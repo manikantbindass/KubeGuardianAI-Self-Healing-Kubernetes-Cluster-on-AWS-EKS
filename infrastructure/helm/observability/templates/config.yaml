@@ -1,0 +1,23 @@
+{{- range $name, $content := .Files.Glob "files/*.yml" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: obs-{{ base $name | replace ".yml" "" }}
+  {{- if eq (base $name) "otel.yml" }}
+  namespace: sentinel-telemetry
+  {{- end }}
+data:
+  {{ base $name }}: |
+{{ $content | toString | indent 4 }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: obs-dashboards-data
+data:
+{{- range $name, $content := .Files.Glob "dashboards/*.json" }}
+  {{ base $name }}: |
+{{ $content | toString | indent 4 }}
+{{- end }}

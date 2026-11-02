@@ -38,10 +38,11 @@ def test_postgres_migration_round_trip() -> None:
         with engine.connect() as connection:
             assert (
                 connection.scalar(text("SELECT version_num FROM alembic_version"))
-                == "0001_greeting_jobs"
+                == "0002_incidents"
             )
         migrate("downgrade", "base")
         assert "greeting_jobs" not in inspect(engine).get_table_names()
+        assert "incidents" not in inspect(engine).get_table_names()
         migrate("upgrade", "head")
         migrate("upgrade", "head")  # Restart must be harmless.
     finally:

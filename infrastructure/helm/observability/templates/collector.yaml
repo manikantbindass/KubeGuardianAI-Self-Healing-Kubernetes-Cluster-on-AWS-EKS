@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sentinel-telemetry
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: obs-no-api, namespace: sentinel-telemetry}
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: {name: otel, namespace: sentinel-telemetry}
+spec:
+  selector:
+    matchLabels: {app: sentinel, component: otel}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ print ((.Files.Glob "files/*").AsConfig) ((.Files.Glob "dashboards/*").AsConfig) | sha256sum }}
+      labels: {app: sentinel, component: otel}
+    spec:
+      serviceAccountName: obs-no-api
+      automountServiceAccountToken: false
+      tolerations: [{operator: Exists, effect: NoSchedule}]
+      securityContext: {seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: otel
+          image: {{ .Values.images.otel }}
+          args: [--config=/etc/otel/otel.yml]
+          ports: [{name: otlp, containerPort: 4318}, {name: metrics, containerPort: 8888}]
+          resources:
+            requests: {cpu: 50m, memory: 96Mi}
+            limits: {cpu: "1", memory: 256Mi}
+          # Root is scoped to read host container log files; no API token or privileged mode.
+          securityContext: {runAsUser: 0, allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          startupProbe:
+            httpGet: {path: /, port: 13133}
+            failureThreshold: 60
+            periodSeconds: 3
+          readinessProbe: {httpGet: {path: /, port: 13133}}
+          livenessProbe: {httpGet: {path: /, port: 13133}}
+          volumeMounts:
+            - {name: config, mountPath: /etc/otel, readOnly: true}
+            - {name: logs, mountPath: /var/log/pods, readOnly: true}
+            - {name: offsets, mountPath: /var/lib/otel}
+      volumes:
+        - {name: config, configMap: {name: obs-otel}}
+        - {name: logs, hostPath: {path: /var/log/pods, type: Directory}}
+        - {name: offsets, emptyDir: {sizeLimit: 64Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: otel, namespace: sentinel-telemetry}
+spec:
+  selector: {app: sentinel, component: otel}
+  ports:
+    - {name: otlp, port: 4318, targetPort: otlp}
+    - {name: metrics, port: 8888, targetPort: metrics}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: otel-boundary, namespace: sentinel-telemetry}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kubesentinel}}
+          podSelector: {matchLabels: {app: sentinel}}
+      ports: [{port: 4318}, {port: 8888}]
+  egress:
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kubesentinel}}
+          podSelector: {matchLabels: {component: loki}}
+      ports: [{port: 3100}]
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}
+          podSelector: {matchLabels: {k8s-app: kube-dns}}
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: event-collector}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: sentinel, component: event-collector}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ print ((.Files.Glob "files/*").AsConfig) ((.Files.Glob "dashboards/*").AsConfig) | sha256sum }}
+      labels: {app: sentinel, component: event-collector}
+    spec:
+      serviceAccountName: event-collector
+      automountServiceAccountToken: true
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: events
+          image: {{ .Values.apiImage }}
+          command: [python, -m, kubesentinel_api.event_collector]
+          env:
+            - name: TELEMETRY_TOKEN
+              valueFrom: {secretKeyRef: {name: {{ .Values.secretName }}, key: TELEMETRY_TOKEN}}
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 192Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          startupProbe:
+            exec: {command: [python, -c, "from pathlib import Path; assert Path('/tmp/event-collector-heartbeat').exists()"]}
+            failureThreshold: 60
+            periodSeconds: 3
+          readinessProbe:
+            exec: {command: [python, -c, "import time; from pathlib import Path; assert time.time()-Path('/tmp/event-collector-heartbeat').stat().st_mtime<90"]}
+          volumeMounts: [{name: tmp, mountPath: /tmp}]
+      volumes: [{name: tmp, emptyDir: {sizeLimit: 64Mi}}]

@@ -1,0 +1,50 @@
+groups:
+  - name: sentinel-recordings
+    rules:
+      - record: sentinel:http_requests:rate5m
+        expr: sum(rate(sentinel_http_requests_total[5m]))
+      - record: sentinel:http_errors:ratio5m
+        expr: ((sum(rate(sentinel_http_requests_total{status=~"5.."}[5m])) or vector(0)) / clamp_min(sum(rate(sentinel_http_requests_total[5m])), 0.001)) and on() (sum(rate(sentinel_http_requests_total[5m])) > 0)
+      - record: sentinel:http_latency:p95
+        expr: histogram_quantile(0.95, sum by(le) (rate(sentinel_http_duration_seconds_bucket[5m])))
+      - record: sentinel:pod_pending_seconds
+        expr: (time() - kube_pod_created{namespace="kubesentinel"}) * on(namespace,pod) group_left() (kube_pod_status_phase{namespace="kubesentinel",phase="Pending"} == 1)
+      - record: sentinel:http_errors:ratio1h
+        expr: ((sum(increase(sentinel_http_requests_total{status=~"5.."}[1h])) or vector(0)) / clamp_min(sum(increase(sentinel_http_requests_total[1h])), 1)) and on() (sum(increase(sentinel_http_requests_total[1h])) > 0)
+  - name: sentinel-alerts
+    rules:
+      - alert: SentinelApiUnavailable
+        expr: up{job="sentinel-api"} == 0
+        for: 30s
+        labels: {severity: critical, namespace: kubesentinel}
+        annotations: {summary: "KubeSentinel API scrape is unavailable"}
+      - alert: WorkloadReplicasUnavailable
+        expr: kube_deployment_status_replicas_available{namespace="kubesentinel"} < kube_deployment_spec_replicas{namespace="kubesentinel"}
+        for: 30s
+        labels: {severity: warning}
+        annotations: {summary: "Deployment has unavailable replicas"}
+      - alert: ContainerRestarting
+        expr: increase(kube_pod_container_status_restarts_total{namespace="kubesentinel"}[5m]) > 0
+        for: 15s
+        labels: {severity: warning}
+        annotations: {summary: "A container restarted in the last five minutes"}
+      - alert: ContainerOOMKilled
+        expr: kube_pod_container_status_last_terminated_reason{namespace="kubesentinel",reason="OOMKilled"} == 1
+        for: 15s
+        labels: {severity: critical}
+        annotations: {summary: "Container last termination was OOMKilled"}
+      - alert: PodPendingTooLong
+        expr: sentinel:pod_pending_seconds > 120
+        for: 30s
+        labels: {severity: warning}
+        annotations: {summary: "Pod has remained pending for over two minutes"}
+      - alert: NodePressure
+        expr: kube_node_status_condition{condition=~"MemoryPressure|DiskPressure|PIDPressure",status="true"} == 1
+        for: 30s
+        labels: {severity: critical, namespace: kubesentinel}
+        annotations: {summary: "Node has a pressure condition"}
+      - alert: HttpErrorBudgetBurn
+        expr: sentinel:http_errors:ratio5m > 0.0144 and sentinel:http_errors:ratio1h > 0.0144
+        for: 2m
+        labels: {severity: critical, namespace: kubesentinel}
+        annotations: {summary: "Availability SLO is burning over 14.4x budget"}
