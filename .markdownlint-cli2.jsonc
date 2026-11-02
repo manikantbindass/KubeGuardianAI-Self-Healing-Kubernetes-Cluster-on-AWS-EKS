@@ -1,4 +1,4 @@
 {
   "config": { "default": true, "MD013": false, "MD024": { "siblings_only": true } },
-  "ignores": ["**/node_modules/**", ".venv/**", "**/.next/**"]
+  "ignores": ["**/node_modules/**", ".venv/**", ".tools/**", ".cache/**", "**/.next/**"]
 }

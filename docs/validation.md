@@ -37,13 +37,22 @@ The validator deliberately does not check external URL availability or Markdown 
 ## Blockers and limitations
 
 - `docker desktop start --detach` accepted the start request, but no Docker engine became reachable. `docker compose up --build --wait --wait-timeout 180` failed on the missing Windows engine pipe; `docker --context desktop-linux compose up --build --wait --wait-timeout 180` failed on the missing Linux engine pipe. No global Docker context was changed.
-- Therefore full container startup, greeting completion against real PostgreSQL/Redis, PostgreSQL migration upgrade/downgrade, Redis outage recovery with actual services, and container hardening behavior are **not verified locally**. CI defines these checks on a Linux Docker host, but no CI run is claimed before publication.
+- Therefore container startup, real-store greeting completion, migration upgrade/downgrade, Redis outage recovery, and container hardening behavior are **not verified locally**. Linux CI subsequently verified migration and startup/job/API-outage/recovery behavior as recorded below. Redis-specific outage recovery and a comprehensive container-hardening assessment remain separate, unexecuted scenarios.
 - Windows denied binding port 3000 with EACCES. Native dashboard HTTP checks used port 3100. Change local port or `.env` host mapping as described in the development guide.
 - `npm audit` reports 16 moderate findings in the ESLint/minimatch development chain. No high/critical findings remain after patch-compatible documentation dependency overrides. Runtime audit is clean. Do not apply `npm audit fix --force` blindly: the suggested downgrades break the selected tooling. Revisit upstream fixes through dependency updates.
 - The GitHub CLI's stored token is invalid and the connected account reports read-only access, but Git credential manager authentication successfully pushed `feat/phase-01-foundation`. The GitHub connector then had a transport failure; CLI authentication through the existing Git credential opened [draft PR #1](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/pull/1). No credential values were logged or committed. No rename, branch protection update, cloud provisioning, or AWS API call was performed.
 
-Phase 01 implementation is present, but full acceptance requires a Linux Docker host to run the blocked integration checks. Refer to the [development guide](development-guide.md) and [CI workflow](../.github/workflows/checks.yml) for exact reproduction commands.
+The Windows Docker blocker remains local to this host; Linux CI supplies the migration/container acceptance evidence below. Refer to the [development guide](development-guide.md) and [CI workflow](../.github/workflows/checks.yml) for exact reproduction commands.
 
 ## CI follow-up
 
-The first Linux CI runs exposed missing optional native packages in the Windows-generated npm lockfile (Rolldown and Lightning CSS). The lock was regenerated in an isolated directory without installed dependencies to retain platform packages, including Linux/macOS variants. `npm run check:lock` now guards this regression. Backend checks passed on Linux and Windows, and the real PostgreSQL migration upgrade/downgrade/re-upgrade test passed in [run 41456407597](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41456407597). Frontend/container jobs are being rerun with the corrected lock; their final status must be checked on the PR.
+The first Linux CI runs exposed missing optional native packages in the Windows-generated npm lockfile (Rolldown and Lightning CSS). The lock was regenerated without installed dependencies to retain Linux/macOS variants. `npm run check:lock` now verifies 57 native dependency declarations and guards this regression.
+
+[Run 41457197239](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41457197239), commit `20181f8`, completed successfully with all five jobs passing:
+
+- Dashboard: locked install, native-dependency guard, lint, docs/diagrams, strict types, 10 tests and production build on Linux.
+- API: Ruff, formatting, strict mypy, 9 unit tests, local documentation links/license and whitespace checks on both Linux and Windows.
+- Migrations: real PostgreSQL upgrade, downgrade, re-upgrade and repeated upgrade against a disposable database.
+- Containers: secure multi-stage images build; Compose startup/migrations/readiness pass; actual PostgreSQL/Redis greeting completes; dashboard stays available while API is stopped; API restart/recovery smoke passes; project resources clean up.
+
+This validates Phase 01 on a Linux Docker host. It does not validate a cloud deployment, production security, arbitrary workload recovery, or Redis-specific outage behavior.
