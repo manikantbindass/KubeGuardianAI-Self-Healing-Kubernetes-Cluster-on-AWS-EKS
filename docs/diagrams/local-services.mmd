@@ -1,0 +1,9 @@
+flowchart LR
+  browser["Browser :3000"] --> dashboard["Next.js / TanStack Query"]
+  dashboard -->|"Same-origin proxy / API_BASE_URL"| api["FastAPI :8000 /api/v1"]
+  api -->|"Durable jobs / readiness / migration revision"| pg[("PostgreSQL :5432")]
+  api -->|"Completed job cache / bounded wake-up hints"| redis[("Redis :6379")]
+  migrate["One-shot Alembic migrator"] --> pg
+  migrate -->|"Must complete before API and worker"| api
+  worker["Greeting worker"] -->|"Claim queued SQL rows; SKIP LOCKED"| pg
+  worker -->|"BLPOP wake-ups; SQL polling fallback"| redis

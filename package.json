@@ -1,0 +1,20 @@
+{
+  "name": "kubesentinel-ai",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/dashboard"],
+  "engines": { "node": ">=24 <25", "npm": ">=11 <12" },
+  "packageManager": "npm@11.11.0",
+  "scripts": {
+    "dev": "npm run dev --workspace @kubesentinel/dashboard",
+    "build": "npm run build --workspace @kubesentinel/dashboard",
+    "start": "npm run start --workspace @kubesentinel/dashboard",
+    "lint": "npm run lint --workspaces",
+    "lint:docs": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.venv\" \"#apps/dashboard/.next\"",
+    "diagrams": "node scripts/validate-diagrams.mjs",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": { "markdownlint-cli2": "0.24.0", "mermaid": "12.2.0", "jsdom": "26.1.0", "next": "16.4.4" },
+  "overrides": { "re2js": "2.9.1", "katex": "0.18.2" }
+}

@@ -1,0 +1,17 @@
+flowchart LR
+  human["Person: Platform operator / incident responder"]
+  reviewer["Person: Security reviewer / approver"]
+  sentinel["Software system: KubeSentinel AI (planned)"]
+  idp["External system: OIDC identity provider"]
+  cluster["External system: Kubernetes cluster / future AWS EKS"]
+  git["External system: GitHub / CI / reviewed desired state"]
+  notify["External system: Approved notification destinations"]
+  provider["External system: Optional AI provider"]
+  human -->|"Inspect incidents; request scoped action"| sentinel
+  reviewer -->|"Review policy and approve proposals"| sentinel
+  sentinel -->|"Validate identity"| idp
+  cluster -->|"Read-only telemetry; untrusted evidence"| sentinel
+  sentinel -->|"Policy-approved, bounded operator action"| cluster
+  git -->|"Builds and GitOps desired state"| sentinel
+  sentinel -->|"Redacted incident notifications"| notify
+  sentinel -->|"Optional redacted retrieval context; no execution"| provider

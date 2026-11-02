@@ -1,0 +1,38 @@
+UV ?= uv
+
+.PHONY: setup dev dev-native-api dev-native-dashboard worker test lint typecheck build clean health migrate check
+setup:
+	npm ci
+	$(UV) sync --frozen
+dev:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build --wait --wait-timeout 180
+dev-native-api:
+	$(UV) run uvicorn kubesentinel_api.main:app --app-dir apps/api --reload --host 127.0.0.1 --port 8000 --no-access-log
+dev-native-dashboard:
+	npm run dev
+worker:
+	$(UV) run python scripts/setup/run_worker.py
+migrate:
+	$(UV) run alembic -c apps/api/alembic.ini upgrade head
+test:
+	npm test
+	$(UV) run pytest
+lint:
+	npm run lint
+	npm run lint:docs
+	npm run diagrams
+	$(UV) run ruff check .
+	$(UV) run ruff format --check .
+typecheck:
+	npm run typecheck
+	$(UV) run mypy
+build:
+	npm run build
+	docker compose build
+health:
+	$(UV) run python scripts/setup/smoke.py
+clean:
+	docker compose down --remove-orphans
+check: lint typecheck test
+	$(UV) run python scripts/validate_repository.py
+	git diff --check

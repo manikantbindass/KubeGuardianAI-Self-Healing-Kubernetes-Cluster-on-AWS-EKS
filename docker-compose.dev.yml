@@ -1,0 +1,25 @@
+# Optional hot reload overlay: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build --wait
+services:
+  api:
+    command: [uvicorn, kubesentinel_api.main:app, --host, 0.0.0.0, --port, "8000", --reload, --no-access-log]
+    volumes:
+      - ./apps/api/kubesentinel_api:/app/kubesentinel_api:ro
+  worker:
+    volumes:
+      - ./apps/api/kubesentinel_api:/app/kubesentinel_api:ro
+  dashboard:
+    build:
+      target: dependencies
+    read_only: false
+    command: [npm, run, dev, --workspace, "@kubesentinel/dashboard", --, --hostname, 0.0.0.0]
+    working_dir: /app
+    volumes:
+      - ./apps/dashboard:/app/apps/dashboard
+      - dashboard-next:/app/apps/dashboard/.next
+      - dashboard-node-modules:/app/apps/dashboard/node_modules
+    environment:
+      API_BASE_URL: http://api:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+volumes:
+  dashboard-next:
+  dashboard-node-modules:
