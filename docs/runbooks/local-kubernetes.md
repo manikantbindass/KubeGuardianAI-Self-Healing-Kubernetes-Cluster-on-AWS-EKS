@@ -1,6 +1,6 @@
 # Local Kubernetes deployment
 
-Phase 02 provides Helm templates and a scoped kind lifecycle, not AWS infrastructure. The API remains unauthenticated; use a trusted local lab. Docker Desktop must run Linux containers. This host currently has no Docker engine, so local cluster and image scans are blocked; consult the Local Kubernetes CI workflow for live results, rather than inferring success from templates.
+Phase 02 provides Helm templates and a scoped kind lifecycle, not AWS infrastructure. The API remains unauthenticated; use a trusted local lab. Docker Desktop must run Linux containers. This host has no Docker engine, but Linux CI verified actual kind deployment and smoke tests; see the [validation record](../reports/phase-02-validation.md) for evidence and scan limitations.
 
 ## Prerequisites and bootstrap
 

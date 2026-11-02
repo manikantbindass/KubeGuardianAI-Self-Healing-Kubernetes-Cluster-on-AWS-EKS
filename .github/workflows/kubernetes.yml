@@ -45,15 +45,20 @@ jobs:
         run: |
           mkdir -p .cache
           status=0
-          for image in api dashboard; do
-            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache:/out" aquasec/trivy:0.69.3 image --severity HIGH,CRITICAL --exit-code 1 --format json --output /out/$image-scan.json kubesentinel/$image:phase02 || status=1
+          for entry in api=kubesentinel/api:phase02 dashboard=kubesentinel/dashboard:phase02 postgres=postgres:17.10-bookworm redis=redis:8.2.2-bookworm; do
+            name="${entry%%=*}"
+            image="${entry#*=}"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache:/out" aquasec/trivy:0.69.3 image --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --format json --output /out/$name-scan.json "$image" || status=1
           done
+          python scripts/summarize_scans.py .cache
           exit "$status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: kubernetes-validation-and-scans
           path: .cache/*.json
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Diagnostics
         if: failure()
         run: |

@@ -180,7 +180,8 @@ def main() -> None:
                             "python",
                             "-c",
                             "import socket,sys\n"
-                            "try: socket.create_connection(('sentinel-api',8000),3)\n"
+                            "host=socket.gethostbyname('sentinel-api')\n"
+                            "try: socket.create_connection((host,8000),3)\n"
                             "except OSError: sys.exit(0)\nsys.exit(1)",
                         ],
                     }
