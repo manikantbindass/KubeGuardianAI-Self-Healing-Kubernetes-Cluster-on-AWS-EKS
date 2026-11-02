@@ -10,6 +10,8 @@ Phase 01 runs a local dashboard/API, PostgreSQL, Redis, one-shot migrator, and g
 
 All commands below start in repository root unless stated. No activation is required for uv. `.env` is ignored; never commit real secrets. npm uses `package-lock.json`; uv uses `uv.lock`; use frozen installs in CI.
 
+Run `npm run check:lock` after dependency changes. npm can omit other operating systems' optional native packages when updating a lock against an existing install. If this check fails, regenerate the lock in an isolated directory containing the root/workspace package manifests and `.npmrc`, with no `node_modules`, then copy the lock back and verify clean installs on CI. Do not commit a Windows-only lockfile or repair it by adding Linux-only packages as mandatory dependencies.
+
 ## Container startup
 
 ```sh

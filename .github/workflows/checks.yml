@@ -19,6 +19,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm install --global npm@11.11.0
+      - run: npm run check:lock
       - run: npm ci
       - run: npm run lint
       - run: npm run lint:docs

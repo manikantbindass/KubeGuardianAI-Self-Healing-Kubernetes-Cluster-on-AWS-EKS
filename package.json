@@ -12,6 +12,7 @@
     "lint": "npm run lint --workspaces",
     "lint:docs": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.venv\" \"#apps/dashboard/.next\"",
     "diagrams": "node scripts/validate-diagrams.mjs",
+    "check:lock": "node scripts/validate-lockfile.mjs",
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test --workspaces"
   },

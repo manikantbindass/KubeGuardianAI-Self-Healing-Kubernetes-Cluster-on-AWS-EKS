@@ -18,6 +18,7 @@ test:
 	npm test
 	$(UV) run pytest
 lint:
+	npm run check:lock
 	npm run lint
 	npm run lint:docs
 	npm run diagrams
