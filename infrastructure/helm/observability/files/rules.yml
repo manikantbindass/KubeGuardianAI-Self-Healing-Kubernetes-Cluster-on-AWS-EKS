@@ -4,13 +4,13 @@ groups:
       - record: sentinel:http_requests:rate5m
         expr: sum(rate(sentinel_http_requests_total[5m]))
       - record: sentinel:http_errors:ratio5m
-        expr: sum(rate(sentinel_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(sentinel_http_requests_total[5m])), 0.001)
+        expr: ((sum(rate(sentinel_http_requests_total{status=~"5.."}[5m])) or vector(0)) / clamp_min(sum(rate(sentinel_http_requests_total[5m])), 0.001)) and on() (sum(rate(sentinel_http_requests_total[5m])) > 0)
       - record: sentinel:http_latency:p95
         expr: histogram_quantile(0.95, sum by(le) (rate(sentinel_http_duration_seconds_bucket[5m])))
       - record: sentinel:pod_pending_seconds
         expr: (time() - kube_pod_created{namespace="kubesentinel"}) * on(namespace,pod) group_left() (kube_pod_status_phase{namespace="kubesentinel",phase="Pending"} == 1)
       - record: sentinel:http_errors:ratio1h
-        expr: sum(increase(sentinel_http_requests_total{status=~"5.."}[1h])) / clamp_min(sum(increase(sentinel_http_requests_total[1h])), 1)
+        expr: ((sum(increase(sentinel_http_requests_total{status=~"5.."}[1h])) or vector(0)) / clamp_min(sum(increase(sentinel_http_requests_total[1h])), 1)) and on() (sum(increase(sentinel_http_requests_total[1h])) > 0)
   - name: sentinel-alerts
     rules:
       - alert: SentinelApiUnavailable

@@ -31,7 +31,9 @@ jobs:
       - name: Validate runtime configuration before deployment
         run: |
           config="$PWD/infrastructure/helm/observability/files"
-          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" prom/prometheus:v3.6.0 check config /etc/prometheus/prometheus.yml
+          # Kubernetes mounts token/CA only at runtime; preflight checks config syntax plus rules separately.
+          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" prom/prometheus:v3.6.0 check config --syntax-only /etc/prometheus/prometheus.yml
+          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" -v "$PWD/infrastructure/helm/observability/tests:/tests:ro" prom/prometheus:v3.6.0 test rules /tests/rules.yml
           docker run --rm -v "$config:/etc/loki:ro" grafana/loki:3.5.7 -config.file=/etc/loki/loki.yml -verify-config=true
           docker run --rm -v "$config:/etc/otel:ro" otel/opentelemetry-collector-contrib:0.136.0 validate --config=/etc/otel/otel.yml
       - run: python scripts/kubernetes.py bootstrap --tag phase04 --observability
