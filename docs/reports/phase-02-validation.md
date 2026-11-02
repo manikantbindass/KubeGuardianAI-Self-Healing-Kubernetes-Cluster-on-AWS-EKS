@@ -14,6 +14,17 @@ Local environment: Windows, Docker client installed but no reachable engine. The
 
 ## Scan follow-up and limits
 
-The first Trivy scan step returned nonzero and was advisory. It is **not a clean scan**. Its report upload was skipped because GitHub excludes hidden directories by default; the workflow now explicitly includes the report files and summarizes all four app/datastore images. Consult the latest PR artifacts and summary before accepting image security.
+The first Trivy scan step returned nonzero and was advisory. Its report upload was skipped because GitHub excludes hidden directories by default. The workflow now explicitly uploads reports and summarizes all four images. Reports recovered from [run 41476109557](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41476109557) show:
+
+| Image | HIGH | CRITICAL | Findings with a listed fixed version |
+| --- | --- | --- | --- |
+| API (also worker/migrator) | 114 | 6 | 75 |
+| Dashboard | 59 | 7 | 33 |
+| PostgreSQL | 93 | 16 | 60 |
+| Redis | 57 | 7 | 31 |
+
+These are package/advisory occurrences, not unique CVE totals or a reachability assessment. They include base OS and packaged runtime findings. The Trivy JSON artifacts retain package versions, advisory IDs, fixed versions where available and image metadata. Scanning is advisory in this development workflow, so a successful job does **not** mean clean images. This PR remains draft for image-security follow-up: update reviewed base/runtime/store versions, rebuild and rescan, triage remaining findings with evidence, then pin approved digests before production. Do not suppress findings or infer that non-root execution removes vulnerable code.
+
+The later [run 41476207732](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41476207732) also passed cluster bootstrap and live tests including the stronger DNS-aware isolation test, Redis outage readiness=503 while liveness remains healthy, Redis recovery, and actual frontend smoke. Scan results remain advisory and must be checked separately.
 
 No metrics-server is installed by default, so HPA load response is not tested. Ingress templates validate, but no ingress controller/TLS deployment was exercised; local access uses loopback port-forward. Dev/prod profiles require external stores and reviewed egress/ingress allowances and are not production certification. Application dependencies are locked; base image tags are versioned but not digest-pinned. No AWS or real workload remediation is introduced.

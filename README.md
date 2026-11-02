@@ -43,7 +43,7 @@ Responsibility notes identify future components without empty placeholder files.
 
 ## Run locally
 
-For kind and Helm orchestration, see the [local Kubernetes guide](docs/runbooks/local-kubernetes.md). Phase 02 adds scoped bootstrap/build/scan/cleanup scripts, chart profiles and deployment tests. The Windows Docker engine remains unavailable locally; live cluster acceptance must be confirmed in the Local Kubernetes CI workflow. Animated SVG banners above and below use local assets; readers with reduced-motion preferences receive a static treatment where supported.
+For kind and Helm orchestration, see the [local Kubernetes guide](docs/runbooks/local-kubernetes.md). Phase 02 adds scoped bootstrap/build/scan/cleanup scripts, chart profiles and deployment tests. Linux CI verified fresh-cluster deployment and smoke tests; Windows Docker remains unavailable locally. Image scans contain HIGH/CRITICAL findings; see the [validation and security follow-up](docs/reports/phase-02-validation.md) before promotion. Animated SVG banners use local assets and offer a static treatment for reduced-motion preferences where supported.
 
 Install Docker Engine + Compose v2 (Linux) or Docker Desktop using **Linux containers** (Windows/macOS). From the repository root:
 
