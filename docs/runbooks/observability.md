@@ -11,7 +11,7 @@ npx playwright install chromium
 python3 scripts/test_observability.py
 ```
 
-On Windows use `py -3.12` and a running Linux Docker engine, kind 0.31.0, Helm 3.19.0 and kubectl on PATH. The bootstrap creates random ingestion/Grafana credentials in the existing namespace Secret; none is stored in Git or printed. It resolves Kubernetes service and endpoint IPs into narrow API egress rules. Helm waits for the app migration and telemetry workloads. Default startup without `--observability` leaves metrics ingestion disabled unless explicitly configured.
+On Windows use `py -3.12` and a running Linux Docker engine, kind 0.31.0, Helm 3.19.0 and kubectl on PATH. Bootstrap creates a random ingestion token in the runtime Secret and a separate `sentinel-grafana` administrator Secret; neither is stored in Git or printed. The Event collector receives only the ingestion token, and Alertmanager mounts only that key. Bootstrap resolves Kubernetes service/endpoint IPs into narrow API egress rules. Helm waits for the app migration and telemetry workloads. Default startup without `--observability` leaves metrics ingestion disabled unless explicitly configured.
 
 For interactive use: `kubectl --context kind-kubesentinel -n kubesentinel port-forward service/grafana 3300:3000`, then open localhost:3300. Viewer-only anonymous access is a deliberate lab setting. Prometheus 9090, Loki 3100 and Alertmanager 9093 remain ClusterIP services; forward only to loopback when debugging. Cleanup: `python3 scripts/kubernetes.py clean`, which deletes only the named kind cluster and its local data.
 

@@ -28,7 +28,7 @@ export default function Home() {
           <a href="#status" aria-current="page" className="rounded-md bg-muted px-3 py-2 text-sm">System status</a>
           <a href="#jobs" className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted">Background jobs</a>
         </nav>
-        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">Phase 01 foundation<br />No cluster connected</p>
+        <p className="mt-8 text-xs leading-relaxed text-muted-foreground">Local telemetry foundation<br />No remediation enabled</p>
       </aside>
       <main id="main" className="mx-auto w-full max-w-6xl px-6 py-10 md:px-12">
         <header className="mb-10 flex flex-wrap items-start justify-between gap-5">
@@ -64,7 +64,7 @@ export default function Home() {
             {jobs.isPending ? <p className="animate-pulse text-muted-foreground">Loading recent jobs…</p> : jobs.isError ? <p role="alert" className="text-amber-300">Recent jobs unavailable. Start the database and apply migrations.</p> : jobs.data.length === 0 ? <p className="rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">No greetings yet. Queue the first one above.</p> : <ul className="divide-y divide-border">{jobs.data.map(job => <li key={job.id} className="flex flex-wrap justify-between gap-3 py-4"><div><p className="text-sm">{job.message ?? `Waiting for the worker to greet ${job.name}…`}</p><p className="mt-1 text-xs text-muted-foreground">{job.id}</p></div><span className="text-xs text-primary">{job.status}</span></li>)}</ul>}
           </div>
         </Card>
-        <footer className="mt-8 text-xs leading-relaxed text-muted-foreground">{version.data ? `API ${version.data.api_version} · ${version.data.environment} · v${version.data.version}` : "Version unavailable"} · Authentication, telemetry, anomaly detection, and remediation are future phases.</footer>
+        <footer className="mt-8 text-xs leading-relaxed text-muted-foreground">{version.data ? `API ${version.data.api_version} · ${version.data.environment} · v${version.data.version}` : "Version unavailable"} · Telemetry incidents are advisory. Authentication, anomaly models and remediation remain future work.</footer>
       </main>
     </div>
   );

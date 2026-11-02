@@ -120,7 +120,7 @@ def authenticate(authorization: Annotated[str | None, Header()] = None) -> None:
     token = get_settings().telemetry_token.get_secret_value()
     if not token:
         raise HTTPException(503, "Telemetry ingestion is disabled.")
-    if not hmac.compare_digest(authorization or "", f"Bearer {token}"):
+    if not hmac.compare_digest((authorization or "").encode(), f"Bearer {token}".encode()):
         raise HTTPException(401, "Invalid ingestion credentials.")
 
 

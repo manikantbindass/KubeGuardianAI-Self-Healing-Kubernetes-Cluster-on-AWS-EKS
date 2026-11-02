@@ -86,7 +86,6 @@ def main() -> None:
             "DATABASE_URL": f"postgresql+psycopg://sentinel:{password}@sentinel-postgres:5432/sentinel",
             "REDIS_URL": "redis://sentinel-redis:6379/0",
             "TELEMETRY_TOKEN": secrets.token_hex(32),
-            "GRAFANA_ADMIN_PASSWORD": secrets.token_hex(24),
         }
         secret = {
             "apiVersion": "v1",
@@ -97,6 +96,18 @@ def main() -> None:
             },
         }
         kube("apply", "-f", "-", data=json.dumps(secret))
+        if args.observability:
+            grafana_secret = {
+                "apiVersion": "v1",
+                "kind": "Secret",
+                "metadata": {"name": "sentinel-grafana"},
+                "data": {
+                    "GRAFANA_ADMIN_PASSWORD": base64.b64encode(
+                        secrets.token_hex(24).encode()
+                    ).decode()
+                },
+            }
+            kube("apply", "-f", "-", data=json.dumps(grafana_secret))
         build(args.tag)
         for component in ("api", "dashboard"):
             run(

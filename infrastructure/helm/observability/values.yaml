@@ -1,6 +1,7 @@
 # Trusted local cluster only; never public exposure.
 apiImage: kubesentinel/api:phase04
 secretName: sentinel-runtime
+grafanaSecretName: sentinel-grafana
 apiServerCIDRs: []
 nodeNames: [kubesentinel-control-plane, kubesentinel-worker]
 retention: 7d
