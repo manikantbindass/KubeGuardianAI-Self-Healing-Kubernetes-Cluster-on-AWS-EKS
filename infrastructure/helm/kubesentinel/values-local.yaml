@@ -1,0 +1,3 @@
+# Disposable local lab. Secrets are created separately by the bootstrap script.
+localStores: true
+replicas: 1

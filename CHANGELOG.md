@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Phase 02
+
+- Add kind configuration, cross-platform lifecycle/build/scan scripts, Helm local/dev/prod profiles, migration Jobs, service discovery, PVC-backed local stores, namespace policy, scoped RBAC, network isolation, resources, probes, optional API PDB/HPA and ingress templates.
+- Add worker heartbeat probes and numeric non-root application image users.
+- Add Kubernetes schema/lint/deployment/scan CI and orchestration runbook/diagram. Local live tests remain blocked by an unavailable Docker engine; no AWS resources created.
+- Add animated, locally maintained SVG banners at the README top and bottom.
+
 ## 0.1.0 - Phase 01 (2026-11-02)
 
 - Add versioned FastAPI health/readiness/version APIs, typed Pydantic settings/schemas, structured JSON request logging, correlation IDs, sanitized exception handling, CORS, and OpenAPI.

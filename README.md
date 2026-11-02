@@ -1,5 +1,7 @@
 # KubeSentinel AI
 
+![Animated KubeSentinel AI header](docs/assets/header.svg)
+
 Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
 
 **Current status: Phase 01 - functional full-stack foundation.** Implemented: Next.js App Router/TypeScript/Tailwind dashboard, shadcn-style source components, TanStack Query, FastAPI/Pydantic configuration and schemas, versioned health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL-backed greeting jobs, Redis cache/wake-ups, and a worker. Docker/CI definitions and architecture are included. Verification results and environment blockers are recorded below. Authentication, cluster telemetry, anomaly detection, remediation, and AWS remain future work.
@@ -40,6 +42,8 @@ The larger platform is a target design. Implemented local components are listed 
 Responsibility notes identify future components without empty placeholder files. No cloud manifests or fabricated report/presentation binaries are included.
 
 ## Run locally
+
+For kind and Helm orchestration, see the [local Kubernetes guide](docs/runbooks/local-kubernetes.md). Phase 02 adds scoped bootstrap/build/scan/cleanup scripts, chart profiles and deployment tests. The Windows Docker engine remains unavailable locally; live cluster acceptance must be confirmed in the Local Kubernetes CI workflow. Animated SVG banners above and below use local assets; readers with reduced-motion preferences receive a static treatment where supported.
 
 Install Docker Engine + Compose v2 (Linux) or Docker Desktop using **Linux containers** (Windows/macOS). From the repository root:
 
@@ -86,3 +90,5 @@ Make targets: `setup`, `dev`, `test`, `lint`, `build`, `clean`, `health`, plus `
 ## Collaboration
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [SECURITY](SECURITY.md), and [CHANGELOG](CHANGELOG.md). Branch from `main` using `feat/`, `fix/`, `docs/`, `chore/`, or `ci/` and use Conventional Commits. Preserve [LICENSE](LICENSE) and existing Git ancestry.
+
+![Animated Kubernetes engineering footer](docs/assets/footer.svg)

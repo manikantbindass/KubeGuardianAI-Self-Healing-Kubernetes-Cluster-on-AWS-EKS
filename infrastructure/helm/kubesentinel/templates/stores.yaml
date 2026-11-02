@@ -1,0 +1,62 @@
+{{- if .Values.localStores }}
+{{- range $store := list "postgres" "redis" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Values.nameOverride }}-{{ $store }}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: {{ $.Values.nameOverride }}, component: {{ $store }}}
+  template:
+    metadata:
+      labels: {app: {{ $.Values.nameOverride }}, component: {{ $store }}}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ $store }}
+          image: {{ if eq $store "postgres" }}{{ $.Values.postgresImage }}{{ else }}{{ $.Values.redisImage }}{{ end }}
+          {{- if eq $store "postgres" }}
+          env:
+            - {name: POSTGRES_USER, value: sentinel}
+            - {name: POSTGRES_DB, value: sentinel}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ $.Values.secretName }}, key: POSTGRES_PASSWORD}}
+          {{- else }}
+          args: [redis-server, --maxmemory, 128mb, --maxmemory-policy, allkeys-lru]
+          {{- end }}
+          ports: [{containerPort: {{ if eq $store "postgres" }}5432{{ else }}6379{{ end }}}]
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          readinessProbe:
+            tcpSocket: {port: {{ if eq $store "postgres" }}5432{{ else }}6379{{ end }}}
+          startupProbe:
+            tcpSocket: {port: {{ if eq $store "postgres" }}5432{{ else }}6379{{ end }}}
+            failureThreshold: 60
+            periodSeconds: 3
+          livenessProbe:
+            tcpSocket: {port: {{ if eq $store "postgres" }}5432{{ else }}6379{{ end }}}
+          volumeMounts: [{name: data, mountPath: {{ if eq $store "postgres" }}/var/lib/postgresql/data{{ else }}/data{{ end }}}]
+      volumes: [{name: data, persistentVolumeClaim: {claimName: {{ $.Values.nameOverride }}-{{ $store }}}}]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $.Values.nameOverride }}-{{ $store }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: 1Gi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Values.nameOverride }}-{{ $store }}
+spec:
+  selector: {app: {{ $.Values.nameOverride }}, component: {{ $store }}}
+  ports: [{port: {{ if eq $store "postgres" }}5432{{ else }}6379{{ end }}}]
+{{- end }}
+{{- end }}

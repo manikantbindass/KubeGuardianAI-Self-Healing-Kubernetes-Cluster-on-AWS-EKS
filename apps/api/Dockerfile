@@ -13,7 +13,7 @@ COPY --from=builder --chown=sentinel:sentinel /app/.venv /app/.venv
 COPY --chown=sentinel:sentinel apps/api/kubesentinel_api ./kubesentinel_api
 COPY --chown=sentinel:sentinel apps/api/migrations ./migrations
 COPY --chown=sentinel:sentinel apps/api/alembic.ini ./alembic.ini
-USER sentinel
+USER 10001:10001
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=8s --start-period=10s --retries=12 CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/ready', timeout=7)"]
 CMD ["uvicorn", "kubesentinel_api.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]

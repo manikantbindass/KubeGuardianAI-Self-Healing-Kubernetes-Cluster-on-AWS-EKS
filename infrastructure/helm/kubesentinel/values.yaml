@@ -1,0 +1,28 @@
+nameOverride: sentinel
+environment: local
+secretName: sentinel-runtime
+image:
+  api: kubesentinel/api
+  dashboard: kubesentinel/dashboard
+  tag: phase02
+  pullPolicy: IfNotPresent
+replicas: 1
+localStores: true
+postgresImage: postgres:17.10-bookworm
+redisImage: redis:8.2.2-bookworm
+resources:
+  requests: {cpu: 100m, memory: 128Mi}
+  limits: {cpu: "1", memory: 512Mi}
+ingress:
+  enabled: false
+  className: ""
+  host: sentinel.local
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPU: 70
+pdb:
+  enabled: false
+observability:
+  annotations: {}

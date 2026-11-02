@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-label="KubeSentinel AI">
+  <defs><linearGradient id="bg"><stop stop-color="#080f1e"/><stop offset="1" stop-color="#143449"/></linearGradient></defs>
+  <style>@media(prefers-reduced-motion:reduce){.pulse{display:none}}</style>
+  <rect width="1200" height="100%" rx="18" fill="url(#bg)"/>
+  <path d="M0 25 H1200 M0 95 H1200" stroke="#16465b" fill="none"/>
+  <rect class="pulse" x="-100" y="24" width="100" height="2" fill="#67e8f9"><animate attributeName="x" from="-100" to="1200" dur="6s" repeatCount="indefinite"/></rect>
+  <text x="55" y="105" fill="#e5edf7" font-family="Arial,sans-serif" font-size="44" font-weight="700">KubeSentinel AI</text>
+  <text x="57" y="150" fill="#9aabc0" font-family="Arial,sans-serif" font-size="18">Observe · Understand · Recover safely</text>
+  <circle class="pulse" cx="1120" cy="60" r="8" fill="#67e8f9"><animate attributeName="opacity" values="0.25;1;0.25" dur="3s" repeatCount="indefinite"/></circle>
+</svg>

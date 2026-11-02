@@ -1,0 +1,63 @@
+name: Local Kubernetes
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - name: Install pinned tools
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 -o /tmp/kind
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+          curl -fsSL https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz | tar xz -C /tmp kubeconform
+          sudo mv /tmp/kubeconform /usr/local/bin/
+      - name: Lint and validate all configurations
+        run: |
+          mkdir -p .cache
+          for values in local dev prod; do
+            helm lint infrastructure/helm/kubesentinel -f infrastructure/helm/kubesentinel/values-$values.yaml
+            helm template sentinel infrastructure/helm/kubesentinel -f infrastructure/helm/kubesentinel/values-$values.yaml > .cache/$values.yaml
+            kubeconform -strict -summary .cache/$values.yaml
+          done
+      - run: python scripts/kubernetes.py bootstrap
+      - run: python scripts/kubernetes.py test
+      - name: Actual frontend smoke
+        run: |
+          kubectl --context kind-kubesentinel -n kubesentinel port-forward service/sentinel-dashboard 3100:3000 > /tmp/dashboard.log 2>&1 &
+          kubectl --context kind-kubesentinel -n kubesentinel port-forward service/sentinel-api 8100:8000 > /tmp/api.log 2>&1 &
+          sleep 5
+          python scripts/setup/smoke.py --dashboard http://127.0.0.1:3100 --api http://127.0.0.1:8100
+      - name: Scan application images
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .cache
+          status=0
+          for image in api dashboard; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache:/out" aquasec/trivy:0.69.3 image --severity HIGH,CRITICAL --exit-code 1 --format json --output /out/$image-scan.json kubesentinel/$image:phase02 || status=1
+          done
+          exit "$status"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kubernetes-validation-and-scans
+          path: .cache/*.json
+      - name: Diagnostics
+        if: failure()
+        run: |
+          kubectl --context kind-kubesentinel -n kubesentinel get pods,jobs,events
+          kubectl --context kind-kubesentinel -n kubesentinel logs -l component=api --all-containers --tail=100
+      - if: always()
+        run: python scripts/kubernetes.py clean
