@@ -18,7 +18,7 @@ Audit date: 2026-11-02. Remote: <https://github.com/manikantbindass/KubeGuardian
 
 The repository was cloned rather than reinitialized. No existing file was replaced and no history was rebased, amended, or force-pushed. The new local feature branch is `feat/phase-01-foundation`, based on the initial commit and including the requested architecture foundation. LICENSE preservation is checked against the original Git blob. No runtime capability can be inferred from the initial repository name.
 
-GitHub metadata and branch/ruleset observations came from the connected GitHub API. Fine-grained administrator settings, private reporting availability, and merge settings were not verified. Read access does not authorize administration. Before publication, an owner must provide working write credentials; no token values are stored in this repository.
+GitHub metadata and branch/ruleset observations came from the connected GitHub API. Fine-grained administrator settings, private reporting availability, and merge settings were not verified. Read access does not authorize administration. Publication later succeeded through a separate existing Git credential manager identity, despite invalid stored CLI credentials and the connector's read-only account. See [verification results](validation.md); no credential values are stored in this repository.
 
 ## Rename recommendation
 
