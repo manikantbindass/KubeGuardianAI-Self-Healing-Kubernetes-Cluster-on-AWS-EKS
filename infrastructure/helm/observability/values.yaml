@@ -1,0 +1,14 @@
+# Trusted local cluster only; never public exposure.
+apiImage: kubesentinel/api:phase04
+secretName: sentinel-runtime
+apiServerCIDRs: []
+nodeNames: [kubesentinel-control-plane, kubesentinel-worker]
+retention: 7d
+storageSize: 2Gi
+images:
+  prometheus: prom/prometheus:v3.6.0
+  alertmanager: prom/alertmanager:v0.28.1
+  grafana: grafana/grafana:12.2.0
+  loki: grafana/loki:3.5.7
+  otel: otel/opentelemetry-collector-contrib:0.136.0
+  kube-state-metrics: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.17.0

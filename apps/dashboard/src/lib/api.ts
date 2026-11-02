@@ -2,6 +2,7 @@ export type Health = { status: "ok"; service: "kubesentinel-api"; version: strin
 export type Readiness = { status: "ready" | "unavailable"; dependencies: Record<string, "ok" | "unavailable"> };
 export type Version = { version: string; api_version: string; environment: string };
 export type Job = { id: string; name: string; status: "queued" | "completed"; message: string | null; created_at: string };
+export type Incident = { id: string; source: string; reason: string; resource: string; severity: string; status: string; summary: string };
 
 export class ApiError extends Error {
   constructor(public status: number, public correlationId?: string, public code?: string) { super(`API request failed (${status})`); }
@@ -23,6 +24,7 @@ async function request<T>(path: string, valid: (value: unknown) => value is T, i
   return body;
 }
 export const api = {
+  incidents: () => request("incidents", (v): v is Incident[] => Array.isArray(v) && v.every(i => record(i) && ["id", "source", "reason", "resource", "severity", "status", "summary"].every(key => typeof i[key] === "string"))),
   health: () => request("health", (v): v is Health => record(v) && v.status === "ok" && v.service === "kubesentinel-api" && typeof v.version === "string"),
   ready: () => request("ready", (v): v is Readiness => record(v) && ["ready", "unavailable"].includes(String(v.status)) && record(v.dependencies) && Object.values(v.dependencies).every(s => s === "ok" || s === "unavailable"), undefined, true),
   version: () => request("version", (v): v is Version => record(v) && typeof v.version === "string" && typeof v.api_version === "string" && typeof v.environment === "string"),

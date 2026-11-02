@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import Home from "./page";
 import { api, ApiError } from "@/lib/api";
 
-vi.mock("@/lib/api", async importOriginal => ({ ...(await importOriginal<typeof import("@/lib/api")>()), api: { health: vi.fn(), ready: vi.fn(), version: vi.fn(), jobs: vi.fn(), createJob: vi.fn() } }));
+vi.mock("@/lib/api", async importOriginal => ({ ...(await importOriginal<typeof import("@/lib/api")>()), api: { health: vi.fn(), ready: vi.fn(), version: vi.fn(), jobs: vi.fn(), createJob: vi.fn(), incidents: vi.fn() } }));
 function mount() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   return render(<QueryClientProvider client={client}><Home /></QueryClientProvider>);
@@ -14,6 +14,7 @@ beforeEach(() => {
   vi.mocked(api.ready).mockResolvedValue({ status: "ready", dependencies: { postgresql: "ok", redis: "ok" } });
   vi.mocked(api.version).mockResolvedValue({ version: "0.1.0", api_version: "v1", environment: "local" });
   vi.mocked(api.jobs).mockResolvedValue([]);
+  vi.mocked(api.incidents).mockResolvedValue([]);
 });
 describe("status page", () => {
   it("shows connected, ready, empty state and accessible navigation", async () => {

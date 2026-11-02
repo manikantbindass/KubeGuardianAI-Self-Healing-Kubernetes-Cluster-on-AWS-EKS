@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ path: string[] }> };
 async function proxy(request: NextRequest, context: Context) {
   const path = (await context.params).path.join("/");
-  const allowed = /^(health|ready|version|jobs|jobs\/[a-fA-F0-9-]{36})$/.test(path);
+  const allowed = /^(health|ready|version|incidents|telemetry\/health|metrics\/(cpu|memory|restarts|request_rate|error_rate)|jobs|jobs\/[a-fA-F0-9-]{36})$/.test(path);
   if (!allowed || (request.method === "POST" && path !== "jobs")) return Response.json({ error: "Unknown route" }, { status: 404 });
   const correlationId = crypto.randomUUID();
   try {

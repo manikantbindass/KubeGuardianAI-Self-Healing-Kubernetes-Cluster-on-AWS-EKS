@@ -43,6 +43,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["build", "bootstrap", "test", "scan", "clean"])
     parser.add_argument("--tag", default="phase02")
+    parser.add_argument("--observability", action="store_true")
     args = parser.parse_args()
     if args.action == "clean":
         print(run("kind", "delete", "cluster", "--name", CLUSTER))
@@ -82,6 +83,8 @@ def main() -> None:
             "POSTGRES_PASSWORD": password,
             "DATABASE_URL": f"postgresql+psycopg://sentinel:{password}@sentinel-postgres:5432/sentinel",
             "REDIS_URL": "redis://sentinel-redis:6379/0",
+            "TELEMETRY_TOKEN": secrets.token_hex(32),
+            "GRAFANA_ADMIN_PASSWORD": secrets.token_hex(24),
         }
         secret = {
             "apiVersion": "v1",
@@ -115,11 +118,79 @@ def main() -> None:
                 NAMESPACE,
                 "--set-string",
                 f"image.tag={args.tag}",
+                "--set",
+                f"observability.enabled={str(args.observability).lower()}",
                 "--wait",
                 "--timeout",
                 "8m",
             )
         )
+        if args.observability:
+            endpoints = json.loads(
+                run(
+                    "kubectl",
+                    "--context",
+                    CONTEXT,
+                    "-n",
+                    "default",
+                    "get",
+                    "endpoints",
+                    "kubernetes",
+                    "-o",
+                    "json",
+                )
+            )
+            service = json.loads(
+                run(
+                    "kubectl",
+                    "--context",
+                    CONTEXT,
+                    "-n",
+                    "default",
+                    "get",
+                    "service",
+                    "kubernetes",
+                    "-o",
+                    "json",
+                )
+            )
+            cidrs = [service["spec"]["clusterIP"] + "/32"]
+            cidrs.extend(
+                address["ip"] + "/32"
+                for subset in endpoints["subsets"]
+                for address in subset["addresses"]
+            )
+            print(
+                run(
+                    "helm",
+                    "upgrade",
+                    "--install",
+                    "observability",
+                    "infrastructure/helm/observability",
+                    "--kube-context",
+                    CONTEXT,
+                    "--namespace",
+                    NAMESPACE,
+                    "--set-string",
+                    f"apiImage=kubesentinel/api:{args.tag}",
+                    "--set-json",
+                    "apiServerCIDRs=" + json.dumps(cidrs),
+                    "--wait",
+                    "--timeout",
+                    "8m",
+                )
+            )
+            run(
+                "kubectl",
+                "--context",
+                CONTEXT,
+                "-n",
+                "sentinel-telemetry",
+                "rollout",
+                "status",
+                "daemonset/otel",
+                "--timeout=180s",
+            )
     else:
         for component in ("api", "dashboard", "worker"):
             kube("rollout", "status", f"deployment/sentinel-{component}", "--timeout=180s")

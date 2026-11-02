@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 import uuid
 from collections.abc import Awaitable, Callable
 from typing import Annotated, Literal
@@ -8,9 +9,11 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from opentelemetry import propagate, trace
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from redis import Redis
 from redis.exceptions import RedisError
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -18,12 +21,21 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from kubesentinel_api import __version__
 from kubesentinel_api.config import get_settings
 from kubesentinel_api.database import get_db, get_redis
-from kubesentinel_api.models import GreetingJob
+from kubesentinel_api.instrumentation import (
+    INCIDENTS,
+    LATENCY,
+    REQUESTS,
+    STORE_UP,
+    configure_tracing,
+)
+from kubesentinel_api.models import GreetingJob, Incident
 from kubesentinel_api.observability import configure_logging
 from kubesentinel_api.schemas import GreetingInput, GreetingOutput, Health, Readiness
+from kubesentinel_api.telemetry import router as telemetry_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
+configure_tracing(settings.otel_exporter_otlp_endpoint)
 logger = logging.getLogger("kubesentinel.api")
 app = FastAPI(title="KubeSentinel AI", version=__version__, docs_url="/docs")
 app.add_middleware(
@@ -55,24 +67,41 @@ async def correlation(
     request.state.correlation_id = (
         incoming if re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", incoming) else str(uuid.uuid4())
     )
-    try:
-        response = await call_next(request)
-    except Exception:
-        logger.error(
-            "unhandled_request_error", extra={"correlation_id": request.state.correlation_id}
+    started = time.perf_counter()
+    with trace.get_tracer("kubesentinel.api").start_as_current_span(
+        "http.request", context=propagate.extract(dict(request.headers))
+    ) as span:
+        try:
+            response = await call_next(request)
+        except Exception:
+            logger.error(
+                "unhandled_request_error", extra={"correlation_id": request.state.correlation_id}
+            )
+            response = error_response(
+                request, 500, "internal_error", "An unexpected error occurred."
+            )
+        route = getattr(request.scope.get("route"), "path", "unmatched")
+        span.update_name(f"{request.method} {route}")
+        span.set_attribute("http.response.status_code", response.status_code)
+        logger.info(
+            "http_request",
+            extra={
+                "correlation_id": request.state.correlation_id,
+                "method": request.method,
+                "path": route,
+                "status": response.status_code,
+            },
         )
-        response = error_response(request, 500, "internal_error", "An unexpected error occurred.")
+    if route not in {"/metrics", "/health", "/api/v1/health", "/api/v1/ready"}:
+        method = (
+            request.method
+            if request.method in {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
+            else "OTHER"
+        )
+        REQUESTS.labels(method, route, str(response.status_code)).inc()
+        LATENCY.labels(method, route).observe(time.perf_counter() - started)
     response.headers["X-Correlation-ID"] = request.state.correlation_id
     response.headers["Cache-Control"] = "no-store"
-    logger.info(
-        "http_request",
-        extra={
-            "correlation_id": request.state.correlation_id,
-            "method": request.method,
-            "path": request.url.path,
-            "status": response.status_code,
-        },
-    )
     return response
 
 
@@ -117,7 +146,7 @@ def ready(db: Db, cache: Cache, response: Response) -> Readiness:
     try:
         db.execute(text("SELECT 1 FROM greeting_jobs LIMIT 1"))
         revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        dependencies["postgresql"] = "ok" if revision == "0001_greeting_jobs" else "unavailable"
+        dependencies["postgresql"] = "ok" if revision == "0002_incidents" else "unavailable"
     except SQLAlchemyError:
         dependencies["postgresql"] = "unavailable"
     try:
@@ -172,3 +201,21 @@ def get_job(job_id: uuid.UUID, db: Db, cache: Cache) -> GreetingOutput:
 
 
 app.include_router(router)
+app.include_router(telemetry_router)
+
+
+@app.get("/metrics", include_in_schema=False)
+def prometheus_metrics(db: Db) -> Response:
+    try:
+        rows = db.execute(
+            select(Incident.source, Incident.severity, Incident.status, func.count()).group_by(
+                Incident.source, Incident.severity, Incident.status
+            )
+        )
+        INCIDENTS.clear()
+        for source, severity, status, count in rows:
+            INCIDENTS.labels(source, severity, status).set(count)
+        STORE_UP.set(1)
+    except SQLAlchemyError:
+        STORE_UP.set(0)
+    return Response(generate_latest(), headers={"Content-Type": CONTENT_TYPE_LATEST})

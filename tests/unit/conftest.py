@@ -20,7 +20,7 @@ def db() -> Generator[Session]:
     Base.metadata.create_all(engine)
     with engine.begin() as connection:
         connection.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32))"))
-        connection.execute(text("INSERT INTO alembic_version VALUES ('0001_greeting_jobs')"))
+        connection.execute(text("INSERT INTO alembic_version VALUES ('0002_incidents')"))
     with Session(engine, expire_on_commit=False) as session:
         yield session
     engine.dispose()

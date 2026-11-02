@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field, PostgresDsn, RedisDsn
+from pydantic import Field, PostgresDsn, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     redis_url: RedisDsn = Field(default=RedisDsn("redis://127.0.0.1:6379/0"))
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     log_level: str = "INFO"
+    prometheus_url: str = "http://127.0.0.1:9090"
+    telemetry_token: SecretStr = SecretStr("")
+    otel_exporter_otlp_endpoint: str = ""
 
 
 @lru_cache

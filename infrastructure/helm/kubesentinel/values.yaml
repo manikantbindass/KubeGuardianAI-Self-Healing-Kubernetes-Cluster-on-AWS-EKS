@@ -31,4 +31,5 @@ autoscaling:
 pdb:
   enabled: false
 observability:
+  enabled: false
   annotations: {}

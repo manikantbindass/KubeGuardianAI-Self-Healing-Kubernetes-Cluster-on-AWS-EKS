@@ -13,6 +13,7 @@ export default function Home() {
   const ready = useQuery({ queryKey: ["ready"], queryFn: api.ready, refetchInterval: 10000 });
   const version = useQuery({ queryKey: ["version"], queryFn: api.version });
   const jobs = useQuery({ queryKey: ["jobs"], queryFn: api.jobs, refetchInterval: 2000 });
+  const incidents = useQuery({ queryKey: ["incidents"], queryFn: api.incidents, refetchInterval: 10000 });
   const create = useMutation({ mutationFn: api.createJob, onSuccess: () => { setName(""); void client.invalidateQueries({ queryKey: ["jobs"] }); } });
   const error = health.error;
   const status = health.isPending ? "Checking backend…" : error ? error instanceof ApiError && error.code !== "upstream_unavailable" ? "Backend error" : "Backend offline" : "Backend connected";
@@ -48,6 +49,10 @@ export default function Home() {
           </Card>
         </section>
         <Card id="jobs" className="mt-6" aria-labelledby="jobs-title">
+          <h2 className="text-xl font-semibold">Telemetry incidents</h2>
+          <div aria-live="polite" className="my-5">
+            {incidents.isPending ? <p>Loading incidents…</p> : incidents.isError ? <p role="alert">Incident store unavailable. Metrics outages do not erase persisted incidents.</p> : incidents.data.length === 0 ? <p className="text-muted-foreground">No incidents recorded. Enable the observability stack to ingest cluster warnings and alerts.</p> : <ul className="divide-y divide-border">{incidents.data.map(incident => <li key={incident.id} className="py-3"><p>{incident.reason} · {incident.severity} · {incident.status}</p><p className="text-sm text-muted-foreground">{incident.source} / {incident.resource}: {incident.summary}</p></li>)}</ul>}
+          </div>
           <h2 id="jobs-title" className="text-xl font-semibold">Background greetings</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Create a greeting to exercise the API, PostgreSQL, Redis, and worker. This demo never performs cluster actions.</p>
           <form className="mt-6 flex flex-wrap items-end gap-3" onSubmit={e => { e.preventDefault(); if (name.trim()) create.mutate(name.trim()); }}>

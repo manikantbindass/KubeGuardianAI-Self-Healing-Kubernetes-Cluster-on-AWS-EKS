@@ -5,6 +5,10 @@ metadata:
 data:
   APP_ENV: {{ .Values.environment | quote }}
   LOG_LEVEL: INFO
+  {{- if .Values.observability.enabled }}
+  PROMETHEUS_URL: http://prometheus:9090
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel.sentinel-telemetry.svc:4318
+  {{- end }}
   API_BASE_URL: http://{{ .Values.nameOverride }}-api:8000
   CORS_ORIGINS: {{ .Values.corsOrigins | toJson | quote }}
 ---
