@@ -126,6 +126,28 @@ def main() -> None:
         # Exec in the actual dashboard: checks service DNS and frontend-to-backend health.
         probe = "fetch('http://sentinel-api:8000/api/v1/ready').then(r=>{if(!r.ok)process.exit(1)})"
         kube("exec", "deployment/sentinel-dashboard", "--", "node", "-e", probe)
+        kube("scale", "deployment/sentinel-redis", "--replicas=0")
+        unavailable = (
+            "(async()=>{for(let i=0;i<30;i++){"
+            "let r=await fetch('http://sentinel-api:8000/api/v1/ready');"
+            "if(r.status===503)return;await new Promise(r=>setTimeout(r,1000));}"
+            "process.exit(1)})().catch(()=>process.exit(1))"
+        )
+        try:
+            kube("exec", "deployment/sentinel-dashboard", "--", "node", "-e", unavailable)
+            kube(
+                "exec",
+                "deployment/sentinel-dashboard",
+                "--",
+                "node",
+                "-e",
+                "fetch('http://sentinel-api:8000/api/v1/health')"
+                ".then(r=>{if(!r.ok)process.exit(1)})",
+            )
+        finally:
+            kube("scale", "deployment/sentinel-redis", "--replicas=1")
+        kube("rollout", "status", "deployment/sentinel-redis", "--timeout=180s")
+        kube("rollout", "status", "deployment/sentinel-api", "--timeout=180s")
         kube("rollout", "restart", "deployment/sentinel-api")
         kube("rollout", "status", "deployment/sentinel-api", "--timeout=180s")
         kube("scale", "deployment/sentinel-api", "--replicas=2")
