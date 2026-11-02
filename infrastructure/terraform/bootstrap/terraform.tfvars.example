@@ -1,0 +1,5 @@
+# Not deployable until an authorized owner replaces and approves these values.
+region      = "ap-south-1"
+account_id  = "000000000000"
+bucket_name = "REPLACE_WITH_GLOBALLY_UNIQUE_STATE_BUCKET"
+owner       = "REPLACE_WITH_OWNER"

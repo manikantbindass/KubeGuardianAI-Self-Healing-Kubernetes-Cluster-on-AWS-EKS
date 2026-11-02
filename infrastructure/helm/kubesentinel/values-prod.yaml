@@ -1,5 +1,7 @@
 # Starting configuration only, not production certification. Supply external stores/secrets.
 localStores: false
+rbac:
+  create: false
 environment: production
 replicas: 2
 pdb:

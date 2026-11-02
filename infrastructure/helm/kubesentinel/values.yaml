@@ -1,4 +1,10 @@
 nameOverride: sentinel
+rbac:
+  create: true
+corsOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"]
+networkPolicy:
+  extraIngress: []
+  extraEgress: []
 environment: local
 secretName: sentinel-runtime
 image:

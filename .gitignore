@@ -20,5 +20,15 @@ Thumbs.db
 *.tfstate*
 *.tfvars
 !*.tfvars.example
+*.tfplan
+*.plan
+*.tfplan.json
+crash.log
+crash.*.log
+backend.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
 *.pem
 *.key

@@ -6,7 +6,7 @@ data:
   APP_ENV: {{ .Values.environment | quote }}
   LOG_LEVEL: INFO
   API_BASE_URL: http://{{ .Values.nameOverride }}-api:8000
-  CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
+  CORS_ORIGINS: {{ .Values.corsOrigins | toJson | quote }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -20,6 +20,7 @@ metadata:
   name: {{ .Values.nameOverride }}-observer
 automountServiceAccountToken: false
 ---
+{{- if .Values.rbac.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -41,3 +42,4 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: {{ .Values.nameOverride }}-observer
+{{- end }}
