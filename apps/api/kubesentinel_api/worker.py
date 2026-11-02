@@ -2,7 +2,9 @@
 
 import logging
 import signal
+import tempfile
 import time
+from pathlib import Path
 from types import FrameType
 
 from redis.exceptions import RedisError
@@ -47,6 +49,7 @@ def main() -> None:
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
     while running:
+        (Path(tempfile.gettempdir()) / "sentinel-worker-heartbeat").touch()
         try:
             with SessionLocal() as session:
                 if process_one(session):

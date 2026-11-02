@@ -1,0 +1,10 @@
+flowchart LR
+  browser[Browser] --> forward[Loopback port-forward]
+  forward --> frontend[Dashboard Service / Deployment]
+  frontend --> api[API Service / Deployment]
+  api --> postgres[PostgreSQL Service / PVC]
+  api --> redis[Redis Service / PVC]
+  migration[Versioned migration Job] --> postgres
+  worker[Worker Deployment] --> postgres
+  worker --> redis
+  policy[Namespace network policy / scoped service accounts] -.-> api
