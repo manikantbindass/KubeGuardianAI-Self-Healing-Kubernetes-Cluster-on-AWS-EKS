@@ -18,7 +18,7 @@ spec:
       containers:
         - name: prometheus
           image: {{ index .Values.images "prometheus" }}
-          args: ["--config.file=/etc/prometheus/prometheus.yml","--storage.tsdb.path=/data","--storage.tsdb.retention.time=7d","--storage.tsdb.retention.size=1GB"]
+          args: ["--config.file=/etc/prometheus/prometheus.yml","--storage.tsdb.path=/data","--storage.tsdb.retention.time={{ .Values.retention }}","--storage.tsdb.retention.size=1GB"]
           ports: [{name: http, containerPort: 9090}]
           resources:
             requests: {cpu: 50m, memory: 64Mi}
@@ -38,12 +38,14 @@ spec:
           volumeMounts:
             - {name: tmp, mountPath: /tmp}
             - {name: config, mountPath: /etc/prometheus, readOnly: true}
-            - {name: rules, mountPath: /etc/prometheus/rules.yml, subPath: rules.yml, readOnly: true}
             - {name: data, mountPath: /data}
       volumes:
         - {name: tmp, emptyDir: {sizeLimit: 64Mi}}
-        - {name: config, configMap: {name: obs-prometheus}}
-        - {name: rules, configMap: {name: obs-rules}}
+        - name: config
+          projected:
+            sources:
+              - configMap: {name: obs-prometheus}
+              - configMap: {name: obs-rules}
         - {name: data, persistentVolumeClaim: {claimName: obs-prometheus}}
 
 ---
@@ -168,6 +170,9 @@ spec:
             - {name: GF_AUTH_DISABLE_LOGIN_FORM, value: "true"}
             - {name: GF_USERS_ALLOW_SIGN_UP, value: "false"}
             - {name: GF_ANALYTICS_REPORTING_ENABLED, value: "false"}
+            - {name: GF_ANALYTICS_CHECK_FOR_UPDATES, value: "false"}
+            - {name: GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES, value: "false"}
+            - {name: GF_PLUGINS_PREINSTALL_DISABLED, value: "true"}
             - name: GF_SECURITY_ADMIN_PASSWORD
               valueFrom: {secretKeyRef: {name: {{ .Values.secretName }}, key: GRAFANA_ADMIN_PASSWORD}}
           volumeMounts:

@@ -14,9 +14,11 @@ NAMESPACE = "kubesentinel"
 
 
 def run(*args: str, data: str | None = None) -> str:
-    return subprocess.run(
-        args, cwd=ROOT, input=data, text=True, check=True, capture_output=True
-    ).stdout
+    result = subprocess.run(args, cwd=ROOT, input=data, text=True, check=False, capture_output=True)
+    if result.returncode:
+        detail = result.stderr[-4000:] if data is None else "Input and diagnostics redacted."
+        raise RuntimeError(f"{args[0]} exited {result.returncode}: {detail}")
+    return result.stdout
 
 
 def kube(*args: str, data: str | None = None) -> str:

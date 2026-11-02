@@ -20,7 +20,12 @@ scrape_configs:
     metric_relabel_configs:
       - {action: labeldrop, regex: "uid|pod_ip|host_ip|container_id|image_id"}
   - job_name: otel
-    static_configs: [{targets: [otel.sentinel-telemetry.svc:8888]}]
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces: {names: [sentinel-telemetry]}
+    relabel_configs:
+      - {source_labels: [__meta_kubernetes_service_name], action: keep, regex: otel}
+      - {source_labels: [__meta_kubernetes_endpoint_port_name], action: keep, regex: metrics}
   - job_name: kubernetes-cadvisor
     scheme: https
     authorization: {credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}

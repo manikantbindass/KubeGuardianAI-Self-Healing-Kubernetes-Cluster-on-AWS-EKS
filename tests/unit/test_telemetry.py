@@ -14,17 +14,6 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 
-@pytest.fixture
-def authorized() -> dict[str, str]:
-    settings = get_settings()
-    old = settings.telemetry_token
-    settings.telemetry_token = SecretStr("test-token")
-    yield_headers = {"Authorization": "Bearer test-token"}
-    # Monkeypatch fixture cleanup is handled by the yielding fixture below.
-    settings.telemetry_token = old
-    return yield_headers
-
-
 @pytest.fixture(autouse=True)
 def token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(get_settings(), "telemetry_token", SecretStr("test-token"))

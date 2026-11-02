@@ -27,8 +27,9 @@ def normalize(event: dict[str, Any]) -> dict[str, Any]:
         "reason": str(event.get("reason", "Unknown"))[:128],
         "message": str(event.get("message", ""))[:1024],
         "type": event.get("type", "Normal"),
-        "count": event.get("count", 1),
-        "observed_at": event.get("lastTimestamp")
+        "count": event.get("series", {}).get("count", event.get("count", 1)),
+        "observed_at": event.get("series", {}).get("lastObservedTime")
+        or event.get("lastTimestamp")
         or event.get("eventTime")
         or metadata.get("creationTimestamp")
         or datetime.now(UTC).isoformat(),

@@ -28,6 +28,12 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
       - run: helm lint infrastructure/helm/observability
+      - name: Validate runtime configuration before deployment
+        run: |
+          config="$PWD/infrastructure/helm/observability/files"
+          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" prom/prometheus:v3.6.0 check config /etc/prometheus/prometheus.yml
+          docker run --rm -v "$config:/etc/loki:ro" grafana/loki:3.5.7 -config.file=/etc/loki/loki.yml -verify-config=true
+          docker run --rm -v "$config:/etc/otel:ro" otel/opentelemetry-collector-contrib:0.136.0 validate --config=/etc/otel/otel.yml
       - run: python scripts/kubernetes.py bootstrap --tag phase04 --observability
       - run: python -u scripts/test_observability.py
       - uses: actions/upload-artifact@v4

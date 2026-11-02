@@ -69,7 +69,7 @@ async def correlation(
     )
     started = time.perf_counter()
     with trace.get_tracer("kubesentinel.api").start_as_current_span(
-        "http.request", context=propagate.extract(dict(request.headers))
+        "http.request", context=propagate.extract(dict(request.headers)), kind=trace.SpanKind.SERVER
     ) as span:
         try:
             response = await call_next(request)
@@ -82,6 +82,8 @@ async def correlation(
             )
         route = getattr(request.scope.get("route"), "path", "unmatched")
         span.update_name(f"{request.method} {route}")
+        span.set_attribute("http.route", route)
+        span.set_attribute("http.request.method", request.method)
         span.set_attribute("http.response.status_code", response.status_code)
         logger.info(
             "http_request",

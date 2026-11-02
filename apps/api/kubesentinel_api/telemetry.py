@@ -82,6 +82,13 @@ class Alert(BaseModel):
     startsAt: datetime
     endsAt: datetime | None = None
 
+    @field_validator("startsAt", "endsAt")
+    @classmethod
+    def alert_timezone(cls, value: datetime | None) -> datetime | None:
+        if value is not None and value.tzinfo is None:
+            raise ValueError("Alert timestamps require timezones")
+        return value.astimezone(UTC) if value is not None else None
+
     @field_validator("labels", "annotations")
     @classmethod
     def bounded_values(cls, value: dict[str, str]) -> dict[str, str]:
@@ -206,7 +213,7 @@ def telemetry_health(
     try:
         result = metrics.query('up{job="sentinel-api"}')
         healthy = bool(result) and all(float(row["value"][1]) == 1 for row in result)
-    except (MetricsUnavailable, ValueError, KeyError, TypeError):
+    except (MetricsUnavailable, ValueError, KeyError, TypeError, IndexError):
         healthy = False
     response.status_code = 200 if healthy else 503
     return {"status": "ok" if healthy else "unavailable", "api_scrape": healthy}
@@ -242,7 +249,9 @@ def ingest_alerts(payload: AlertBatch, db: Db) -> dict[str, int]:
         if namespace != "kubesentinel":
             continue
         reason = alert.labels.get("alertname", "UnknownAlert")[:128]
-        resource = alert.labels.get("pod", alert.labels.get("deployment", "control-plane"))[:253]
+        resource = alert.labels.get(
+            "pod", alert.labels.get("deployment", alert.labels.get("node", "control-plane"))
+        )[:253]
         # Canonical bounded labels; replica-specific transport fields do not split incidents.
         identity = json.dumps([reason, namespace, resource, alert.startsAt.isoformat()])
         observed = alert.endsAt if alert.status == "resolved" and alert.endsAt else alert.startsAt
