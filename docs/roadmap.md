@@ -1,6 +1,8 @@
 # Development roadmap
 
-Ordered by dependencies and exit gates; no performance results are promised. Phase 00 foundation and Phase 01 implementation are included in this change. Consult the [verification record](validation.md) before treating Phase 01 acceptance as complete; unavailable integration checks remain explicit blockers. Later phases require linked acceptance evidence.
+The executed sequence is Phase 00 foundation, Phase 01 full-stack local runtime, Phase 02 kind/Helm orchestration and Phase 03 AWS infrastructure **code only**. The earlier feature milestones below retain their original planning labels; those labels do not imply that telemetry or identity shipped in the actual Phase 02/03 execution. Future feature ordering needs a separate implementation request. No performance results are promised.
+
+Phase 02 evidence is in its [validation record](reports/phase-02-validation.md). Phase 03 [static validation](reports/phase-03-validation.md) and [cost/operator gates](runbooks/aws-eks.md) do not authorize provisioning. The optional AWS pilot milestone below remains a future **live deployment**, distinct from the source code delivered now.
 
 | Phase | Deliverables | Exit gate |
 | --- | --- | --- |

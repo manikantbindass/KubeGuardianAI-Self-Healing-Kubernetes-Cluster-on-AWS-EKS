@@ -27,6 +27,12 @@ The initial Trivy 0.69.3 run warned about a newer policy requirement; it was rep
 
 No AWS credentials are needed for these checks. Mocked tests use synthetic AWS responses in memory; they do not verify live IAM, KMS grants, network paths, node/add-on compatibility or create resources. Static scans can miss dynamic settings, low/medium findings, service-managed defaults or organizational requirements. The examples intentionally contain placeholder account IDs and impossible add-on/AMI sentinel values; replace them with approved compatibility inputs before any real plan. `terraform validate` does not certify those examples as deployable values.
 
+## Linux CI evidence
+
+At implementation commit `4c4ed7e`, [Terraform static run 41487003082](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41487003082) passed formatting, backend-disabled initialization/validation for all roots, all five mocked-provider tests, scanner download checksum verification and per-root HIGH/CRITICAL security scans. Static report artifacts were uploaded. No AWS identity or backend was configured by this workflow.
+
+[Kind run 41487002958](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41487002958) passed fresh local-cluster deployment, Helm/schema checks, DNS, scaling/restart/rollback, RBAC/network isolation, readiness outage/recovery and actual frontend greeting smoke after the Helm compatibility changes. Its image scans remain advisory with the previously documented findings; green deployment CI is not image-security clearance. [Foundation run 41487002821](https://github.com/manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS/actions/runs/41487002821) passed dashboard checks, API checks on Linux/Windows, PostgreSQL migration round-trip and Compose smoke.
+
 ## Deliberate deployment gates
 
 - No live plan: no approved AWS plan identity/account/backend exists in this session. Credential files and token values are not inspected or printed.

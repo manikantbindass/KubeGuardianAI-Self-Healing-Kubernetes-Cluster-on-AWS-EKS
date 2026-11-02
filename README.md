@@ -4,7 +4,7 @@
 
 Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
 
-**Current status: Phase 01 - functional full-stack foundation.** Implemented: Next.js App Router/TypeScript/Tailwind dashboard, shadcn-style source components, TanStack Query, FastAPI/Pydantic configuration and schemas, versioned health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL-backed greeting jobs, Redis cache/wake-ups, and a worker. Docker/CI definitions and architecture are included. Verification results and environment blockers are recorded below. Authentication, cluster telemetry, anomaly detection, remediation, and AWS remain future work.
+**Current status: Phase 03 infrastructure code; tested local runtime from Phases 01–02.** Implemented locally: Next.js/TypeScript/Tailwind dashboard, TanStack Query, FastAPI/Pydantic, health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL greeting jobs, Redis and a worker, Compose and kind/Helm orchestration. Modular AWS EKS Terraform source now validates but has **not** been deployed. Authentication, cluster telemetry, anomaly detection and remediation remain future work. Exact verification and release blockers are documented below.
 
 The repository retains its original GitHub name and Apache 2.0 license. Renaming it to **KubeSentinel-AI** is recommended; no remote rename has been performed. See the [repository audit and rename procedure](docs/repository-audit.md).
 
