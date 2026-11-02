@@ -38,6 +38,9 @@ Canonical manifests live in `infrastructure/helm/kubesentinel/templates`; the st
 | `pdb.enabled` | API disruption budget for multi-replica configurations; not enabled for one replica |
 | `autoscaling` | CPU HPA; enable only after installing a working metrics API |
 | `observability.annotations` | Pod annotations; no metrics endpoint or monitoring stack is fabricated |
+| `rbac.create` | Local true; dev/prod false, requiring separately authorized platform-owned Role/RoleBinding |
+| `corsOrigins` | Exact trusted CORS origin list, rendered as JSON |
+| `networkPolicy.extraIngress`, `extraEgress` | Explicit reviewed policy rules for external services/controllers; empty by default |
 
 Dev/prod values are starting profiles, not production-ready deployments. Supply external stores, credentials, network egress policy, identity, TLS, backups and image review before use. Local network isolation permits only app-labelled namespace peers and kube-dns. An external datastore or ingress controller requires separately reviewed NetworkPolicy allowances; simply enabling ingress is insufficient. Never open unrestricted egress to make a failed deployment green.
 

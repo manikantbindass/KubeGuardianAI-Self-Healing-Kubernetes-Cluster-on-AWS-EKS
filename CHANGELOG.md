@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Phase 03
+
+- Add pinned Terraform/AWS provider configuration and Windows/Linux provider locks, reusable VPC/EKS/IAM/ECR/logging/Pod Identity/DNS modules, dev/demo profiles and separate S3/KMS state bootstrap.
+- Define private nodes/API defaults, scoped access entries, repository-and-branch-bound GitHub OIDC publishing, encryption, retention, explicit AMI/add-on pins and configurable NAT/endpoint tradeoffs.
+- Add synthetic provider-mocked guardrail tests and static-only CI; no AWS credentials, apply, destroy or live plan.
+- Add module reference, state/deployment/rollback/teardown runbooks, cost model and local/cloud matrix. Expose controlled Helm CORS/network overrides and skip platform-owned RBAC in cloud profiles.
+
 ## Unreleased - Phase 02
 
 - Add kind configuration, cross-platform lifecycle/build/scan scripts, Helm local/dev/prod profiles, migration Jobs, service discovery, PVC-backed local stores, namespace policy, scoped RBAC, network isolation, resources, probes, optional API PDB/HPA and ingress templates.

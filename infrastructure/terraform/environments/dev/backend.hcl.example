@@ -1,0 +1,7 @@
+# State bootstrap is a separate approved operation. No credentials in this file.
+bucket = "REPLACE_WITH_BOOTSTRAPPED_STATE_BUCKET"
+key = "kubesentinel/dev/terraform.tfstate"
+region = "ap-south-1"
+encrypt = true
+kms_key_id = "REPLACE_WITH_STATE_KMS_KEY_ARN"
+use_lockfile = true

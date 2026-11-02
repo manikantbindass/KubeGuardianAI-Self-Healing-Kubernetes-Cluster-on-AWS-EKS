@@ -4,7 +4,7 @@
 
 Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
 
-**Current status: Phase 01 - functional full-stack foundation.** Implemented: Next.js App Router/TypeScript/Tailwind dashboard, shadcn-style source components, TanStack Query, FastAPI/Pydantic configuration and schemas, versioned health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL-backed greeting jobs, Redis cache/wake-ups, and a worker. Docker/CI definitions and architecture are included. Verification results and environment blockers are recorded below. Authentication, cluster telemetry, anomaly detection, remediation, and AWS remain future work.
+**Current status: Phase 03 infrastructure code; tested local runtime from Phases 01–02.** Implemented locally: Next.js/TypeScript/Tailwind dashboard, TanStack Query, FastAPI/Pydantic, health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL greeting jobs, Redis and a worker, Compose and kind/Helm orchestration. Modular AWS EKS Terraform source now validates but has **not** been deployed. Authentication, cluster telemetry, anomaly detection and remediation remain future work. Exact verification and release blockers are documented below.
 
 The repository retains its original GitHub name and Apache 2.0 license. Renaming it to **KubeSentinel-AI** is recommended; no remote rename has been performed. See the [repository audit and rename procedure](docs/repository-audit.md).
 
@@ -42,6 +42,8 @@ The larger platform is a target design. Implemented local components are listed 
 Responsibility notes identify future components without empty placeholder files. No cloud manifests or fabricated report/presentation binaries are included.
 
 ## Run locally
+
+Phase 03 adds [AWS EKS Terraform infrastructure code](infrastructure/terraform/README.md): networking, EKS, IAM/Pod Identity, ECR, logging and optional existing-LB DNS modules, dev/demo profiles and separate encrypted state bootstrap. **No AWS resources are deployed and no live plan/apply/destroy has been run.** See the [operator gates](docs/runbooks/aws-eks.md), [cost assumptions](docs/costs/eks-estimate.md) and [validation record](docs/reports/phase-03-validation.md).
 
 For kind and Helm orchestration, see the [local Kubernetes guide](docs/runbooks/local-kubernetes.md). Phase 02 adds scoped bootstrap/build/scan/cleanup scripts, chart profiles and deployment tests. Linux CI verified fresh-cluster deployment and smoke tests; Windows Docker remains unavailable locally. Image scans contain HIGH/CRITICAL findings; see the [validation and security follow-up](docs/reports/phase-02-validation.md) before promotion. Animated SVG banners use local assets and offer a static treatment for reduced-motion preferences where supported.
 

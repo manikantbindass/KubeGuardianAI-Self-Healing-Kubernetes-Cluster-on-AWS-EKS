@@ -6,9 +6,15 @@ spec:
   podSelector: {matchLabels: {app: {{ .Values.nameOverride }}}}
   policyTypes: [Ingress, Egress]
   ingress:
+    {{- with .Values.networkPolicy.extraIngress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     - from:
         - podSelector: {matchLabels: {app: {{ .Values.nameOverride }}}}
   egress:
+    {{- with .Values.networkPolicy.extraEgress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     - to:
         - podSelector: {matchLabels: {app: {{ .Values.nameOverride }}}}
     - to:
