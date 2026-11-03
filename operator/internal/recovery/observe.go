@@ -47,12 +47,12 @@ func Observe(ctx context.Context, c client.Client, d *apps.Deployment, now time.
 			return makeIncident("SustainedPressure", string(pod.UID), "critical"), nil
 		}
 		for _, status := range pod.Status.ContainerStatuses {
-			identity := fmt.Sprintf("%s:%s:%d", pod.UID, status.Name, status.RestartCount)
-			if status.State.Waiting != nil && status.State.Waiting.Reason == "CrashLoopBackOff" {
-				return makeIncident("CrashLoopBackOff", identity, "critical"), nil
-			}
+			identity := fmt.Sprintf("%s:%s", pod.UID, status.Name)
 			if status.LastTerminationState.Terminated != nil && status.LastTerminationState.Terminated.Reason == "OOMKilled" && now.Sub(status.LastTerminationState.Terminated.FinishedAt.Time) < 5*time.Minute {
 				return makeIncident("OOMKilled", identity, "critical"), nil
+			}
+			if status.State.Waiting != nil && status.State.Waiting.Reason == "CrashLoopBackOff" {
+				return makeIncident("CrashLoopBackOff", identity, "critical"), nil
 			}
 			if status.RestartCount >= 3 && !status.Ready {
 				return makeIncident("ExcessiveRestarts", identity, "warning"), nil
@@ -60,7 +60,9 @@ func Observe(ctx context.Context, c client.Client, d *apps.Deployment, now time.
 		}
 		startedNotReady := false
 		for _, status := range pod.Status.ContainerStatuses {
-			if status.Started != nil && *status.Started && status.State.Running != nil && !status.Ready { startedNotReady = true }
+			if status.Started != nil && *status.Started && status.State.Running != nil && !status.Ready {
+				startedNotReady = true
+			}
 		}
 		for _, condition := range pod.Status.Conditions {
 			if condition.Type == core.PodScheduled && condition.Status == core.ConditionFalse && condition.Reason == "Unschedulable" {

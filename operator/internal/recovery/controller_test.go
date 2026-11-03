@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"testing"
 	"time"
 
@@ -161,5 +162,111 @@ func TestProtectedAndUnlistedWorkloadsDoNothing(t *testing.T) {
 	_ = r.Client.List(context.Background(), list)
 	if len(list.Items) != 0 {
 		t.Fatal("unsafe action created")
+	}
+}
+
+func TestVerifiedSnapshotAndBudgetedUndo(t *testing.T) {
+	r, p, d, probe := testController(t)
+	ctx := context.Background()
+	p.Spec.DryRun = false
+	p.Spec.Rollback.Enabled = true
+	_ = r.Client.Update(ctx, p)
+	d.Status = apps.DeploymentStatus{ObservedGeneration: d.Generation, Replicas: 2, ReadyReplicas: 2, UpdatedReplicas: 2, AvailableReplicas: 2}
+	_ = r.Client.Status().Update(ctx, d)
+	if err := r.snapshot(ctx, d, p); err != nil {
+		t.Fatal(err)
+	}
+	name, err := r.previous(ctx, d, p, true)
+	if err != nil || name == "" {
+		t.Fatal("healthy template was not certified", err)
+	}
+	d.Spec.Template.Spec.Containers[0].Image = "demo:broken"
+	d.Generation++
+	_ = r.Client.Update(ctx, d)
+	i := v1.Incident{ID: "fault", Type: "ReadinessProbeFailure", Source: "kubernetes", Severity: "warning", ObservedAt: metav1.NewTime(r.Now())}
+	plan := Plan(p, d, i, name, r.Now())
+	a := &v1.RemediationAction{ObjectMeta: metav1.ObjectMeta{Name: "undo-action", Namespace: d.Namespace, UID: "undo-uid"}, Spec: plan}
+	_ = r.Client.Create(ctx, a)
+	d.Annotations = map[string]string{ActionMarker: string(a.UID) + ":Verifying"}
+	_ = r.Client.Update(ctx, d)
+	a.Status = v1.ActionStatus{Phase: "Verifying", ApprovalUID: "signed-approval", AppliedGeneration: d.Generation, ExpectedTemplate: Digest(d.Spec.Template), ExpectedReplicas: 2, MutationCount: 1, Before: &v1.ProbeResult{Requests: 3, P95Milliseconds: 10}, VerificationStartedAt: &metav1.Time{Time: r.Now().Add(-time.Minute)}}
+	_ = r.Client.Status().Update(ctx, a)
+	probe.errors = 3
+	if err := r.resume(ctx, d, p, a); err != nil {
+		t.Fatal(err)
+	}
+	if a.Status.Phase != "VerifyingRollback" || a.Status.MutationCount != 2 {
+		t.Fatalf("undo was not fenced and recorded: %#v", a.Status)
+	}
+	_ = r.Client.Get(ctx, client.ObjectKeyFromObject(d), d)
+	if d.Spec.Template.Spec.Containers[0].Image != "demo:v1" {
+		t.Fatal("wrong rollback template")
+	}
+	d.Status.ObservedGeneration = d.Generation
+	if err := r.Client.Status().Update(ctx, d); err != nil {
+		t.Fatal(err)
+	}
+	probe.errors = 0
+	for i := 0; i < 2; i++ {
+		if err := r.resume(ctx, d, p, a); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if a.Status.Phase != "RolledBack" {
+		t.Fatal(a.Status.Phase)
+	}
+	// A forged/modified revision cannot be used just because status claims verification.
+	revision := &v1.VerifiedRevision{}
+	_ = r.Client.Get(ctx, types.NamespacedName{Namespace: d.Namespace, Name: name}, revision)
+	revision.Spec.TemplateDigest = "tampered"
+	_ = r.Client.Update(ctx, revision)
+	if _, err := r.revision(ctx, name, d, p); err == nil {
+		t.Fatal("tampered snapshot accepted")
+	}
+}
+
+type unavailableClient struct{ client.Client }
+
+func (c unavailableClient) Get(context.Context, client.ObjectKey, client.Object, ...client.GetOption) error {
+	return fmt.Errorf("API server unavailable")
+}
+
+func TestAPIUnavailableCannotMutate(t *testing.T) {
+	r, _, d, _ := testController(t)
+	original := r.Client
+	r.Client = unavailableClient{original}
+	if _, err := r.Reconcile(context.Background(), ctrl.Request{NamespacedName: client.ObjectKeyFromObject(d)}); err == nil {
+		t.Fatal("API outage was hidden")
+	}
+	list := &v1.RemediationActionList{}
+	_ = original.List(context.Background(), list)
+	if len(list.Items) != 0 {
+		t.Fatal("outage produced action")
+	}
+}
+
+func TestNativeOOMIdentitySurvivesRestartCounterChanges(t *testing.T) {
+	r, _, d, _ := testController(t)
+	yes := true
+	ctx := context.Background()
+	set := &apps.ReplicaSet{ObjectMeta: metav1.ObjectMeta{Name: "owned-set", Namespace: d.Namespace, UID: "set-uid", OwnerReferences: []metav1.OwnerReference{{UID: d.UID, Controller: &yes}}}}
+	if err := r.Client.Create(ctx, set); err != nil {
+		t.Fatal(err)
+	}
+	pod := &core.Pod{ObjectMeta: metav1.ObjectMeta{Name: "owned-pod", Namespace: d.Namespace, UID: "pod-uid", Labels: d.Spec.Selector.MatchLabels, OwnerReferences: []metav1.OwnerReference{{UID: set.UID, Controller: &yes}}}, Status: core.PodStatus{ContainerStatuses: []core.ContainerStatus{{Name: "demo", RestartCount: 1, State: core.ContainerState{Waiting: &core.ContainerStateWaiting{Reason: "CrashLoopBackOff"}}, LastTerminationState: core.ContainerState{Terminated: &core.ContainerStateTerminated{Reason: "OOMKilled", FinishedAt: metav1.NewTime(r.Now().Add(-time.Second))}}}}}}
+	if err := r.Client.Create(ctx, pod); err != nil {
+		t.Fatal(err)
+	}
+	first, err := Observe(ctx, r.Client, d, r.Now())
+	if err != nil || first == nil || first.Type != "OOMKilled" {
+		t.Fatal(first, err)
+	}
+	pod.Status.ContainerStatuses[0].RestartCount = 2
+	if err := r.Client.Status().Update(ctx, pod); err != nil {
+		t.Fatal(err)
+	}
+	second, err := Observe(ctx, r.Client, d, r.Now())
+	if err != nil || second == nil || second.ID != first.ID {
+		t.Fatal("same ongoing OOM fault invalidated plan", second, err)
 	}
 }

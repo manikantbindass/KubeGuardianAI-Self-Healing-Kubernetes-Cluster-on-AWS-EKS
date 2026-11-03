@@ -1,0 +1,24 @@
+stateDiagram-v2
+    [*] --> Observing: Native fault produces immutable plan
+    Observing --> Rejected: Scope / stale / availability / budget / conflict denied
+    Observing --> DryRun: Global or policy execution disabled
+    Observing --> Escalated: Alert-only action or no safe revision
+    Observing --> AwaitingApproval: Risk requires signed exact plan
+    AwaitingApproval --> Rejected: Expiry / policy / workload changed
+    AwaitingApproval --> Applying: Valid signature and fresh safety checks
+    Observing --> Applying: Explicitly permitted low-risk restart
+    Applying --> Verifying: Persist intent then guarded API patch
+    Applying --> Failed: Ambiguous result places safety hold
+    Verifying --> Succeeded: Repeated rollout / replicas / SLI checks pass
+    Verifying --> RollingBack: Verification fails with signed undo consent
+    Verifying --> Escalated: Verification fails without safe authorized undo
+    RollingBack --> VerifyingRollback: Persist second intent then guarded patch
+    RollingBack --> Failed: Ambiguous result places safety hold
+    VerifyingRollback --> RolledBack: Undo independently verified
+    VerifyingRollback --> Escalated: Undo verification fails / safety hold
+    Succeeded --> [*]
+    DryRun --> [*]
+    Rejected --> [*]
+    RolledBack --> [*]
+    Escalated --> [*]
+    Failed --> [*]

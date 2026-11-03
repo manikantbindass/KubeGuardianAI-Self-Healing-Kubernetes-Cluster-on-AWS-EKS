@@ -341,6 +341,9 @@ func (r *Reconciler) revision(ctx context.Context, name string, d *apps.Deployme
 	if json.Unmarshal(row.Spec.Template.Raw, &template) != nil || Digest(template) != row.Spec.TemplateDigest {
 		return nil, fmt.Errorf("revision digest mismatch")
 	}
+	if template.Spec.PriorityClassName == "system-cluster-critical" || template.Spec.PriorityClassName == "system-node-critical" {
+		return nil, fmt.Errorf("critical-priority rollback target refused")
+	}
 	return row, nil
 }
 

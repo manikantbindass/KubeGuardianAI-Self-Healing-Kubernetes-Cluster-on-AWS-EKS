@@ -249,6 +249,30 @@ def main() -> None:
     )
     assert patch_result.returncode != 0 and "immutable" in patch_result.stderr
     print("PASS: CRD admission enforces immutable action plans", flush=True)
+    # A controlled slow-start replica shortage exercises the real bounded scale patch.
+    policy(
+        maintenanceWindows=[{"weekdays": list(range(7)), "startHour": 0, "endHour": 24}],
+        cooldownSeconds=0,
+        maxActionsPerWindow=20,
+        rollback={"enabled": False},
+        verification={"timeoutSeconds": 90, "consecutiveSuccesses": 2},
+    )
+    kube("set", "env", "deployment/demo-recovery", "STARTUP_DELAY_SECONDS=25")
+    ready()
+    kube("scale", "deployment/demo-recovery", "--replicas=3")
+    generation = int(obj("deployment", "demo-recovery")["metadata"]["generation"])
+    pending = wait(
+        lambda: action(generation, "AwaitingApproval"),
+        "real replica shortage requires scale approval",
+    )
+    assert pending["spec"]["kind"] == "Scale" and pending["spec"]["scaleTo"] == 4
+    approve(pending)
+    scaled = wait(
+        lambda: action(generation, "Succeeded"),
+        "approved scale respects bounds and verifies four available replicas",
+    )
+    assert obj("deployment", "demo-recovery")["status"]["availableReplicas"] == 4
+    (EVIDENCE / "approved-scale.json").write_text(json.dumps(scaled, indent=2), encoding="utf-8")
     (EVIDENCE / "all-actions.json").write_text(json.dumps(actions(), indent=2), encoding="utf-8")
     (EVIDENCE / "summary.json").write_text(
         json.dumps(

@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 MODE = os.environ.get("MODE", "healthy")
 START = time.monotonic()
+time.sleep(float(os.environ.get("STARTUP_DELAY_SECONDS", "0")))
 if MODE == "crash":
     time.sleep(3)
     raise SystemExit(1)

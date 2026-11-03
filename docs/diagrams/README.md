@@ -10,5 +10,6 @@ The C4 and remediation diagrams show the **proposed target architecture**, not i
 | [remediation-sequence.mmd](remediation-sequence.mmd) | Proposal, approval, execution, audit, verification |
 | [local-services.mmd](local-services.mmd) | Implemented local dashboard/API/worker and datastore dependencies |
 | [anomaly-detection.mmd](anomaly-detection.mmd) | Phase 05 feature, training, evaluation and advisory scoring boundaries |
+| [recovery-state-machine.mmd](recovery-state-machine.mmd) | Phase 06 approval, intent, verification, undo and safety-hold states |
 
 The [system overview](../architecture/system-overview.md) explains relationships, interfaces, failure behavior, environments, and alternatives. Run `npm run diagrams` to parse all `.mmd` sources. A successful parse checks grammar, not visual layout or architectural correctness; use a Mermaid-enabled editor to preview when changing layout.
