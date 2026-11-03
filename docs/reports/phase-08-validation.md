@@ -13,7 +13,7 @@ Implemented source/configuration for secure delivery and GitOps. No AWS apply/de
 | Checkov 3.4.3, locked separate environment, all Terraform | 139 passed, seven failed findings covered by exact proposed exceptions, no skipped checks/parser errors; [review issue](https://github.com/manikantbindass/KubeSentinel-AI/issues/10), expiry 2026-12-03 |
 | `terraform fmt`, `validate` and provider-mocked `test` | Formatted, dev/bootstrap valid; eight mocked tests passed, including environment-bound ECR roles and scoped secret identity |
 | `python scripts/validate_delivery.py` in locked security environment | Official Argo schemas passed; staging/production Helm lint and 22 native resources valid; synthetic staging promotion changed only staging; production without evidence denied |
-| Markdown, local file links, Mermaid | Passed: 64 Markdown files and 12 diagrams; original LICENSE verified |
+| Markdown, local file links, Mermaid | Passed: 65 Markdown files and 12 diagrams; original LICENSE verified |
 | Local Trivy dependency scan | Not verified: vulnerability DB download was forcibly interrupted by upstream connection closure; no successful scan claimed |
 | Local Docker builds/kind admission | Not executed: Windows Docker engine unavailable; Linux CI is the validation path |
 
