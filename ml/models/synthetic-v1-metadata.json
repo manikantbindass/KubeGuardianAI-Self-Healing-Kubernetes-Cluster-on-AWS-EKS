@@ -1,5 +1,5 @@
 {
-  "model_version": "bbe9c67cd86dc60a7fcbd013713f054aaa2025afc3abd5c9f09461d69a736154",
+  "model_version": "888c58ed498934bde273c7f8f36ba27f4008994c72ccb3e43d8a23f59b6341a0",
   "feature_version": "1.0.0",
   "feature_order": [
     "cpu_ratio",
@@ -37,7 +37,7 @@
   "dataset_sha256": "33e2047bc6d8ecbc0650224e925cfeae12602c851765f3e4a759dee969748fd5",
   "dataset_id": "synthetic-v1-seed-42",
   "provenance": "synthetic",
-  "code_sha256": "9a076217a6a4349086f23bfbf5f4db7117e9272dd6c91be7a183677d889d5279",
+  "code_sha256": "caa8e447bb7c6fbee489a9881278ce094cee94a99b1c230c49fef6322bc9ca2a",
   "python": "3.12.4",
   "packages": {
     "numpy": "2.5.4",

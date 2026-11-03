@@ -66,10 +66,15 @@ def evaluate(
         tn = len(test) - tp - fp - fn
         delays: dict[str, list[float]] = defaultdict(list)
         incident_ids = {i for w in test for i in w.incident_ids}
+        detected: set[str] = set()
         for window, score in zip(test, results, strict=True):
-            if window.label and score.anomalous and window.fault_started_at:
+            if window.label and score.anomalous:
+                detected.update(window.incident_ids)
                 for incident in window.incident_ids:
-                    delays[incident].append((window.end - window.fault_started_at).total_seconds())
+                    if incident in window.incident_starts:
+                        delays[incident].append(
+                            (window.end - window.incident_starts[incident]).total_seconds()
+                        )
         first = [min(value) for value in delays.values()]
         precision, recall, _ = precision_recall_curve(labels, [s.score for s in results])
         report["detectors"][name] = {
@@ -79,8 +84,9 @@ def evaluate(
             "false_positive_rate": fp / max(1, fp + tn),
             "confusion_matrix": [[tn, fp], [fn, tp]],
             "incident_count": len(incident_ids),
-            "detected_incidents": len(delays),
-            "missed_incidents": sorted(incident_ids - delays.keys()),
+            "detected_incidents": len(detected),
+            "missed_incidents": sorted(incident_ids - detected),
+            "delay_missing_incidents": sorted(detected - delays.keys()),
             "mean_detection_delay_seconds": mean(first) if first else None,
             "delay_definition": "first positive window END minus fault start; excludes misses",
             "inference_latency_ms": {

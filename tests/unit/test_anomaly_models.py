@@ -98,3 +98,19 @@ def test_quality_fallback_and_drift(trained: tuple[Bundle, list[Window]]) -> Non
     extreme.feature_version = "invalid"
     with pytest.raises(ValueError, match="version"):
         bundle.score(extreme)
+
+
+def test_unknown_fault_start_does_not_turn_detection_into_miss(
+    trained: tuple[Bundle, list[Window]],
+    tmp_path: Path,
+) -> None:
+    bundle, original = trained
+    rows = [w.model_copy(deep=True) for w in original]
+    for row in rows:
+        row.incident_starts = {}
+        row.fault_started_at = None
+    report = evaluate(bundle, rows, tmp_path, plots=False)["detectors"]["rules"]
+    assert report["detected_incidents"] == 2
+    assert report["missed_incidents"] == []
+    assert len(report["delay_missing_incidents"]) == 2
+    assert report["mean_detection_delay_seconds"] is None

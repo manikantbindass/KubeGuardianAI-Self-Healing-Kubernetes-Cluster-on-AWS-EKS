@@ -21,6 +21,7 @@ jobs:
           version: 0.13.6
           enable-cache: true
       - run: uv sync --frozen --extra ml
+      - run: uv run --extra ml mypy
       - run: uv run --extra ml pytest -m "not postgres"
       - run: uv run --extra ml python scripts/ml.py generate
       - run: uv run --extra ml python scripts/ml.py train

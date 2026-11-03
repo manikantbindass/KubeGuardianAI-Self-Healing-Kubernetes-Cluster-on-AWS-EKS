@@ -34,6 +34,7 @@ class Window(BaseModel):
     label: bool | None
     incident_ids: list[str]
     fault_started_at: datetime | None
+    incident_starts: dict[str, datetime]
 
 
 def windows(
@@ -96,8 +97,12 @@ def windows(
                         else None,
                     }
                 )
-            labels = [r.label for r in bucket if r.label is not None]
             faults = [r.fault_started_at for r in bucket if r.fault_started_at is not None]
+            incident_starts: dict[str, datetime] = {}
+            for row in bucket:
+                if row.incident_id and row.fault_started_at:
+                    previous = incident_starts.get(row.incident_id, row.fault_started_at)
+                    incident_starts[row.incident_id] = min(previous, row.fault_started_at)
             times = sorted({r.timestamp.timestamp() for r in bucket})
             window = Window(
                 dataset_id=dataset,
@@ -111,9 +116,14 @@ def windows(
                 samples=len(bucket),
                 clipped=clipped,
                 irregular=any(b - a > seconds / 2 for a, b in zip(times, times[1:], strict=False)),
-                label=any(labels) if labels else None,
+                label=True
+                if any(r.label is True for r in bucket)
+                else False
+                if bucket and all(r.label is False for r in bucket)
+                else None,
                 incident_ids=sorted({r.incident_id for r in bucket if r.incident_id}),
                 fault_started_at=min(faults) if faults else None,
+                incident_starts=incident_starts,
             )
             output.append(window)
             history.append(window)

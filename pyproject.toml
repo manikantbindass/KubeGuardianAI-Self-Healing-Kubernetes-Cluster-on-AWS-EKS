@@ -45,7 +45,7 @@ strict = true
 files = ["apps/api/kubesentinel_api", "scripts", "tests", "ml/kubesentinel_ml", "services/anomaly-detector/kubesentinel_detector"]
 
 [[tool.mypy.overrides]]
-module = ["sklearn.*"]
+module = ["sklearn.*", "numpy.*", "matplotlib.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

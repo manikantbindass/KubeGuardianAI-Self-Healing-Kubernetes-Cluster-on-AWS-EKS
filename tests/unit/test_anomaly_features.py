@@ -36,6 +36,15 @@ def test_conflicting_duplicate_and_bounded_gap() -> None:
         windows([rows[0], far], max_windows=256)
 
 
+def test_partial_unknown_labels_are_not_negative_ground_truth() -> None:
+    rows = synthetic(minutes=300)[:2]
+    rows[0].label = None
+    assert windows(rows)[0].label is None
+    rows[1].label = True
+    rows[1].incident_id = "known-fault"
+    assert windows(rows)[0].label is True
+
+
 @pytest.mark.parametrize(
     "field,value",
     [

@@ -1,5 +1,5 @@
 {
-  "model_version": "bbe9c67cd86dc60a7fcbd013713f054aaa2025afc3abd5c9f09461d69a736154",
+  "model_version": "888c58ed498934bde273c7f8f36ba27f4008994c72ccb3e43d8a23f59b6341a0",
   "provenance": "synthetic",
   "dataset_sha256": "33e2047bc6d8ecbc0650224e925cfeae12602c851765f3e4a759dee969748fd5",
   "scope": "held-out windows; synthetic fixture results do not establish real-world accuracy",
@@ -30,11 +30,12 @@
       "incident_count": 2,
       "detected_incidents": 2,
       "missed_incidents": [],
+      "delay_missing_incidents": [],
       "mean_detection_delay_seconds": 60.0,
       "delay_definition": "first positive window END minus fault start; excludes misses",
       "inference_latency_ms": {
-        "p50": 0.003,
-        "p95": 0.0073
+        "p50": 0.0038,
+        "p95": 0.0105
       },
       "threshold": 0.5,
       "insufficient_data_windows": 0,
@@ -60,11 +61,12 @@
       "missed_incidents": [
         "fault-9"
       ],
+      "delay_missing_incidents": [],
       "mean_detection_delay_seconds": 240.0,
       "delay_definition": "first positive window END minus fault start; excludes misses",
       "inference_latency_ms": {
-        "p50": 0.1597,
-        "p95": 0.3293
+        "p50": 0.1479,
+        "p95": 0.1833
       },
       "threshold": 99.73634830748004,
       "insufficient_data_windows": 0,
@@ -88,11 +90,12 @@
       "incident_count": 2,
       "detected_incidents": 2,
       "missed_incidents": [],
+      "delay_missing_incidents": [],
       "mean_detection_delay_seconds": 120.0,
       "delay_definition": "first positive window END minus fault start; excludes misses",
       "inference_latency_ms": {
-        "p50": 0.159,
-        "p95": 0.4318
+        "p50": 0.1721,
+        "p95": 0.5199
       },
       "threshold": 0.46971988492149863,
       "insufficient_data_windows": 0,
