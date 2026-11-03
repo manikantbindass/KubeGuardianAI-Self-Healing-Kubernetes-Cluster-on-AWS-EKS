@@ -12,7 +12,7 @@ No resources exist as a result of Phase 03. No AWS bill, account-specific quote 
 | EKS | One, private API, all five control-plane log types | Same, standard support only |
 | Managed nodes / disks | One desired t3.large, min one/max three, 30GiB gp3 encrypted each | Two desired/min two/max three, 30GiB each |
 | KMS | One rotating environment key/alias | One separate environment key/alias |
-| ECR | Two repositories, immutable tags, scan-on-push, bounded image retention | Same |
+| ECR | Five repositories (API, dashboard, operator, detector, demo workload), immutable tags, scan-on-push, bounded image retention | Same |
 | CloudWatch | Three groups; flow log writer; audit filter + one alarm; 14-day retention | 30-day retention |
 | IAM / access | Cluster/node/CNI roles; optional scoped access entries; no app role by default | Same |
 | Optional integrations | Existing-provider GitHub ECR publisher, Pod Identity log writer, existing-zone CNAME | Same; all disabled by default |

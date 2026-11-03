@@ -1,0 +1,93 @@
+{
+  "hash_normalization": "UTF-8 text uses Git LF line endings; binaries use exact bytes",
+  "generation_date": "2026-11-03",
+  "base_source_commit": "afa9867c887819969ac40830cac171914027a720",
+  "working_tree_changes": true,
+  "toolchain": {
+    "artifact_tool": "2.8.106",
+    "authoring_node": "24.22.1",
+    "codex_primary_runtime": "26.1026.10807",
+    "reportlab": "4.4.9",
+    "matplotlib": "3.11.2",
+    "font": "Arial",
+    "slide_pdf_export": "installed Microsoft PowerPoint, Windows"
+  },
+  "reproducibility": "Pinned inputs and editable generation source; not byte-identical Office export",
+  "files": [
+    {
+      "path": "KubeSentinel-AI-Presentation.pptx",
+      "sha256": "0cdded4e6a759f0d95a6ebb6a4e56ccb2ff4dc711b777094d06b7216f2af049c",
+      "bytes": 573162
+    },
+    {
+      "path": "KubeSentinel-AI-Technical-Report.pdf",
+      "sha256": "8582ff255425e9b256074468a2662c11c4493f253b5bdc37bbda9abefbdc2f42",
+      "bytes": 646637
+    },
+    {
+      "path": "docs/presentations/KubeSentinel-AI-Presentation.pdf",
+      "sha256": "4974145b6fdabd02d5f86c2b7f7f6830d20042750b2e1b49ad3e39f71eb6f6e3",
+      "bytes": 294721
+    },
+    {
+      "path": "docs/presentations/preview.png",
+      "sha256": "a6860ef4282ff48aed06c5404384047198e381ffc6a3b8b50d58e63a0d2db2d1",
+      "bytes": 19680
+    },
+    {
+      "path": "docs/portfolio/content.json",
+      "sha256": "01af32ed6ed9e7f3c96de3c8896bd989390c09fdd03e04b235c27df4eb7b3789",
+      "bytes": 44139
+    },
+    {
+      "path": "docs/portfolio/build_figures.py",
+      "sha256": "36ca1ff9b91ef75c17386e33e5267dbe86968012e0846d8b72544c308b879c3b",
+      "bytes": 7719
+    },
+    {
+      "path": "docs/portfolio/build_report.py",
+      "sha256": "ac3c297a6cb99cb4fba67bba510a04a3c8857dfab68a887ff766d4b59376567d",
+      "bytes": 13974
+    },
+    {
+      "path": "docs/portfolio/build_presentation.mjs",
+      "sha256": "eb207fdafb44bfd64b2933ed5df645891e83b2860dabf03c24cee255bbdc9e26",
+      "bytes": 12086
+    },
+    {
+      "path": "docs/portfolio/export_slides.ps1",
+      "sha256": "2e56ab8beb753475c8c4026e9ba9d78ca6c96ead45ce590b2e4cf894d5b206a3",
+      "bytes": 1025
+    },
+    {
+      "path": "docs/portfolio/evidence-manifest.json",
+      "sha256": "9fed4f21d4f684229b20690e061a8a13ccf11a4b761fd6412e93dd5064853cc6",
+      "bytes": 2189
+    },
+    {
+      "path": "docs/portfolio/provenance.py",
+      "sha256": "e7cbeea48c3546a7c81d426edfbfaf4ad168f0dd407fdbe61b00b6c9f404d59a",
+      "bytes": 363
+    },
+    {
+      "path": "docs/portfolio/pyproject.toml",
+      "sha256": "832bfc8bfba7cb9885db3a2551d469256e57478d3d344b3a223c34a5d6774815",
+      "bytes": 224
+    },
+    {
+      "path": "docs/portfolio/uv.lock",
+      "sha256": "626be5747cd0c0eb74df4a13782981ff9b918749ca8b8460866b53965439f30e",
+      "bytes": 124134
+    },
+    {
+      "path": "docs/portfolio/write_manifest.py",
+      "sha256": "6bf3a55500f43ea5e0ab924ca4040c9b7ca2e304dbcbb1deef859b6874527b70",
+      "bytes": 1944
+    },
+    {
+      "path": "docs/portfolio/validate_artifacts.py",
+      "sha256": "1fc1e489850072e26479f12715e8ca546a00113d37fe509d41d82dd4608b7f28",
+      "bytes": 3274
+    }
+  ]
+}

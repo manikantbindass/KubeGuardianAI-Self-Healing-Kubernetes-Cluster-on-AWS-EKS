@@ -1,0 +1,27 @@
+{
+  "scope": "Phase 11 local source checks; no new image scan or AWS deployment",
+  "checkov": {
+    "passed": 139,
+    "failed": 7,
+    "skipped": 0,
+    "parsing_errors": 0,
+    "resource_count": 73,
+    "checkov_version": "3.4.3"
+  },
+  "checkov_policy_gate": {
+    "existing_excepted_findings": 7,
+    "new_exceptions": 0,
+    "blocked": []
+  },
+  "gitleaks": {
+    "candidate_findings": 0,
+    "history_findings": 0,
+    "commits_scanned": 36
+  },
+  "local_trivy": {
+    "status": "blocked",
+    "reason": "No cached DB; mirror.gcr.io download exceeded timeout",
+    "clean_scan_claimed": false
+  },
+  "image_security": "Five inherited PR 13 image jobs fail; release remains blocked"
+}

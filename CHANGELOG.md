@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased - Phase 11 portfolio and release preparation
+
+- Add a root editable 25-slide PowerPoint with notes and native chart workbooks, slide PDF export, technical report and reviewable generation source.
+- Derive figures from recorded synthetic ML, isolated recovery and health-only load evidence; label cost assumptions and missing experiments explicitly.
+- Rewrite the README with portfolio previews, actual application screenshots, capability states, quickstarts and release limitations; retain animated banners.
+- Add artifact/source hashes, structural validation, documentation dependency lock and a blocked v1.0.0 publication checklist. Preserve original LICENSE/history.
+- Fix Terraform workflow shell quoting and capture real kind status artifacts. Security vulnerability enforcement remains blocking; no merge, release or AWS deployment.
+
+## Unreleased - Phase 10 incident intelligence
+
+- Add bounded deterministic incident grouping, evidence-linked hypotheses, historical similarity, curated runbook retrieval and audited operator feedback.
+- Keep the assistant read-only with no remote provider calls or privileged execution; record eight-case synthetic contract evaluation and its limits.
+
+## Unreleased - Phase 09 resilience engineering
+
+- Add bounded queue admission/retries, database pool bounds, ordered queue indexing, stabilized API HPA and repeatable load/isolated-chaos tooling.
+- Record 900 Windows loopback health requests; full-stack saturation, CPU/memory, scaling and repeated native recovery comparisons remain unmeasured.
+
 ## Phase 08 — Secure delivery and GitOps
 
 - Pin actions and application base images by immutable digest; add locked tool/checksum metadata.

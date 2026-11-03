@@ -1,0 +1,65 @@
+{
+  "hash_normalization": "UTF-8 text uses Git LF line endings; binaries use exact bytes",
+  "scope": "Recorded synthetic evaluations and lab/loopback observations; costs are assumptions",
+  "sources": [
+    {
+      "path": "docs/reports/phase-05/evaluation.json",
+      "sha256": "e0523f45a70eddc7e6e8d81a760ff4d51ef604e0413ec57d67d791698ee178cb"
+    },
+    {
+      "path": "docs/reports/phase-06/all-actions.json",
+      "sha256": "e8dacd412b2baf57baaceb9709c5f2028b35d64cbae665655c461af31425b3cf"
+    },
+    {
+      "path": "docs/reports/phase-06/approved-scale.json",
+      "sha256": "651aef37235603272dffff5f7400776a7556d981bf687ea4295a7aab0e370596"
+    },
+    {
+      "path": "docs/benchmarks/phase-09/loopback/summary.json",
+      "sha256": "2eb6cd2b7bcfe7788767e19481743fd52b991b52c4f7e6bf1978e95e5ba79ab3"
+    },
+    {
+      "path": "docs/reports/phase-10/results.json",
+      "sha256": "5656b039238e3f470f98778a00c468a9a1e9ab4bf123c6c45aa3438b84ecd403"
+    },
+    {
+      "path": "docs/costs/eks-estimate.md",
+      "sha256": "419559428f07b8484cb61765db538710b21d6842415465267fe9345bb426319b"
+    },
+    {
+      "path": "docs/reports/phase-05/rules-precision-recall.csv",
+      "sha256": "1e196d6cfca095fe72605719426b7dbaba7ae0fe777c2dbdd9e21ecb6c6f4935"
+    },
+    {
+      "path": "docs/reports/phase-05/robust_statistics-precision-recall.csv",
+      "sha256": "de689bd1d0c57c8a8a23a4b3d7e4dce0422a77b3cb23bc96b1376a1ad7e0b6ba"
+    },
+    {
+      "path": "docs/reports/phase-05/isolation_forest-precision-recall.csv",
+      "sha256": "fdc44b041765b544f5b6c1a5a404ba5bc8436f83c50df8f303fbb8f1e91d8b51"
+    }
+  ],
+  "action_outcomes": {
+    "Rejected": 4,
+    "Succeeded": 2,
+    "DryRun": 1,
+    "RolledBack": 1
+  },
+  "action_incident_types": {
+    "CrashLoopBackOff": 5,
+    "OOMKilled": 1,
+    "ReplicaShortage": 1,
+    "ReadinessProbeFailure": 1
+  },
+  "action_severities": {
+    "critical": 6,
+    "warning": 2
+  },
+  "missing_measurements": [
+    "CPU/memory overhead",
+    "HPA scaling",
+    "production incident frequency",
+    "repeated native-vs-sentinel recovery",
+    "database/queue saturation"
+  ]
+}

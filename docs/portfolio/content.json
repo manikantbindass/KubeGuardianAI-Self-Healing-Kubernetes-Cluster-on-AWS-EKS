@@ -1,0 +1,542 @@
+{
+  "title": "KubeSentinel AI",
+  "tagline": "Observe clearly. Recover with evidence.",
+  "date": "2026-11-03",
+  "repository": "https://github.com/manikantbindass/KubeSentinel-AI",
+  "slides": [
+    {
+      "title": "KubeSentinel AI",
+      "subtitle": "Observe clearly. Recover with evidence.",
+      "kind": "cover",
+      "points": [
+        "Kubernetes operations, explainable detection and guarded recovery",
+        "Engineering portfolio | Release preparation | November 2026"
+      ],
+      "source": "README.md",
+      "notes": "This is a local and CI-tested engineering portfolio, not a production certification. AWS resources have not been created. Version 1.0.0 is not published; security gates remain blocking."
+    },
+    {
+      "title": "The operational problem",
+      "subtitle": "Signals arrive separately; recovery needs shared context",
+      "points": [
+        "Metrics, logs and Kubernetes events describe different parts of the same failure.",
+        "Unbounded automation can amplify an outage or cross an authorization boundary.",
+        "Objective: connect evidence, propose bounded actions and verify the outcome."
+      ],
+      "source": "docs/architecture/system-overview.md",
+      "notes": "Native Kubernetes restarts and replica reconciliation remain essential. KubeSentinel adds an evidence and policy layer; no benchmark establishes superiority over native recovery."
+    },
+    {
+      "title": "Engineering differentiators",
+      "subtitle": "Authority stays deterministic",
+      "points": [
+        "Separate detection, authorization and execution boundaries",
+        "Default dry-run, exact-plan approvals, cooldowns and action budgets",
+        "Durable action evidence and verification before success",
+        "Explicit provenance: real cluster, synthetic fixture or planning assumption"
+      ],
+      "source": "docs/architecture/recovery-operator.md",
+      "notes": "These controls are implemented in the scoped operator and tested locally or in isolated CI. Their presence does not establish production safety across arbitrary workloads."
+    },
+    {
+      "title": "Technology choices",
+      "subtitle": "Independent privilege boundaries; shared typed contracts",
+      "kind": "stack",
+      "points": [
+        "Experience | Next.js, TypeScript, Tailwind, TanStack Query",
+        "Application | FastAPI, Pydantic, SQLAlchemy, Alembic",
+        "State | PostgreSQL durable records; Redis transient coordination",
+        "Execution | Go controller, versioned Kubernetes CRDs, Helm",
+        "Operations | Prometheus, Loki, OTel, Grafana, Terraform, Argo CD"
+      ],
+      "source": "docs/architecture/system-overview.md",
+      "notes": "Alternatives include React/Vite, a Go API, Flux, managed observability and PostgreSQL-only queues. Extraction into additional services requires measured isolation or scaling needs."
+    },
+    {
+      "title": "High-level architecture",
+      "subtitle": "Telemetry informs decisions; policy authorizes execution",
+      "kind": "flow",
+      "points": [
+        "Cluster signals",
+        "Ingest + normalize",
+        "Detect + correlate",
+        "Policy + approval",
+        "Operator + verify"
+      ],
+      "source": "docs/diagrams/remediation-sequence.mmd",
+      "notes": "PostgreSQL stores incident and audit state. Redis accelerates transient work. The UI never receives Kubernetes credentials. The last boundary is independently enforced by Kubernetes RBAC and the controller."
+    },
+    {
+      "title": "C4 context and trust boundaries",
+      "subtitle": "People and external systems",
+      "kind": "flow",
+      "points": [
+        "Operator / approver",
+        "OIDC identity provider",
+        "KubeSentinel platform",
+        "Kubernetes API",
+        "GitHub + optional AWS"
+      ],
+      "source": "docs/diagrams/c4-context.mmd",
+      "notes": "External identity-provider interoperability is not certified with a live tenant. AWS and external delivery are gated integrations. Untrusted telemetry is evidence, never an instruction to execute."
+    },
+    {
+      "title": "C4 containers and API components",
+      "subtitle": "A container is a process or store, not a directory promise",
+      "kind": "components",
+      "points": [
+        "Browser -> Next.js proxy -> FastAPI authorization",
+        "Query services -> PostgreSQL / Redis / Prometheus / Loki",
+        "Collectors -> normalized incidents -> advisory detector",
+        "Approval bridge -> signed plan -> independent Go operator"
+      ],
+      "source": "docs/diagrams/c4-container.mmd; docs/diagrams/c4-component.mmd",
+      "notes": "API components handle authentication, bounded query contracts, incident lifecycle, correlation, audit and exact-plan approval. Stores and privileged execution are separate trust boundaries. Full editable C4 diagrams live in docs/diagrams."
+    },
+    {
+      "title": "AWS EKS infrastructure",
+      "subtitle": "Validated source; no live deployment",
+      "kind": "flow",
+      "points": [
+        "Encrypted remote state",
+        "VPC + private subnets",
+        "EKS managed nodes",
+        "Scoped IAM + Pod Identity",
+        "ECR + CloudWatch"
+      ],
+      "source": "infrastructure/terraform/README.md",
+      "notes": "Dev and demonstration roots expose configurable CIDRs, node bounds and access entries. No RDS, ElastiCache, load balancer or hosted zone is implicitly provisioned. Apply and destroy require separate authorization and cost approval."
+    },
+    {
+      "title": "Observability and incident ingestion",
+      "subtitle": "Metrics, logs and events retain distinct semantics",
+      "kind": "flow",
+      "points": [
+        "Prometheus + KSM",
+        "OTel -> Loki",
+        "Kubernetes events",
+        "Normalize + deduplicate",
+        "Grafana + incidents"
+      ],
+      "source": "docs/runbooks/observability.md",
+      "notes": "Prometheus queries are bounded; outage behavior is explicit rather than synthetic fallback. Dashboards cover cluster, workload, application, incidents, recovery and SLO views. Retention and cardinality need environment-specific budgets."
+    },
+    {
+      "title": "Reproducible detection pipeline",
+      "subtitle": "Temporal splits and provenance precede model complexity",
+      "kind": "flow",
+      "points": [
+        "Timestamp + provenance",
+        "Window + rolling features",
+        "Time-based split",
+        "Rules / robust / forest",
+        "Score + explanation"
+      ],
+      "source": "docs/runbooks/anomaly-detection.md",
+      "notes": "Duplicates, irregular sampling and missing windows are handled in deterministic features. Metadata binds data hash, model version and seed. Scores are uncalibrated; rules remain the default. LSTM and autoencoder are not claimed."
+    },
+    {
+      "title": "Anomaly detection evaluation",
+      "subtitle": "Synthetic held-out windows only | n = 177; two fault incidents",
+      "kind": "ml",
+      "points": [
+        "Rules: precision 1.00, recall 1.00",
+        "Robust statistics: precision 0.875, recall 0.35",
+        "Isolation Forest: precision 0.667, recall 0.90",
+        "Small synthetic results do not estimate production accuracy"
+      ],
+      "source": "docs/reports/phase-05/evaluation.json",
+      "notes": "The chart and confusion matrix are generated from evaluation.json. Matrix axes: actual rows, predicted columns; negative then positive. Rules match the synthetic generator particularly well. No confidence calibration or production accuracy is established."
+    },
+    {
+      "title": "Evidence-grounded incident correlation",
+      "subtitle": "Read-only analysis with an explicit uncertainty boundary",
+      "points": [
+        "Bounded namespace/time grouping and deployment-change context",
+        "Historical similarity and four curated internal runbooks",
+        "12 expected directed links on eight synthetic fixtures; 8/8 retrieval matches",
+        "No remote LLM calls; no assistant path to privileged actions"
+      ],
+      "source": "docs/reports/phase-10/results.json",
+      "notes": "Fixture precision and recall are both 1.0, but this is a contract evaluation on eight hand-authored cases. It is not an estimate of real-world correlation accuracy or root-cause certainty. Retrieved instructions remain subject to deterministic safety controls."
+    },
+    {
+      "title": "Policy-driven recovery",
+      "subtitle": "A durable state machine, not a shell-command generator",
+      "kind": "flow",
+      "points": [
+        "Observe + qualify",
+        "Dry-run / reject",
+        "Signed approval",
+        "Apply bounded action",
+        "Verify / undo / escalate"
+      ],
+      "source": "docs/architecture/recovery-operator.md",
+      "notes": "Supported paths include rollout restart, bounded scale and rollback to a verified revision. Policies scope namespaces, workload selectors, incident types, severity, maintenance windows, cooldown, budget and minimum healthy replicas."
+    },
+    {
+      "title": "Safety and rollback architecture",
+      "subtitle": "Ambiguity stops automation",
+      "points": [
+        "Protect critical namespaces; never delete arbitrary pods",
+        "Check target identity, policy version, approval expiry and action digest",
+        "Use leader election, durable intents and workload conflict fencing",
+        "Verify rollout and sampled service indicators; undo only within policy",
+        "Escalate stale incidents, exhausted budgets and unavailable APIs"
+      ],
+      "source": "docs/runbooks/recovery-operator.md",
+      "notes": "A successful Kubernetes mutation is not a successful recovery. Service verification uses bounded samples and does not prove a long-term SLO. Rollback requires a verified prior revision and can itself fail."
+    },
+    {
+      "title": "Backend API architecture",
+      "subtitle": "Versioned contracts and durable operational state",
+      "points": [
+        "/api/v1 health, readiness, version and typed operations endpoints",
+        "OIDC-compatible RBAC with namespace scope and audited mutations",
+        "PostgreSQL migrations, bounded pools and durable queue records",
+        "Structured JSON logs, request correlation and trace context",
+        "SSE reconnect plus polling; explicit upstream outage responses"
+      ],
+      "source": "apps/api/kubesentinel_api; docs/runbooks/operations-dashboard.md",
+      "notes": "OpenAPI documents endpoint schemas. Redis is not the authoritative queue; PostgreSQL owns durable business state. Opaque OIDC access tokens and automatic token refresh are not supported. Deployment health does not imply cloud readiness."
+    },
+    {
+      "title": "Operations dashboard",
+      "subtitle": "Actual browser capture | explicitly synthetic data partition",
+      "kind": "screenshot",
+      "points": [
+        "Twelve connected sections; responsive dark canvas",
+        "Inventory, metrics, incidents, policies and audit",
+        "Loading, offline, empty and error states",
+        "Real API mode remains the deployment default"
+      ],
+      "source": "docs/screenshots/phase-07/desktop.png; docs/reports/phase-07/browser-results.json",
+      "notes": "This is a real screenshot of the running dashboard using labeled synthetic fixtures, not production telemetry. The gallery-style visual uses illustrative geometry rather than a discovered network topology. Phase 07 browser evidence records six validated flows."
+    },
+    {
+      "title": "Secure delivery and GitOps",
+      "subtitle": "Build and inspect before reviewed digest promotion",
+      "kind": "flow",
+      "points": [
+        "Lint + type + tests",
+        "Build + SBOM + scan",
+        "OIDC -> ECR digest",
+        "Reviewed environment PR",
+        "Argo reconciliation"
+      ],
+      "source": "docs/runbooks/secure-delivery.md",
+      "notes": "Actions are SHA-pinned and tokens restricted. Terraform owns cloud prerequisites; Argo owns application state. Delivery is disabled by default. Image vulnerability checks are blocking and no release, AWS publish or Argo sync is claimed."
+    },
+    {
+      "title": "Security and access control",
+      "subtitle": "Protect both the control plane and its evidence",
+      "points": [
+        "Scoped user roles, exact origins and protected approval signing keys",
+        "Non-root containers, read-only filesystems and network policies",
+        "No committed credentials; OIDC replaces long-lived AWS keys",
+        "Telemetry redaction, bounded queries and fail-closed rate limits",
+        "Security scans remain release gates, including unfixed findings"
+      ],
+      "source": "docs/security/threat-model.md; SECURITY.md",
+      "notes": "Admission examples and secret-manager integration are deployment guidance, not a claim that a live cloud environment enforces them. CI currently identifies HIGH/CRITICAL image findings. No security exception silently authorizes release."
+    },
+    {
+      "title": "Chaos testing methodology",
+      "subtitle": "Disposable environments and explicit destructive-test authorization",
+      "points": [
+        "Isolate opted-in lab workloads; record context, namespace and source commit",
+        "Inject one fault; capture before/after state and action audit",
+        "Assert dry-run, approval, cooldown, rejection and verified undo paths",
+        "Capture raw results; compare repeated runs against a native baseline",
+        "Node drain, network impairment and cloud chaos remain pending"
+      ],
+      "source": "docs/runbooks/resilience.md; docs/reports/phase-06/summary.json",
+      "notes": "Historical isolated kind recovery tests exist. This documentation step does not authorize new destructive tests. Phase 09 scripts cover additional scenarios but do not establish production resilience or a measured improvement over native Kubernetes."
+    },
+    {
+      "title": "Recovery evidence",
+      "subtitle": "One isolated kind run | eight action records",
+      "kind": "recovery",
+      "points": [
+        "Approved scale: 10 s observation-to-apply; 36 s verification",
+        "Human approval and reconciliation polling are included",
+        "Outcome counts describe action records, not independent fault trials",
+        "No paired native Kubernetes benchmark is available"
+      ],
+      "source": "docs/reports/phase-06/all-actions.json; docs/reports/phase-06/approved-scale.json",
+      "notes": "Timestamp deltas have second resolution. This is a descriptive lab observation, not a latency distribution, recovery SLA or causal speedup. Rejected and dry-run actions are safety outcomes, not failed recovery attempts."
+    },
+    {
+      "title": "Load, scalability and reliability",
+      "subtitle": "900 loopback health requests | Windows | no DB or cluster",
+      "kind": "load",
+      "points": [
+        "Three repetitions at concurrency 1, 4 and 8; 100 requests each",
+        "Observed p95: 16.6-31.0 ms; no HTTP errors in this sample",
+        "Bounded queue, retries, database pools, quotas and API HPA",
+        "CPU, memory, backlog and scaling experiments still need measurement"
+      ],
+      "source": "docs/benchmarks/phase-09/loopback/summary.json",
+      "notes": "Charts preserve individual trial values rather than pooled percentiles. Requests per second are short-run throughput for health only. PostgreSQL saturation, distributed workers, HPA response and end-to-end incident throughput are not measured here."
+    },
+    {
+      "title": "Cloud cost considerations",
+      "subtitle": "Illustrative planning inputs in USD; not an AWS quote",
+      "kind": "cost",
+      "points": [
+        "730 hours; EKS $0.10/h; nodes $0.10/h; NAT $0.05/h",
+        "Dev: $211.50/month; two-node demo: $324.00/month",
+        "Seven interface services across two AZs: +$102.20 before data",
+        "Excludes managed DB/cache, load balancers, transfer, tax and support"
+      ],
+      "source": "docs/costs/eks-estimate.md",
+      "notes": "These assumed rounded rates are not current regional prices. A complete application environment costs more. Obtain a dated account/region quote, budget approval and TTL before any deployment. Retained state, logs and images can outlive cluster teardown."
+    },
+    {
+      "title": "Known limitations and release gates",
+      "subtitle": "Portfolio evidence is narrower than production readiness",
+      "points": [
+        "HIGH/CRITICAL image findings currently block v1.0.0",
+        "Synthetic ML and correlation fixtures need real labeled telemetry",
+        "Health-only load tests do not establish cluster capacity or SLOs",
+        "Live OIDC certification, cloud deployment and promotion are unverified",
+        "No measured CPU/memory overhead or repeated recovery comparison"
+      ],
+      "source": "docs/releases/v1.0.0-candidate.md",
+      "notes": "Read the dated validation record for current checks. Historical passing evidence is identified by source commit and does not override later failing CI checks. No release tag or production deployment is created by this phase."
+    },
+    {
+      "title": "Future roadmap",
+      "subtitle": "Close evidence gaps before expanding automation",
+      "points": [
+        "First: remediate vulnerabilities and repeat all release checks",
+        "Next: repeated isolated fault trials and full-stack queue/load profiling",
+        "Then: live identity-provider validation and staging GitOps rehearsal",
+        "After approval: cost-bounded EKS demonstration and teardown proof",
+        "Later: real-label model evaluation, drift studies and read-only multi-cluster"
+      ],
+      "source": "docs/roadmap.md",
+      "notes": "Prioritize operational evidence and safety over adding a more complex model. Optional LLM integration requires provider privacy review, retrieval evaluation, budget caps and no privilege expansion."
+    },
+    {
+      "title": "Evidence, policy, verified recovery",
+      "subtitle": "A reproducible foundation for safer Kubernetes operations",
+      "kind": "close",
+      "points": [
+        "Explore the source, runbooks and raw experiment records",
+        "Review the technical report and editable architecture sources",
+        "Contribute through a reviewed feature branch",
+        "github.com/manikantbindass/KubeSentinel-AI"
+      ],
+      "source": "README.md; CONTRIBUTING.md; LICENSE",
+      "notes": "Apache 2.0 license and original repository history are preserved. The project is a local/CI-tested foundation with explicit production and security gates. Thank you for reviewing its evidence and limitations."
+    }
+  ],
+  "chapters": [
+    {
+      "title": "Abstract and introduction",
+      "text": [
+        "KubeSentinel AI is a Kubernetes operations platform that connects telemetry, incident analysis and policy-governed recovery. The repository contains a runnable Next.js/FastAPI foundation, durable PostgreSQL state, Redis coordination, local Kubernetes packaging, advisory anomaly detection and an independently privileged Go recovery controller. This report describes what the code and recorded experiments establish, and where further validation is required.",
+        "The central design principle separates evidence from authority. A detector may identify an unusual condition, and an assistant may explain it, but neither can execute a cluster change. Typed policies, current workload state and explicit approvals govern action execution. Verification then checks whether the workload and sampled service indicators meet the configured postconditions.",
+        "The evidence spans local unit tests, Linux kind CI, explicitly synthetic ML experiments and a small Windows loopback benchmark. It does not establish production accuracy, sustained availability or performance gains over native Kubernetes. AWS infrastructure exists as source only, and version 1.0.0 remains blocked by unresolved security gates."
+      ],
+      "refs": [
+        "docs/architecture/system-overview.md",
+        "docs/releases/v1.0.0-candidate.md"
+      ]
+    },
+    {
+      "title": "Problem statement, objectives and requirements",
+      "text": [
+        "Kubernetes restores desired replica counts and restarts failed containers, but operational diagnosis often requires joining metrics, logs, events and deployment changes. Alert storms and fragmented context increase review effort. Additional automation introduces its own risks: repeated restarts, incorrect rollbacks, availability loss and changes outside an authorized namespace.",
+        "The project objectives are to preserve evidence provenance, expose actionable incident context, constrain remediation through explicit policy, and record a durable explanation of each decision and outcome. A useful local development environment must run without AWS and must distinguish missing telemetry from synthetic fixtures.",
+        "Functional requirements include versioned API contracts, persistent incidents, bounded telemetry queries, deterministic feature windows, explainable anomaly scores, namespace-scoped approvals, recovery audit trails and responsive operations views. Nonfunctional requirements include least privilege, reproducible dependency resolution, explicit failure behavior, resource limits, accessible UI states and reviewable delivery artifacts.",
+        "Acceptance is environment-specific. Unit tests establish contract behavior; isolated kind tests establish selected cluster flows; a cloud demonstration requires separate credentials, cost approval and deployment evidence. No single green health endpoint proves all of these requirements."
+      ],
+      "refs": [
+        "docs/roadmap.md",
+        "docs/security/threat-model.md"
+      ]
+    },
+    {
+      "title": "Architecture and technology justification",
+      "text": [
+        "The context view places human operators, approvers, the identity provider, Kubernetes, GitHub and optional AWS services around the platform. The container view separates the web boundary, API, collectors, stores, advisory detector and privileged operator. Component views split authorization, query services, incident lifecycle, policy proposals and audit responsibilities inside the API.",
+        "Next.js and TypeScript support a typed operations experience and server-side API mediation. FastAPI and Pydantic align API validation with the Python ML toolchain. SQLAlchemy and Alembic make schema evolution explicit. PostgreSQL owns durable operational state; Redis accelerates bounded transient coordination. A PostgreSQL-backed queue is a deliberate alternative to Redis Streams, avoiding a second authoritative queue.",
+        "Go is used for controller reconciliation and a separate execution boundary. Prometheus handles time-series metrics, Loki handles logs, and OpenTelemetry normalizes application telemetry. Terraform owns AWS prerequisites, while Helm and Argo CD describe application delivery. Local kind remains the primary cluster validation environment.",
+        "Reasonable alternatives are React/Vite for a simpler SPA, a Go API for measured CPU pressure, Flux for GitOps, managed monitoring for lower operational burden and a PostgreSQL-only transient path at small scale. Adding microservices, a graph database or a deep model needs evidence of a concrete isolation, query or data-volume requirement."
+      ],
+      "refs": [
+        "docs/diagrams/c4-context.mmd",
+        "docs/diagrams/c4-container.mmd",
+        "docs/diagrams/c4-component.mmd",
+        "docs/architecture/system-overview.md"
+      ]
+    },
+    {
+      "title": "Component implementation and API contracts",
+      "text": [
+        "The backend exposes /api/v1 health, readiness and version contracts alongside operations endpoints. Health checks process liveness; readiness evaluates dependencies. Typed settings cover origins, dependency locations and feature switches. Structured JSON logs carry correlation and trace context; centralized exception handling avoids leaking internal stack details through normal API responses.",
+        "PostgreSQL records survive process restarts. Alembic migrations run before application startup. Redis supports cache, rate-limit and wake-up behavior; durable queue work remains in SQL. Connection pools, admission limits and bounded retries reduce unbounded accumulation. Exactly-once delivery is not assumed: idempotency and conflict checks matter at every mutation boundary.",
+        "The dashboard consumes typed query contracts through a server-side proxy. Twelve sections expose inventory, workloads, metrics, anomalies, incidents, recovery, policies, insights, audit, cost scenarios and preferences. SSE reconnects and polling provide change updates. Missing upstreams produce offline, error or empty states rather than switching silently to demo data.",
+        "Real mode is the deployed default. Synthetic fixtures require explicit enablement and a separate data partition. Local development authentication is restricted to trusted development setup. The public greeting/status surface is a smaller vertical slice and does not imply authorization for operational mutations."
+      ],
+      "refs": [
+        "docs/development-guide.md",
+        "docs/runbooks/operations-dashboard.md",
+        "apps/api/kubesentinel_api"
+      ]
+    },
+    {
+      "title": "Kubernetes operator design",
+      "text": [
+        "RemediationPolicy resources describe namespace and workload scope, incident types, allowed actions, severity thresholds, dry-run, approvals, cooldowns, budgets, healthy-replica constraints, maintenance windows, escalation and verification. RemediationAction records bind an incident and policy version to an exact target and action. The operator never interprets arbitrary shell commands or LLM instructions.",
+        "The reconciliation state machine observes a condition, qualifies policy, records a dry-run or rejection when appropriate, waits for signed approval when required, persists intent before mutation, applies a bounded change, and verifies postconditions. Supported action paths are controlled rollout restart, bounded scale and rollback to a verified previous revision. Critical namespaces and arbitrary pod deletion are excluded.",
+        "Leader election, durable intents, idempotency keys and workload conflict checks reduce duplicate execution. A target identity or template change, stale incident, expired approval, action-budget exhaustion or unavailable control plane can deny execution. Approval signatures bind the exact plan; editing the plan requires new authorization.",
+        "Verification combines rollout/readiness/replica observations with bounded service samples. Success is recorded only when configured checks pass. Failed verification can trigger a separately allowed undo or escalation. Sampled service checks are not proof of a long-term SLO, and rollback may itself fail. The controller is intentionally scoped rather than a general-purpose self-healing authority."
+      ],
+      "refs": [
+        "docs/architecture/recovery-operator.md",
+        "docs/runbooks/recovery-operator.md",
+        "operator/crds"
+      ]
+    },
+    {
+      "title": "ML methodology and evaluation",
+      "text": [
+        "The training pipeline records telemetry provenance and timestamps, creates deterministic feature windows, handles missing and duplicate observations, and computes rolling statistics and lag features. Features cover resource pressure, restart frequency, latency/error conditions, pending duration and replica availability. Time-based splits keep future windows out of training and threshold tuning.",
+        "The available detectors are a rule baseline, robust statistics and Isolation Forest. Metadata records the dataset hash, model identifier, runtime, threshold and score semantics. Inference scores are explicitly uncalibrated. Deterministic rules remain the default and fallback; no LSTM, autoencoder or calibrated probability is claimed.",
+        "The committed held-out evaluation contains 177 synthetic windows, including 20 positive windows from two fault incidents. Rules achieved precision/recall 1.00/1.00 on this fixture; robust statistics achieved 0.875/0.35; Isolation Forest achieved 0.667/0.90. These results reflect a tiny generated distribution and cannot be generalized to production clusters. The rule generator alignment is an important source of optimism.",
+        "Detection delay is first positive window end minus fault start and excludes missed incidents. Rules detected two incidents with mean delay 60 seconds; robust statistics detected one with 240 seconds and missed one; Isolation Forest detected two with 120 seconds. Warm serial inference latency is a separate measurement from end-to-end detection. Real-label validation, calibration and longer drift studies remain outstanding."
+      ],
+      "refs": [
+        "docs/reports/phase-05/evaluation.json",
+        "ml/models/model-card.md",
+        "ml/models/synthetic-v1-metadata.json"
+      ],
+      "figure": "ml"
+    },
+    {
+      "title": "Incident intelligence and retrieval",
+      "text": [
+        "The AIOps layer groups related incidents using bounded time and namespace context, workload relationships and deployment-change evidence. It ranks hypotheses and historical similarity without asserting a confirmed root cause. Runbook retrieval uses a curated internal catalog and produces evidence links, uncertainty and read-only troubleshooting suggestions.",
+        "The Phase 10 evaluation contains eight explicitly synthetic hand-authored incidents with 12 expected directed links. All expected links and eight retrieval targets matched, with no extra links in that fixture. These are contract tests, not production correlation accuracy or a hallucination-rate estimate. The result file records zero remote requests.",
+        "Untrusted logs are treated as data rather than instructions. Secret/PII filtering, bounded context, rate limits and deterministic tool boundaries reduce exposure. The current no-LLM path avoids external provider egress. Any future provider needs privacy review, budget limits, outage handling and independent evaluation; it must not gain approval or execution privileges."
+      ],
+      "refs": [
+        "docs/reports/phase-10/results.json",
+        "docs/architecture/0010-aiops-intelligence.md"
+      ]
+    },
+    {
+      "title": "Security and threat model",
+      "text": [
+        "Primary threats include stolen user sessions, forged or replayed approvals, broad Kubernetes permissions, poisoned telemetry, prompt injection, secret leakage, supply-chain compromise and unbounded resource use. The browser is outside the execution trust boundary. OIDC-compatible roles and namespace scopes are enforced server-side, and the controller independently checks policy and approval evidence.",
+        "Approval signing keys belong in protected runtime secret storage, never Git. Exact origin configuration, secure session cookies and token validation protect the web boundary. Deployed identity uses issuer/audience/signature/expiry checks. Opaque OIDC access tokens and automatic refresh are not supported; live provider interoperability remains a certification gate.",
+        "Images use non-root identities and Kubernetes manifests apply scoped RBAC, security contexts, probes and network controls. Example admission policies and secret-manager integration require environment-specific rollout. OIDC federation replaces long-lived AWS keys for authorized delivery. Terraform state, plan files and credentials are ignored and must remain outside tracked source.",
+        "Security controls are not a claim of vulnerability-free software. Current image scans contain HIGH/CRITICAL findings and block release. Static scan failures and any dated exceptions must be reviewed under the repository policy. The release must not bypass a failing gate merely because a finding is upstream or currently unfixed."
+      ],
+      "refs": [
+        "docs/security/threat-model.md",
+        "SECURITY.md",
+        "docs/runbooks/secure-delivery.md"
+      ]
+    },
+    {
+      "title": "AWS deployment and GitOps ownership",
+      "text": [
+        "Terraform source defines reusable networking, EKS, IAM, ECR and observability modules, dev and demonstration configurations, validated inputs and tagging. The intended topology uses public/private subnet separation, private worker networking, restricted cluster access, managed nodes, encryption and scoped access entries. Optional DNS integration does not silently create a load balancer.",
+        "Remote state bootstrap is a separate lifecycle with encryption, versioning, access controls and locking instructions. AWS credentials are not embedded. GitHub OIDC trust is constrained to the repository and approved ref/environment. Workload permissions use scoped Pod Identity where supported. No live plan, apply or destroy is claimed in this report.",
+        "Terraform owns cloud prerequisites; Argo CD owns reviewed application configuration and immutable image digests. Actions build, test, generate SBOMs, scan and prepare approved artifact publication. Environment gates separate staging and production. Delivery starts disabled, and an operator must authorize costly or sensitive steps.",
+        "Rollback requires selecting a previously verified digest/configuration and reviewing the environment change. It is not a substitute for a database migration rollback plan. Teardown must inventory retained images, logs, state versions, volumes and keys. No AWS deployment or release publication occurs as part of portfolio generation."
+      ],
+      "refs": [
+        "infrastructure/terraform/README.md",
+        "docs/runbooks/aws-eks.md",
+        "docs/runbooks/secure-delivery.md"
+      ]
+    },
+    {
+      "title": "Observability and service objectives",
+      "text": [
+        "Prometheus and kube-state-metrics expose workload and node state; OpenTelemetry instruments the application and routes telemetry; Loki stores logs; Grafana presents operational views; Alertmanager routes bounded alert signals into incident normalization. Metrics, logs and events remain different evidence types with timestamps and provenance.",
+        "Useful signals include CPU/memory utilization, restarts, OOMKilled events, readiness, pending time, node pressure, HTTP request/error/latency metrics, deployment availability and remediation outcomes. Recording and alert rules reduce repeated query work and define severity. Labels must avoid unbounded IDs and user-controlled high-cardinality values.",
+        "The API uses a query abstraction with fixed scoped queries and explicit timeout/outage behavior. Monitoring failures do not fabricate healthy measurements or substitute synthetic data. Retention, log redaction and storage limits need operator sizing; the local stack is not an HA monitoring claim.",
+        "SLIs and error budgets are defined as operational goals, not achieved uptime. CPU/memory overhead, real incident frequency, queue lag and HPA response still need machine-readable repeated measurements. Actual dashboard screenshots are retained with their provenance; demo captures cannot establish real infrastructure performance."
+      ],
+      "refs": [
+        "docs/runbooks/observability.md",
+        "docs/reports/phase-04-validation.md"
+      ]
+    },
+    {
+      "title": "Test strategy and reproducibility",
+      "text": [
+        "The quality strategy combines backend lint/type checks and pytest, frontend lint/type/component tests and production build, migration tests against disposable PostgreSQL, Go controller tests, Helm/schema checks, browser flows and Linux kind integration. Locked npm/uv dependencies and pinned CI actions make inputs reviewable, although container base-image vulnerabilities remain an active release concern.",
+        "Local commands and exact results are captured in the Phase 11 validation record. Tests that require a database, sockets, Docker or a real cluster must not be reported as passed when unavailable. Historical CI evidence is identified by source commit and workflow URL; it cannot override a newly failing check.",
+        "Destructive fault injection requires explicit authorization and isolated disposable environments. The lab records context, namespace, policy, actor, action, result and timestamps. New chaos scenarios should run one at a time with cleanup and availability bounds. Broad node/network disruption is still pending.",
+        "Documentation validation checks local links, required files, license preservation, Markdown formatting and Mermaid parsing. Presentation validation checks package integrity, editability and layout, followed by rendering review. PDF text extraction complements visual inspection but cannot by itself prove absence of clipping."
+      ],
+      "refs": [
+        "docs/reports/phase-11-validation.md",
+        "docs/reports/phase-06/summary.json",
+        "docs/reports/phase-07/browser-results.json"
+      ]
+    },
+    {
+      "title": "Experiments and recovery evidence",
+      "text": [
+        "The isolated Phase 06 kind run records eight RemediationAction objects across approved, rejected and dry-run paths. These are action records, not eight independent comparable recovery trials. Safety rejection is an intended outcome and must not be counted as a failed recovery or used to inflate success rates.",
+        "For the approved scale example, observation was recorded at 02:48:56 UTC, application at 02:49:06 and success at 02:49:42 on 2026-11-03. The resulting 10-second observation-to-apply interval includes human approval and reconciliation polling; the 36-second verification interval is one lab observation. Timestamp resolution is one second.",
+        "There is no paired repeated native-Kubernetes baseline. Consequently this report makes no percentage improvement, average recovery SLA or false-remediation-rate claim. Future experiments must specify workload, cluster size, fault onset, repetitions, baseline treatment, confidence intervals and raw results.",
+        "The generated outcome and incident-type/severity charts describe only the stored lab action sample. They are not incident-frequency estimates for a production cluster. Detection delay comes from the separately labeled synthetic ML evaluation; combining those samples into an end-to-end recovery metric would be invalid."
+      ],
+      "refs": [
+        "docs/reports/phase-06/all-actions.json",
+        "docs/reports/phase-06/approved-scale.json"
+      ],
+      "figure": "recovery"
+    },
+    {
+      "title": "Load testing, scalability and reliability",
+      "text": [
+        "The available loopback benchmark sends 900 total health requests on Windows: 100 requests per trial, three repetitions each at concurrency 1, 4 and 8. It exercises HTTP health only, with database_exercised=false and cluster_exercised=false. The observed per-trial p95 range is 16.6 to 31.0 ms and the sample contains no HTTP errors.",
+        "The charts retain individual trial values. Short trials are sensitive to scheduler, connection setup and warm-up effects; trial percentiles cannot simply be averaged into a pooled request percentile. Higher loopback throughput with concurrency is not evidence of horizontal scaling or PostgreSQL capacity.",
+        "Implemented controls include bounded queue admission, retry limits, connection-pool bounds, an ordered queue index, resource limits, stabilized API HPA configuration and graceful shutdown paths. The PostgreSQL queue is authoritative, while Redis accelerates notifications. Broader multi-worker behavior, queue backlog, distributed command claiming and failure recovery need dedicated measurement.",
+        "Planned experiments must capture CPU/memory, queue age, worker concurrency, database latency, p50/p95/p99 API latency, error rate and replica transitions under fixed workloads. HPA acceptance needs metrics availability and a sufficiently long run; node autoscaling needs a separately cost-approved environment. Backup/restore instructions are operational plans until recovery is actually rehearsed."
+      ],
+      "refs": [
+        "docs/benchmarks/phase-09/loopback/summary.json",
+        "docs/runbooks/resilience.md"
+      ],
+      "figure": "load"
+    },
+    {
+      "title": "Cost and operational considerations",
+      "text": [
+        "The planning model assumes 730 hours/month, EKS at $0.10/cluster-hour, nodes at $0.10/node-hour, NAT at $0.05/gateway-hour plus $0.05/GB, gp3 at $0.10/GiB-month, 20 GB NAT processing and a $25 allowance for logs, ECR, state, KMS and requests. These are rounded illustrative inputs, not current regional AWS prices.",
+        "The dev example totals $211.50/month for one node and one NAT; the demonstration example totals $324.00 for two nodes and two NATs. Seven interface services in two AZs at an assumed $0.01/AZ-hour add $102.20 before processing. These subtotals exclude managed database/cache, load balancers, tax/support, transfer and other charges, and therefore underestimate a complete application environment.",
+        "Single NAT reduces baseline cost but adds zonal dependence and cross-AZ exposure. Private endpoints can cost more at low traffic and do not replace all internet egress. Logs, retained state and images continue charging after an application stops. EKS control-plane charges persist with zero nodes.",
+        "Before a cloud run, obtain dated account/region pricing, approve a ceiling and TTL, and define teardown evidence. Budget alerts are notifications, not spending stops. Cloud cost savings are not measured by this repository, and no AWS resources have been created for this report."
+      ],
+      "refs": [
+        "docs/costs/eks-estimate.md",
+        "docs/costs/aws-cost-considerations.md"
+      ],
+      "figure": "cost"
+    },
+    {
+      "title": "Limitations and future work",
+      "text": [
+        "The strongest current evidence is for scoped contracts and selected isolated integration paths. Synthetic ML and correlation data are small and hand-designed. Health-only loopback traffic does not establish full-stack throughput. Recovery observations are descriptive and lack repeated paired baselines. CPU/memory overhead, live scaling response and sustained SLO compliance remain unmeasured.",
+        "Production identity-provider certification, backup/restore rehearsal, managed database/cache deployment, high-availability monitoring, real GitOps promotion and cloud security enforcement are open gates. Queue and bridge topology require additional multi-replica testing. Optional LLM integration remains disabled and must not weaken the deterministic authorization boundary.",
+        "The immediate roadmap is to resolve vulnerability findings, repeat all CI gates, run repeated isolated recovery/load experiments, validate a live staging identity provider and rehearse digest promotion. A later cost-approved EKS demonstration must include teardown proof. Real-label model evaluation and read-only multi-cluster inventory follow evidence collection rather than preceding it.",
+        "Version 1.0.0 is a prepared release target, not a published release or a production readiness statement. The portfolio preserves original history and license, includes editable documentation sources and links every reported result to a machine-readable record. Reviewers should use the dated validation and release checklist to determine the current state."
+      ],
+      "refs": [
+        "docs/releases/v1.0.0-candidate.md",
+        "docs/roadmap.md"
+      ]
+    }
+  ]
+}

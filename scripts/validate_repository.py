@@ -23,6 +23,11 @@ REQUIRED = (
     "docs/development-guide.md",
     "docs/security/threat-model.md",
     "docs/costs/aws-cost-considerations.md",
+    "KubeSentinel-AI-Presentation.pptx",
+    "KubeSentinel-AI-Technical-Report.pdf",
+    "docs/presentations/KubeSentinel-AI-Presentation.pdf",
+    "docs/portfolio/content.json",
+    "docs/portfolio/artifact-manifest.json",
 )
 
 
