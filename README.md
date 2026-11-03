@@ -1,93 +1,112 @@
 # KubeSentinel AI
 
-![Animated KubeSentinel AI header](docs/assets/header.svg)
+![Animated KubeSentinel AI hero](docs/assets/header.svg)
 
-Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
+**Observe clearly. Recover with evidence.**
 
-**Current status: Phase 07 operations dashboard in development.** This branch includes the dashboard/API/worker, Compose and kind/Helm definitions, AWS Terraform source, observability/incident ingestion, temporal features and rules/statistical/Isolation Forest scoring. The ML evaluation uses explicitly **synthetic** telemetry and does not establish real-cluster accuracy. Rules remain the detector default; no model executes remediation. See the [Phase 05 guide](docs/runbooks/anomaly-detection.md), [model card](ml/models/model-card.md) and [ML verification](docs/reports/phase-05-validation.md). The separately scoped recovery operator is described below. OIDC-compatible identity is implemented; live provider certification and production promotion remain future gates. AWS infrastructure has **not** been deployed.
+A Kubernetes operations platform with a real full-stack dashboard, explainable anomaly detection and a policy-driven recovery operator. Detection supplies evidence; deterministic policy and human approval control execution.
 
-**Phase 06 adds an isolated, policy-driven recovery operator verified in Linux kind CI.** It defaults to dry-run, scopes execution to named opted-in Deployments, requires signed approvals for risky actions, and verifies recovery before success. Actual fault tests passed approved rollback, bounded scale-up, verified undo and safety rejection. No ML/LLM output can directly execute actions. See the [operator guide](docs/runbooks/recovery-operator.md), [safety architecture](docs/architecture/recovery-operator.md) and [actual validation status](docs/reports/phase-06-validation.md). This is not production authorization or an AWS deployment.
+[![Foundation checks](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Fphase-11-portfolio)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml)
+[![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Fphase-11-portfolio)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-The repository is now [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI). The original Apache 2.0 license and Git history are preserved. See the [repository audit](docs/repository-audit.md).
+**Release status:** development portfolio; v1.0.0 is unpublished and blocked by security findings. Local and Linux CI evidence exists for selected flows. AWS is **not deployed**. Synthetic evaluations and demo telemetry do not establish production accuracy or readiness. See the [release checklist](docs/releases/v1.0.0-candidate.md) and [dated validation matrix](docs/reports/phase-11-validation.md).
 
-## Secure delivery (Phase 08)
+## Presentation and technical report
 
-SHA-pinned Actions now add blocking image/dependency/secret/IaC gates, CycloneDX SBOM artifacts and offline GitOps validation. Manual, protected-environment workflows support ECR OIDC publishing, keyless signatures/provenance, and reviewed digest promotion to separate staging/production Argo applications. Delivery starts disabled; no live AWS publication or Argo sync is claimed. See the [delivery runbook](docs/runbooks/secure-delivery.md), [ADR](docs/architecture/0008-secure-gitops-delivery.md) and [security examples](infrastructure/kubernetes/security/README.md).
+[![Preview the editable 25-slide PowerPoint](docs/presentations/preview.png)](KubeSentinel-AI-Presentation.pptx)
 
-## Phase 07 operations workspace
+**[Download editable PowerPoint](KubeSentinel-AI-Presentation.pptx)** · [View slides as PDF](docs/presentations/KubeSentinel-AI-Presentation.pdf) · **[Download technical report](KubeSentinel-AI-Technical-Report.pdf)**
 
-The dashboard now has twelve functional sections, a canvas-neutral cluster overview, workload gallery, telemetry charts, incident and recovery inspection, version-fenced decisions, audit, cost scenarios and saved preferences. Real API data is the default; synthetic fixtures require explicit enablement. The previous greeting demo is at `/status`.
+The presentation includes speaker notes and editable charts. The report covers architecture, implementation, safety, experiments, costs and limitations. [Reproducible documentation sources](docs/portfolio/README.md) include chart inputs and SHA-256 provenance.
 
-Follow the [operations setup guide](docs/runbooks/operations-dashboard.md) for Windows/Linux/macOS, OIDC or explicit trusted-local authentication, PostgreSQL/Redis, real Kubernetes collection and approval-key setup. See the [architecture](docs/architecture/0007-operations-read-model.md), [data flow](docs/diagrams/operations-dashboard.mmd) and [validation record](docs/reports/phase-07-validation.md) for evidence and limits. No AWS deployment is implied.
+## What works, and what remains
 
-![Operations dashboard, explicitly synthetic demo](docs/screenshots/phase-07/desktop.png)
+| Capability | State | Evidence / limit |
+| --- | --- | --- |
+| Next.js, FastAPI, PostgreSQL, Redis | Implemented locally / CI | [Development guide](docs/development-guide.md); health, readiness, migrations and durable greeting queue |
+| Operations workspace, scoped API, audit and live updates | Implemented locally / CI | [Operations guide](docs/runbooks/operations-dashboard.md); twelve sections, real mode default, explicit synthetic partition |
+| kind, Helm, probes, RBAC and isolation | Implemented / CI tested | [Local Kubernetes](docs/runbooks/local-kubernetes.md); check current CI before promotion |
+| Prometheus, Loki, OTel, Grafana, incident ingestion | Implemented / CI tested | [Observability](docs/runbooks/observability.md); environment sizing and HA remain open |
+| Rules, robust statistics, Isolation Forest | Experimental | [Model card](ml/models/model-card.md); small synthetic evaluation, uncalibrated scores |
+| Policy-driven recovery controller | Implemented in isolated lab | [Operator guide](docs/runbooks/recovery-operator.md); dry-run default, signed approval, bounded actions and verification |
+| Correlation and runbook retrieval | Experimental | [AIOps guide](docs/runbooks/aiops-investigation.md); synthetic contracts; no remote LLM |
+| Supply-chain checks and GitOps source | Implemented; delivery gated | [Secure delivery](docs/runbooks/secure-delivery.md); vulnerabilities block release; no live ECR/Argo promotion |
+| Load and resilience tooling | Partial evidence | [Resilience](docs/runbooks/resilience.md); health-only load results; broader chaos/scaling pending |
+| AWS EKS Terraform | Validated source; undeployed | [AWS guide](docs/runbooks/aws-eks.md); paid resources require authorization |
+| Production certification, real-label ML, HA/DR, multi-cluster | Planned | [Roadmap](docs/roadmap.md) and release gates |
 
-## Start here
+## Architecture
 
-- [System architecture and technology choices](docs/architecture/system-overview.md)
-- [C4 diagrams and data flows](docs/diagrams/README.md)
-- [Development guide: Windows and Linux/macOS](docs/development-guide.md)
-- [Roadmap and phase acceptance gates](docs/roadmap.md)
-- [Threat model](docs/security/threat-model.md)
-- [AWS cost considerations](docs/costs/aws-cost-considerations.md)
-- [Architecture decisions](docs/architecture/README.md)
-- [Validation results and blockers](docs/validation.md)
+```mermaid
+flowchart LR
+  User[Operator / approver] --> Web[Next.js dashboard]
+  Web --> API[FastAPI: auth, scope, audit]
+  Cluster[Kubernetes telemetry] --> Ingest[Normalize and correlate]
+  Ingest --> API
+  Ingest --> Detect[Advisory rules / ML]
+  API --> SQL[(PostgreSQL)]
+  API --> Redis[(Redis)]
+  API --> Monitoring[Prometheus / Loki]
+  API --> Plan[Policy + signed approval]
+  Plan --> Operator[Scoped Go operator]
+  Operator --> Verify[Apply, verify, undo or escalate]
+  Verify --> Cluster
+```
 
-## Planned platform
+The browser receives no Kubernetes credentials. The operator independently checks scope, workload identity, approval and safety constraints. ML/LLM output cannot directly execute changes. [C4 sources](docs/diagrams/README.md), [system design](docs/architecture/system-overview.md), [recovery architecture](docs/architecture/recovery-operator.md) and [threat model](docs/security/threat-model.md) explain the boundaries. Terraform owns cloud prerequisites; Argo CD owns reviewed application configuration.
 
-Next.js/TypeScript/Tailwind dashboard; FastAPI backend; OIDC authentication and scoped authorization; telemetry ingestion; PostgreSQL for incidents/policies/audit; Redis for transient coordination; Prometheus and a log store for observability; anomaly detection and incident correlation; a default-deny remediation policy engine; a least-privilege Kubernetes operator; notifications; optional evidence-grounded AI assistance; and a separately authorized AWS EKS deployment managed through Terraform, Helm, and Argo CD.
+## Quickstart: local vertical slice
 
-The larger platform is a target design. Implemented local components are listed above; alternatives, trust boundaries, and deployment stages are documented in the system overview.
-
-## Repository layout
-
-| Directory | Responsibility |
-| --- | --- |
-| `apps/` | Running dashboard/API and worker; future isolated fault workload |
-| `services/` | Advisory anomaly detector and responsibility notes for future domain services |
-| `operator/` | Guarded Go recovery controller, typed CRDs, approval CLI, safety tests and isolated lab |
-| `ml/` | Dataset governance, features, training, evaluation, model lineage |
-| `infrastructure/` | Local Kubernetes/Helm, observability stack and undeployed AWS Terraform source |
-| `docs/` | Audit, C4 architecture, ADRs, roadmap, development, security, costs, validation |
-| `scripts/` | Foundation validation tooling and future development automation |
-| `tests/` | Application, migration, feature, model and integration tests |
-| `.github/` | Application, Kubernetes, Terraform, observability and ML checks |
-
-Responsibility notes identify future components without empty placeholder files. No cloud manifests or fabricated report/presentation binaries are included.
-
-## Run locally
-
-Phase 03 adds [AWS EKS Terraform infrastructure code](infrastructure/terraform/README.md): networking, EKS, IAM/Pod Identity, ECR, logging and optional existing-LB DNS modules, dev/demo profiles and separate encrypted state bootstrap. **No AWS resources are deployed and no live plan/apply/destroy has been run.** See the [operator gates](docs/runbooks/aws-eks.md), [cost assumptions](docs/costs/eks-estimate.md) and [validation record](docs/reports/phase-03-validation.md).
-
-For kind and Helm orchestration, see the [local Kubernetes guide](docs/runbooks/local-kubernetes.md). Phase 02 adds scoped bootstrap/build/scan/cleanup scripts, chart profiles and deployment tests. Linux CI verified fresh-cluster deployment and smoke tests; Windows Docker remains unavailable locally. Image scans contain HIGH/CRITICAL findings; see the [validation and security follow-up](docs/reports/phase-02-validation.md) before promotion. Animated SVG banners use local assets and offer a static treatment for reduced-motion preferences where supported.
-
-Install Docker Engine + Compose v2 (Linux) or Docker Desktop using **Linux containers** (Windows/macOS). From the repository root:
+Install Docker Engine + Compose v2 on Linux, or Docker Desktop using **Linux containers** on Windows/macOS. No AWS account is required.
 
 ```sh
-# Linux/macOS
+# Linux/macOS, from the repository root
 cp .env.example .env
 docker compose up --build --wait --wait-timeout 180
 python3 scripts/setup/smoke.py
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell, from the repository root
 Copy-Item .env.example .env
 docker compose up --build --wait --wait-timeout 180
 py -3.12 scripts/setup/smoke.py
 ```
 
-Open [legacy greeting/status](http://localhost:3000/status), [health](http://localhost:8000/api/v1/health), [readiness](http://localhost:8000/api/v1/ready), or [OpenAPI docs](http://localhost:8000/docs). Queue a greeting on `/status`; the worker completes it and the result persists in PostgreSQL. The one-shot migrator must complete before the API and worker start. Containers publish only loopback ports. This unauthenticated demo is for trusted local development, not public exposure.
+Open [status and greeting demo](http://localhost:3000/status), [health](http://localhost:8000/api/v1/health), [readiness](http://localhost:8000/api/v1/ready) and [OpenAPI](http://localhost:8000/docs). The migrator must finish before API/worker startup. Ports bind to loopback. This unauthenticated greeting slice is for trusted local development.
 
-See the [development guide](docs/development-guide.md) for native hot reload, Compose hot reload, all configuration, API examples, database tests, cleanup, and troubleshooting. Commands are provided for Windows and Linux/macOS. The [service diagram](docs/diagrams/local-services.mmd) shows actual local dependencies.
+For the **full operations dashboard at `/`**, follow the [Windows/Linux/macOS operations setup](docs/runbooks/operations-dashboard.md). It generates local credentials/signing material, configures the Compose overlay and explains OIDC, real collection and optional labeled demo seeding. A fresh real installation stays empty until telemetry is collected. The documented native launcher uses port 4317 to avoid common Windows port conflicts.
 
-## Verify
+[Native/hot-reload setup](docs/development-guide.md) · [kind and Helm deployment](docs/runbooks/local-kubernetes.md) · [Helm values](infrastructure/helm/kubesentinel/values.yaml) · [AWS and teardown gates](docs/runbooks/aws-eks.md)
 
-Use Node **24.14.1**, npm **11.11.0**, Python **3.12** (project supports 3.12-3.14; local validation uses 3.12), and uv **0.13.6**. Application and tooling versions are explicit; npm/uv lockfiles pin transitive dependencies.
+## Actual application screenshot
+
+![Actual browser capture of the dashboard in explicitly synthetic demo mode](docs/portfolio/figures/dashboard-crop.png)
+
+This actual application capture comes from the [Phase 07 browser run](docs/reports/phase-07/browser-results.json), with **synthetic demo telemetry** visibly labeled. It is not production data. [Desktop](docs/screenshots/phase-07/desktop.png), [tablet](docs/screenshots/phase-07/tablet.png), [mobile](docs/screenshots/phase-07/mobile.png) and [monitoring screenshots with provenance](docs/screenshots/observability/README.md) are available.
+
+## Evidence and benchmarks
+
+| Experiment | Recorded result | Interpretation |
+| --- | --- | --- |
+| [Detector evaluation](docs/reports/phase-05/evaluation.json) | 177 synthetic held-out windows, two incidents; rules P/R 1.00/1.00; forest 0.667/0.90 | Tiny generated distribution; no production accuracy estimate |
+| [Isolated kind recovery](docs/reports/phase-06/all-actions.json) | Eight action records: two succeeded, four rejected, one dry-run, one rolled back | Safety outcomes; not eight independent recovery trials |
+| [Approved scale](docs/reports/phase-06/approved-scale.json) | 10 s observation-to-apply; 36 s verification | One sample, including human approval/polling; no SLA or native baseline |
+| [Loopback health load](docs/benchmarks/phase-09/loopback/summary.json) | 900 requests, concurrency 1/4/8, three repetitions; trial p95 16.6–31.0 ms; zero sample errors | Windows HTTP health only; no DB/cluster capacity claim |
+| [Correlation/retrieval](docs/reports/phase-10/results.json) | Eight synthetic incidents, 12 expected directed links, 8/8 retrieval matches | Contract evaluation; no real-world root-cause accuracy claim |
+
+![Measured health-only load trials without database or cluster](docs/portfolio/figures/load.png)
+
+CPU/memory overhead, repeated native-versus-KubeSentinel recovery, full-stack saturation and HPA curves are **planned experiments**, with no invented values. [Cost scenarios](docs/costs/eks-estimate.md) use rounded assumptions, exclude major services, and are not current AWS quotes.
+
+## Validate and contribute
+
+Toolchain: Node **24.14.1**, npm **11.11.0**, Python **3.12**, uv **0.13.6**. Explicit dependencies and transitive locks are committed. Go, Terraform, Helm and security tool pins live with their workflows/configuration.
 
 ```sh
 npm ci
-uv sync --frozen
+uv sync --frozen --extra ml --extra ops
 npm run lint
 npm run typecheck
 npm test
@@ -95,24 +114,26 @@ npm run build
 uv run ruff check .
 uv run ruff format --check .
 uv run mypy
-uv run pytest
+uv run pytest -m 'not postgres'
 npm run lint:docs
 npm run diagrams
 uv run python scripts/validate_repository.py
 ```
 
-Make targets: `setup`, `dev`, `test`, `lint`, `build`, `clean`, `health`, plus `check` and `migrate`. Make is optional on Windows; every underlying command is in the development guide. Migration tests require an explicitly disposable PostgreSQL database ending in `_test`; absent that configuration they skip visibly. See the [verification record](docs/validation.md) for exact results and blockers. No AWS resource is provisioned.
+Migration tests separately require a disposable PostgreSQL database ending in `_test`. Container, browser and cluster checks require documented dependencies; [validation results](docs/reports/phase-11-validation.md) distinguish current local checks from historical CI. Make targets include `setup`, `dev`, `test`, `lint`, `build`, `clean` and `health`; Make is optional on Windows.
 
-## Collaboration
+Read [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) and [CHANGELOG](CHANGELOG.md). Use reviewed feature branches and Conventional Commits. [Release notes and gates](docs/releases/v1.0.0-candidate.md) are prepared; no merge or release publication is authorized by this documentation change.
 
-Read [CONTRIBUTING](CONTRIBUTING.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [SECURITY](SECURITY.md), and [CHANGELOG](CHANGELOG.md). Branch from `main` using `feat/`, `fix/`, `docs/`, `chore/`, or `ci/` and use Conventional Commits. Preserve [LICENSE](LICENSE) and existing Git ancestry.
+## Repository map and license
+
+| Path | Responsibility |
+| --- | --- |
+| `apps/`, `services/` | Dashboard, API, worker, demo workload and advisory detector |
+| `operator/` | Go reconciliation, CRDs, scoped RBAC and recovery lab |
+| `ml/` | Features, training, evaluation, metadata and model limitations |
+| `infrastructure/` | kind/Helm, monitoring, GitOps, admission examples and undeployed Terraform |
+| `docs/`, `scripts/`, `tests/`, `.github/` | Architecture, runbooks, portfolio sources, automation and validation |
+
+The repository was renamed to **KubeSentinel-AI** with its original history and [Apache 2.0 LICENSE](LICENSE) preserved. See the [initial audit](docs/repository-audit.md). Thanks to the Kubernetes/CNCF, Python, Go and React/Next.js communities and tool maintainers. Third-party components retain their own licenses.
 
 ![Animated Kubernetes engineering footer](docs/assets/footer.svg)
-
-## Phase 09 resilience work
-
-Queue backpressure, bounded database pools, an ordered queue index, stabilized API HPA and safe loopback benchmarking are implemented. [Resilience instructions and measured limits](docs/runbooks/resilience.md) include k6 suites and explicitly gated disposable-cluster fault scripts. The committed 900-request health benchmark does not measure database/cluster capacity. Destructive chaos, recovery comparisons and production SLO acceptance remain unverified; Phase 08 vulnerability gates still block releases.
-
-## Phase 10 incident intelligence
-
-Authenticated read-only intelligence correlates exact workload/time-window evidence, ranks explicitly uncertain investigation hypotheses and cites a fixed internal runbook catalog. Operator feedback is persisted/audited separately from recovery approval. The API uses a deterministic local fallback with no remote LLM spend or privileged actions. [Architecture, API and limitations](docs/architecture/0010-aiops-intelligence.md) and [synthetic evaluation](docs/reports/phase-10/results.json) distinguish fixture results from unmeasured real-world accuracy. Raw logs/live metric series, remote LLMs and multi-cluster grouping are not implemented by this engine.

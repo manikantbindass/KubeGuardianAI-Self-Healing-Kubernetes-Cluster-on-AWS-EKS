@@ -42,11 +42,19 @@ jobs:
           kubectl --context kind-kubesentinel -n kubesentinel port-forward service/sentinel-api 8100:8000 > /tmp/api.log 2>&1 &
           sleep 5
           python scripts/setup/smoke.py --dashboard http://127.0.0.1:3100 --api http://127.0.0.1:8100
+      - name: Capture non-secret deployment evidence
+        if: always()
+        run: |
+          mkdir -p .cache
+          kubectl --context kind-kubesentinel -n kubesentinel get pods,deployments,services > .cache/kind-status.log
+          kubectl --context kind-kubesentinel -n kubesentinel get events --field-selector type=Warning > .cache/kind-warnings.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: kubernetes-validation
-          path: .cache/*.json
+          path: |
+            .cache/kind-*.log
+            .cache/*.yaml
           include-hidden-files: true
           if-no-files-found: error
       - name: Diagnostics

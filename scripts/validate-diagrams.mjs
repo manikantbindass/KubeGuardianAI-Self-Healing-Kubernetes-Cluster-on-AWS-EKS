@@ -12,4 +12,9 @@ for (const file of await readdir("docs/diagrams")) {
   console.log(`PASS ${file}`);
   count++;
 }
+for (const match of (await readFile("README.md", "utf8")).matchAll(/```mermaid\s*\n([\s\S]*?)```/g)) {
+  await mermaid.parse(match[1]);
+  console.log("PASS README.md inline Mermaid");
+  count++;
+}
 if (!count) throw new Error("No Mermaid sources found");

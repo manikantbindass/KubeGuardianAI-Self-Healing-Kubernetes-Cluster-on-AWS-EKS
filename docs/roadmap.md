@@ -1,5 +1,13 @@
 # Development roadmap
 
+## Current portfolio handoff: requested Phases 00-11
+
+The original milestone table is preserved below. User-directed phases subsequently delivered local full-stack services, kind/Helm packaging, undeployed EKS Terraform, telemetry ingestion, synthetic ML evaluation, guarded recovery, the operations dashboard, secure-delivery source, partial resilience tooling and bounded incident intelligence. These are separate evidence scopes rather than a claim that every original production milestone is complete.
+
+Phase 11 adds [editable presentation and report sources](portfolio/README.md), root deliverables, an updated README and a [blocked release checklist](releases/v1.0.0-candidate.md). The [dated validation matrix](reports/phase-11-validation.md) is the current handoff. Package versions remain 0.1.0; no v1.0.0 publication or AWS deployment is claimed.
+
+Next gates, in order: remediate vulnerability findings; pass final-commit CI; measure full-stack load and repeated isolated recovery; certify live staging OIDC; rehearse protected digest promotion; obtain cost approval before an EKS demonstration; prove teardown and backup restore. Real-label evaluation, long-running SLO evidence, HA and multi-cluster work remain future milestones.
+
 ## Executed request sequence
 
 Phase 07 adds the authenticated operations dashboard and scoped read/decision transport. The [validation record](reports/phase-07-validation.md) separates browser-preview evidence from PostgreSQL/Redis/kind acceptance. Next production gates include live OIDC certification, per-user namespace grants, audit retention/immutable export, broader workload scaling and independent labeled detection evaluation.

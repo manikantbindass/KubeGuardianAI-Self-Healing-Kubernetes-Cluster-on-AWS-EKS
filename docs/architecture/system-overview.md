@@ -37,7 +37,7 @@ A C4 container is a process/store boundary, not a promise of one Docker service 
 | Infrastructure | Terraform modules/environments, EKS, private worker networking, managed PostgreSQL/Redis options, workload identity | Local kind first; k3d alternative; CDK/Pulumi if team skills justify a different IaC ADR |
 | GitOps / CI | GitHub Actions validates/builds; Helm packages; Argo CD reconciles reviewed image digests | Flux for a smaller GitOps controller; Actions must not hold long-lived cluster-admin credentials |
 
-Node 24 and Python 3.12 are the Phase 01 toolchains, with explicit application pins and npm/uv locks. Compose pins PostgreSQL 17.10 and Redis 8.2.2 images. Go/operator, collectors, charts, Terraform/providers, and models require version selection before implementation. Redis licensing and managed offerings require deployment-specific review; no blanket licensing claim is made here.
+Node 24 and Python 3.12 are the application toolchains, with explicit pins and npm/uv locks. Compose pins PostgreSQL 17.10 and Redis 8.2.2 images. Later phases pin Go/operator modules, collector/chart versions, Terraform/providers and model metadata alongside their implementations and workflows. Redis licensing and managed offerings require deployment-specific review; no blanket licensing claim is made here.
 
 ## Data flow
 

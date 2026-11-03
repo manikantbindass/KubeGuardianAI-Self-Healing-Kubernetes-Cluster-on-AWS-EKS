@@ -39,7 +39,7 @@ jobs:
           status=0
           for root in bootstrap environments/dev environments/demo; do
             name=$(echo "$root" | tr / -)
-            /tmp/trivy config --severity HIGH,CRITICAL --exit-code 1 --tf-vars "infrastructure/terraform/$root/terraform.tfvars.example" --format json --output .cache/terraform/$name.json infrastructure/terraform/$root || status=1
+            /tmp/trivy config --severity HIGH,CRITICAL --exit-code 1 --tf-vars "infrastructure/terraform/$root/terraform.tfvars.example" --format json --output ".cache/terraform/$name.json" "infrastructure/terraform/$root" || status=1
           done
           exit "$status"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
