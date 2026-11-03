@@ -1,0 +1,117 @@
+{
+  "source_commit": "024ee9c6cd31e154e2d906e687ac7ae523a9252c",
+  "checks": [
+    {
+      "completedAt": "2026-11-03T09:02:01Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540680/job/125821147776",
+      "name": "migrations",
+      "state": "SUCCESS",
+      "workflow": "Foundation checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:43Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540680/job/125821147436",
+      "name": "api (ubuntu-latest)",
+      "state": "SUCCESS",
+      "workflow": "Foundation checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:03:53Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540680/job/125821147651",
+      "name": "containers",
+      "state": "SUCCESS",
+      "workflow": "Foundation checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:51Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540680/job/125821147641",
+      "name": "api (windows-latest)",
+      "state": "SUCCESS",
+      "workflow": "Foundation checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:09:51Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540369/job/125821027866",
+      "name": "telemetry",
+      "state": "SUCCESS",
+      "workflow": "Observability acceptance"
+    },
+    {
+      "completedAt": "2026-11-03T09:02:06Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540680/job/125821147675",
+      "name": "dashboard",
+      "state": "SUCCESS",
+      "workflow": "Foundation checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:42Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540520/job/125821028847",
+      "name": "go-checks (ubuntu-latest)",
+      "state": "SUCCESS",
+      "workflow": "Recovery operator"
+    },
+    {
+      "completedAt": "2026-11-03T09:02:48Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540520/job/125821028774",
+      "name": "go-checks (windows-latest)",
+      "state": "SUCCESS",
+      "workflow": "Recovery operator"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:23Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540498/job/125821030462",
+      "name": "reproducibility (ubuntu-latest)",
+      "state": "SUCCESS",
+      "workflow": "Anomaly detection"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:28Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540498/job/125821030012",
+      "name": "reproducibility (windows-latest)",
+      "state": "SUCCESS",
+      "workflow": "Anomaly detection"
+    },
+    {
+      "completedAt": "2026-11-03T09:02:52Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540612/job/125821029497",
+      "name": "browser",
+      "state": "SUCCESS",
+      "workflow": "Operations dashboard"
+    },
+    {
+      "completedAt": "2026-11-03T09:07:50Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540612/job/125821029121",
+      "name": "cluster",
+      "state": "SUCCESS",
+      "workflow": "Operations dashboard"
+    },
+    {
+      "completedAt": "2026-11-03T09:09:08Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540520/job/125821028984",
+      "name": "isolated-recovery",
+      "state": "SUCCESS",
+      "workflow": "Recovery operator"
+    },
+    {
+      "completedAt": "2026-11-03T09:02:42Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540498/job/125821030525",
+      "name": "detector-container",
+      "state": "SUCCESS",
+      "workflow": "Anomaly detection"
+    },
+    {
+      "completedAt": "2026-11-03T09:01:15Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540460/job/125821028050",
+      "name": "validate",
+      "state": "SUCCESS",
+      "workflow": "Terraform static checks"
+    },
+    {
+      "completedAt": "2026-11-03T09:05:38Z",
+      "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540685/job/125821029466",
+      "name": "kind",
+      "state": "SUCCESS",
+      "workflow": "Local Kubernetes"
+    }
+  ]
+}
