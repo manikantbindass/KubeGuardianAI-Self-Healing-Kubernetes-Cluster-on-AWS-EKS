@@ -132,3 +132,11 @@ func TestVerificationCannotDeclareSuccessWithBadSLIs(t *testing.T) {
 		}
 	}
 }
+
+func TestFixedScenarioActionsKeepPressureAndLatencyAlertOnly(t *testing.T) {
+	for incident, want := range map[v1.IncidentType]v1.ActionKind{"CrashLoopBackOff": "Rollback", "OOMKilled": "Rollback", "ReadinessProbeFailure": "Restart", "StuckRollout": "Rollback", "ExcessiveRestarts": "Restart", "ReplicaShortage": "Scale", "SustainedPressure": "Escalate", "LatencyDegradation": "Escalate"} {
+		if got := KindFor(incident); got != want {
+			t.Fatalf("%s got %s want %s", incident, got, want)
+		}
+	}
+}

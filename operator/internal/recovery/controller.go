@@ -177,17 +177,17 @@ func (r *Reconciler) advance(ctx context.Context, d *apps.Deployment, a *v1.Reme
 	if !r.Execute || p.Spec.DryRun {
 		return r.audit(ctx, a, "DryRun", "NoMutationAuthorized")
 	}
-	if NeedsApproval(p.Spec, a.Spec) && !r.approval(ctx, a) {
-		if phase != "AwaitingApproval" {
-			return r.audit(ctx, a, "AwaitingApproval", "SignedPlanApprovalRequired")
-		}
-		return nil
-	}
 	if a.Spec.Kind == "Rollback" && a.Spec.RevisionName == "" {
 		return r.audit(ctx, a, "Escalated", "NoVerifiedPreviousRevision:"+p.Spec.EscalationDestination)
 	}
 	if a.Spec.RollbackEnabled && a.Spec.BeforeRevision == "" {
 		return r.audit(ctx, a, "Rejected", "NoVerifiedUndoSnapshot")
+	}
+	if NeedsApproval(p.Spec, a.Spec) && !r.approval(ctx, a) {
+		if phase != "AwaitingApproval" {
+			return r.audit(ctx, a, "AwaitingApproval", "SignedPlanApprovalRequired")
+		}
+		return nil
 	}
 	before, err := r.Prober.Probe(ctx, d, p.Spec.Verification)
 	if err != nil {
@@ -224,6 +224,7 @@ func (r *Reconciler) advance(ctx context.Context, d *apps.Deployment, a *v1.Reme
 		if err != nil {
 			return r.audit(ctx, a, "Rejected", "InvalidVerifiedRevision")
 		}
+		*template = core.PodTemplateSpec{}
 		if err := json.Unmarshal(revision.Spec.Template.Raw, template); err != nil {
 			return err
 		}
@@ -312,6 +313,7 @@ func (r *Reconciler) resume(ctx context.Context, d *apps.Deployment, p *v1.Remed
 			revision, err := r.revision(ctx, a.Spec.BeforeRevision, d, p)
 			if err == nil {
 				template := d.Spec.Template.DeepCopy()
+				*template = core.PodTemplateSpec{}
 				if err := json.Unmarshal(revision.Spec.Template.Raw, template); err != nil {
 					return err
 				}

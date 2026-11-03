@@ -149,6 +149,21 @@ func TestUncertainIntentAndVerificationFailureHold(t *testing.T) {
 	if !a.Status.Hold || a.Status.Phase != "Escalated" {
 		t.Fatal("verification failure claimed success")
 	}
+	a.Status.Phase = "VerifyingRollback"
+	a.Status.Hold = false
+	d.Annotations[ActionMarker] = string(a.UID) + ":VerifyingRollback"
+	if err := r.Client.Update(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	if err := r.Client.Status().Update(context.Background(), a); err != nil {
+		t.Fatal(err)
+	}
+	if err := r.resume(context.Background(), d, p, a); err != nil {
+		t.Fatal(err)
+	}
+	if a.Status.Phase != "Escalated" || !a.Status.Hold {
+		t.Fatal("failed undo did not escalate and hold")
+	}
 }
 
 func TestProtectedAndUnlistedWorkloadsDoNothing(t *testing.T) {
@@ -181,6 +196,7 @@ func TestVerifiedSnapshotAndBudgetedUndo(t *testing.T) {
 		t.Fatal("healthy template was not certified", err)
 	}
 	d.Spec.Template.Spec.Containers[0].Image = "demo:broken"
+	d.Spec.Template.Annotations = map[string]string{"broken-only": "must-not-survive-rollback"}
 	d.Generation++
 	_ = r.Client.Update(ctx, d)
 	i := v1.Incident{ID: "fault", Type: "ReadinessProbeFailure", Source: "kubernetes", Severity: "warning", ObservedAt: metav1.NewTime(r.Now())}
@@ -201,6 +217,9 @@ func TestVerifiedSnapshotAndBudgetedUndo(t *testing.T) {
 	_ = r.Client.Get(ctx, client.ObjectKeyFromObject(d), d)
 	if d.Spec.Template.Spec.Containers[0].Image != "demo:v1" {
 		t.Fatal("wrong rollback template")
+	}
+	if len(d.Spec.Template.Annotations) != 0 {
+		t.Fatal("rollback merged stale fields instead of restoring exact verified template")
 	}
 	d.Status.ObservedGeneration = d.Generation
 	if err := r.Client.Status().Update(ctx, d); err != nil {
