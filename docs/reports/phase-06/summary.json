@@ -1,0 +1,8 @@
+{
+  "context": "kind-kubesentinel-recovery",
+  "namespace": "sentinel-lab",
+  "result": "passed",
+  "action_records": 8,
+  "aws_resources": false,
+  "scope": "native faults, signed approvals, verification, undo, RBAC and rejection"
+}

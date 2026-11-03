@@ -6,7 +6,7 @@ Local full-stack foundation for a planned AI-powered, safely self-healing Kubern
 
 **Current status: Phase 06 guarded local recovery in development.** This branch includes the dashboard/API/worker, Compose and kind/Helm definitions, AWS Terraform source, observability/incident ingestion, causal features and rules/statistical/Isolation Forest scoring. The ML evaluation uses explicitly **synthetic** telemetry and does not establish real-cluster accuracy. Rules remain the detector default; no model executes remediation. See the [Phase 05 guide](docs/runbooks/anomaly-detection.md), [model card](ml/models/model-card.md) and [ML verification](docs/reports/phase-05-validation.md). The separately scoped recovery operator is described below. Production identity and promotion remain future work. AWS infrastructure has **not** been deployed.
 
-**Phase 06 adds an isolated, policy-driven recovery operator under validation.** It defaults to dry-run, scopes execution to named opted-in Deployments, requires signed approvals for risky actions, and verifies recovery before success. No ML/LLM output can directly execute actions. See the [operator guide](docs/runbooks/recovery-operator.md), [safety architecture](docs/architecture/recovery-operator.md) and [actual validation status](docs/reports/phase-06-validation.md). This is not production authorization or an AWS deployment.
+**Phase 06 adds an isolated, policy-driven recovery operator verified in Linux kind CI.** It defaults to dry-run, scopes execution to named opted-in Deployments, requires signed approvals for risky actions, and verifies recovery before success. Actual fault tests passed approved rollback, bounded scale-up, verified undo and safety rejection. No ML/LLM output can directly execute actions. See the [operator guide](docs/runbooks/recovery-operator.md), [safety architecture](docs/architecture/recovery-operator.md) and [actual validation status](docs/reports/phase-06-validation.md). This is not production authorization or an AWS deployment.
 
 The repository is now [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI). The original Apache 2.0 license and Git history are preserved. See the [repository audit](docs/repository-audit.md).
 
@@ -33,7 +33,7 @@ The larger platform is a target design. Implemented local components are listed 
 | --- | --- |
 | `apps/` | Running dashboard/API and worker; future isolated fault workload |
 | `services/` | Advisory anomaly detector and responsibility notes for future domain services |
-| `operator/` | Future controllers, policy integration, CRDs, reconciliation |
+| `operator/` | Guarded Go recovery controller, typed CRDs, approval CLI, safety tests and isolated lab |
 | `ml/` | Dataset governance, features, training, evaluation, model lineage |
 | `infrastructure/` | Local Kubernetes/Helm, observability stack and undeployed AWS Terraform source |
 | `docs/` | Audit, C4 architecture, ADRs, roadmap, development, security, costs, validation |

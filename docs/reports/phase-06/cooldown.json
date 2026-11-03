@@ -1,0 +1,56 @@
+{
+  "apiVersion": "recovery.kubesentinel.ai/v1alpha1",
+  "kind": "RemediationAction",
+  "metadata": {
+    "creationTimestamp": "2026-11-03T02:47:26Z",
+    "generation": 1,
+    "name": "recovery-14f7aae022c118a38d23fc6076fa39f0",
+    "namespace": "sentinel-lab",
+    "resourceVersion": "1476",
+    "uid": "ca7339e4-b056-4494-aedc-861917795cbf"
+  },
+  "spec": {
+    "beforeRevision": "verified-6d752857405d8853f88c7a246347af3a",
+    "budgetCost": 1,
+    "expiresAt": "2026-11-03T02:52:26Z",
+    "incident": {
+      "id": "267222e23d4b4134f1cdd056e7651102c5870061e74cbf682c39ea5cbc9ac1db",
+      "observedAt": "2026-11-03T02:47:26Z",
+      "severity": "critical",
+      "source": "kubernetes",
+      "type": "CrashLoopBackOff"
+    },
+    "kind": "Rollback",
+    "policyName": "lab-safe",
+    "policyUID": "dca6e28a-b1ec-47fe-bf4a-5c508840aeaa",
+    "policyVersion": "1384",
+    "revisionName": "verified-6d752857405d8853f88c7a246347af3a",
+    "rollbackEnabled": false,
+    "target": {
+      "generation": 9,
+      "name": "demo-recovery",
+      "replicas": 2,
+      "templateDigest": "a5ce10ae3719c79151e4a32916c0c2eab412d475dd77c0ca5874acfe17b821ea",
+      "uid": "1dec9f2d-70d6-42bc-9941-a895bb615ca5"
+    }
+  },
+  "status": {
+    "audit": [
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:47:26Z",
+        "reason": "NativeIncidentDetected",
+        "state": "Observing"
+      },
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:47:31Z",
+        "reason": "CooldownActive",
+        "state": "Rejected"
+      }
+    ],
+    "completedAt": "2026-11-03T02:47:31Z",
+    "phase": "Rejected",
+    "reason": "CooldownActive"
+  }
+}
