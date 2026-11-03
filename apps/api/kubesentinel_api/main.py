@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from kubesentinel_api import __version__
+from kubesentinel_api.anomalies import router as anomaly_router
 from kubesentinel_api.config import get_settings
 from kubesentinel_api.database import get_db, get_redis
 from kubesentinel_api.instrumentation import (
@@ -148,7 +149,7 @@ def ready(db: Db, cache: Cache, response: Response) -> Readiness:
     try:
         db.execute(text("SELECT 1 FROM greeting_jobs LIMIT 1"))
         revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        dependencies["postgresql"] = "ok" if revision == "0002_incidents" else "unavailable"
+        dependencies["postgresql"] = "ok" if revision == "0003_anomaly_evidence" else "unavailable"
     except SQLAlchemyError:
         dependencies["postgresql"] = "unavailable"
     try:
@@ -204,6 +205,7 @@ def get_job(job_id: uuid.UUID, db: Db, cache: Cache) -> GreetingOutput:
 
 app.include_router(router)
 app.include_router(telemetry_router)
+app.include_router(anomaly_router)
 
 
 @app.get("/metrics", include_in_schema=False)

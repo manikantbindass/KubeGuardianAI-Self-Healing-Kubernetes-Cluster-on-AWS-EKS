@@ -20,12 +20,15 @@ dependencies = [
 [dependency-groups]
 dev = ["httpx2==2.16.0", "pytest==9.2.0", "ruff==0.17.3", "mypy==2.4.1"]
 
+[project.optional-dependencies]
+ml = ["numpy==2.5.4", "scikit-learn==1.9.1", "matplotlib==3.11.2"]
+
 [tool.uv]
 package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit", "tests/integration"]
-pythonpath = ["apps/api"]
+pythonpath = ["apps/api", "ml", "services/anomaly-detector"]
 addopts = "-ra --strict-markers"
 markers = ["postgres: requires TEST_DATABASE_URL pointing at a disposable PostgreSQL database"]
 
@@ -39,7 +42,11 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["apps/api/kubesentinel_api", "scripts", "tests"]
+files = ["apps/api/kubesentinel_api", "scripts", "tests", "ml/kubesentinel_ml", "services/anomaly-detector/kubesentinel_detector"]
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*", "numpy.*", "matplotlib.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["redis.*"]

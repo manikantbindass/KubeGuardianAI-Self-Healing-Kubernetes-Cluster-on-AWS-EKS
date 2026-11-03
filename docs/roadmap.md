@@ -1,5 +1,11 @@
 # Development roadmap
 
+## Executed request sequence
+
+The current implementation requests use: 00 repository architecture, 01 full-stack foundation, 02 local Kubernetes, 03 AWS infrastructure code, 04 full-stack observability, and **05 advisory anomaly detection**. The historical milestone table below is retained as design history; its older phase numbers are not the current execution sequence.
+
+Phase 05 delivers feature windows, baseline/statistical/Isolation Forest scoring, reproducible synthetic evaluation, a bounded advisory service and incident evidence. See its [acceptance record](reports/phase-05-validation.md) and [model card](../ml/models/model-card.md). Its synthetic ML results do not justify replacing rules or enabling remediation. Next gates are independently labeled real-workload validation, identity/tenant controls, durable incident lifecycle and separately authorized policy/operator work. No live AWS deployment or advanced sequence model is implied.
+
 The executed sequence is Phase 00 foundation, Phase 01 full-stack local runtime, Phase 02 kind/Helm orchestration and Phase 03 AWS infrastructure **code only**. The earlier feature milestones below retain their original planning labels; those labels do not imply that telemetry or identity shipped in the actual Phase 02/03 execution. Future feature ordering needs a separate implementation request. No performance results are promised.
 
 Phase 02 evidence is in its [validation record](reports/phase-02-validation.md). Phase 03 [static validation](reports/phase-03-validation.md) and [cost/operator gates](runbooks/aws-eks.md) do not authorize provisioning. The optional AWS pilot milestone below remains a future **live deployment**, distinct from the source code delivered now.

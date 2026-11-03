@@ -37,3 +37,17 @@ clean:
 check: lint typecheck test
 	$(UV) run python scripts/validate_repository.py
 	git diff --check
+
+.PHONY: ml-setup ml-data ml-train ml-evaluate ml-serve ml-test
+ml-setup:
+	$(UV) sync --frozen --extra ml
+ml-data:
+	$(UV) run --extra ml python scripts/ml.py generate
+ml-train:
+	$(UV) run --extra ml python scripts/ml.py train
+ml-evaluate:
+	$(UV) run --extra ml python scripts/ml.py evaluate --output .cache/ml/repeated
+ml-serve:
+	$(UV) run python scripts/serve_detector.py
+ml-test:
+	$(UV) run --extra ml pytest -m "not postgres"

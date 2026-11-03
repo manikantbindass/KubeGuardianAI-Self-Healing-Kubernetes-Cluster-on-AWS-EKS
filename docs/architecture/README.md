@@ -7,4 +7,5 @@ Accepted records describe the design baseline, not implemented functionality. Ne
 - [0003: Local-first delivery and cloud approval](0003-environments.md)
 - [0004: Phase 01 local runtime and durable greeting work](0004-phase-01-local-runtime.md)
 - [ADR template](adr-template.md)
+- [0005: Advisory models and portable artifacts](0005-advisory-ml.md)
 - [System overview](system-overview.md)

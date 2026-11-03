@@ -35,14 +35,16 @@ def test_postgres_migration_round_trip() -> None:
     try:
         migrate("upgrade", "head")
         assert "greeting_jobs" in inspect(engine).get_table_names()
+        assert "anomaly_evidence" in inspect(engine).get_table_names()
         with engine.connect() as connection:
             assert (
                 connection.scalar(text("SELECT version_num FROM alembic_version"))
-                == "0002_incidents"
+                == "0003_anomaly_evidence"
             )
         migrate("downgrade", "base")
         assert "greeting_jobs" not in inspect(engine).get_table_names()
         assert "incidents" not in inspect(engine).get_table_names()
+        assert "anomaly_evidence" not in inspect(engine).get_table_names()
         migrate("upgrade", "head")
         migrate("upgrade", "head")  # Restart must be harmless.
     finally:

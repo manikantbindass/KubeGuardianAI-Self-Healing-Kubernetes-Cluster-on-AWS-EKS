@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph Sources[Read-only telemetry boundary]
+      P[Prometheus metrics]
+      L[Loki log counts]
+      K[Kubernetes Warning snapshot]
+    end
+    P --> C[Bounded redacted export]
+    L --> C
+    K --> C
+    S[Explicit synthetic generator] --> D[Versioned JSONL with provenance]
+    C --> D
+    D --> F[UTC windows and causal features]
+    F --> T[Purged time and incident splits]
+    T --> Train[Train-only normalization and forest]
+    T --> V[Validation-only thresholds]
+    Train --> J[Checksummed JSON model]
+    V --> J
+    J --> E[Held-out evaluation vs rules]
+    F --> Q[Bounded scoring queue]
+    J --> Q
+    Q --> R[Scores, quality and explanations]
+    R --> Gate[Opt-in authenticated real-only delivery]
+    Gate --> A[API incidents and durable evidence]
+    R --> NoAction[Advisory only - no execution]

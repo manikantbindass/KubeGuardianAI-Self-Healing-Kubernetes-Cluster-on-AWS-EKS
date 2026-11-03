@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - Phase 05
+
+- Add redacted telemetry exports, provenance, bounded UTC windows, missing-data handling, physical caps and past-only lag/rolling features.
+- Add rules, robust MAD statistics, seeded Isolation Forest training, purged time/incident splits, validation-only threshold tuning and portable JSON model inference.
+- Add measured synthetic evaluation, baseline comparisons, model metadata/card, confusion/precision-recall plots and latency measurements. ML does not outperform rules on this fixture; rules remain the default.
+- Add bounded advisory scoring service, metadata/drift endpoints, rule fallback, optional Compose image and authenticated opt-in incident publishing. Synthetic data/models cannot publish live ML incidents.
+- Add migration 0003 for anomaly evidence, replay-safe incidents and cross-platform tests/CI. No cloud resources or remediation actions are created.
+
+## Unreleased - Phase 04
+
+- Add Prometheus/Grafana/Loki/OpenTelemetry/Alertmanager/KSM, API instrumentation, Kubernetes event collection, persistent incidents and dashboard incident queries.
+- Live acceptance evidence is recorded separately; definitions alone do not prove a complete successful cluster run.
+
 ## Unreleased - Phase 03
 
 - Add pinned Terraform/AWS provider configuration and Windows/Linux provider locks, reusable VPC/EKS/IAM/ECR/logging/Pod Identity/DNS modules, dev/demo profiles and separate S3/KMS state bootstrap.

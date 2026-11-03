@@ -1,0 +1,67 @@
+name: Anomaly detection
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reproducibility:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.13.6
+          enable-cache: true
+      - run: uv sync --frozen --extra ml
+      - run: uv run --extra ml mypy
+      - run: uv run --extra ml pytest -m "not postgres"
+      - run: uv run --extra ml python scripts/ml.py generate
+      - run: uv run --extra ml python scripts/ml.py train
+      - run: uv run --extra ml python scripts/ml.py evaluate --output .cache/ml/repeated
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ml-evaluation-${{ matrix.os }}
+          path: .cache/ml/evaluation
+          include-hidden-files: true
+  detector-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.13.6
+      - run: uv sync --frozen --extra ml
+      - run: uv run --extra ml python scripts/ml.py generate
+      - run: uv run --extra ml python scripts/ml.py train --no-plots
+      - run: docker compose -f docker-compose.yml -f docker-compose.ml.yml config --quiet
+      - run: docker compose -f docker-compose.yml -f docker-compose.ml.yml up --build --wait --wait-timeout 180
+      - run: python scripts/setup/smoke.py
+      - run: uv run python scripts/test_detector_http.py
+      - name: Verify rules after missing model restart
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ml.yml stop detector
+          mv .cache/ml/model.json .cache/ml/model.saved.json
+          docker compose -f docker-compose.yml -f docker-compose.ml.yml up --wait --wait-timeout 60 detector
+          uv run python scripts/test_detector_http.py --expected-mode rules_fallback --output .cache/ml/http-fallback.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detector-http-measurements
+          path: .cache/ml/http*.json
+          include-hidden-files: true
+      - if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ml.yml logs --no-color
+      - if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ml.yml down --volumes --remove-orphans

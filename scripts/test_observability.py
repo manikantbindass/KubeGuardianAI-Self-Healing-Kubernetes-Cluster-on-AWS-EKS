@@ -31,7 +31,8 @@ def request(url: str, payload: dict[str, Any] | None = None, method: str | None 
         url, data=data, method=method, headers={"Content-Type": "application/json"}
     )
     with urllib.request.urlopen(req, timeout=15) as response:
-        return json.load(response)
+        body = response.read()
+        return json.loads(body) if body else {}
 
 
 def wait_for(check: Any, description: str, timeout: int = 180) -> Any:
@@ -43,7 +44,7 @@ def wait_for(check: Any, description: str, timeout: int = 180) -> Any:
             if value:
                 print("PASS:", description, flush=True)
                 return value
-        except (OSError, ValueError, KeyError, AssertionError) as error:
+        except (OSError, ValueError, KeyError, IndexError, AssertionError) as error:
             last = type(error).__name__
         time.sleep(3)
     raise AssertionError(f"Timed out: {description} ({last})")

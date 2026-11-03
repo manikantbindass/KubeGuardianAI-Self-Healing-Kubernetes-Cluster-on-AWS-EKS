@@ -22,7 +22,7 @@ GitHub metadata and branch/ruleset observations came from the connected GitHub A
 
 ## Rename recommendation
 
-Rename to **KubeSentinel-AI** for alignment with the product name and to avoid implying that AWS EKS or self-healing is already delivered. No explicit rename authorization or admin access is available, so no remote rename is attempted.
+The initial recommendation was **KubeSentinel-AI** for alignment with the product name. On 2026-11-02 the owner explicitly authorized the rename, and it was completed through the authenticated administrator identity. Repository ID `1163558235`, the original LICENSE blob and Git ancestry were preserved; local `origin` now targets `https://github.com/manikantbindass/KubeSentinel-AI.git`. The description now identifies development scope and ML/self-healing as roadmap items. The procedure below is retained for future operator reference.
 
 An authorized administrator can follow [GitHub's repository rename instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository):
 

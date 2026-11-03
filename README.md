@@ -4,9 +4,9 @@
 
 Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
 
-**Current status: Phase 03 infrastructure code; tested local runtime from Phases 01–02.** Implemented locally: Next.js/TypeScript/Tailwind dashboard, TanStack Query, FastAPI/Pydantic, health/readiness/version APIs, SQLAlchemy/Alembic, PostgreSQL greeting jobs, Redis and a worker, Compose and kind/Helm orchestration. Modular AWS EKS Terraform source now validates but has **not** been deployed. Authentication, cluster telemetry, anomaly detection and remediation remain future work. Exact verification and release blockers are documented below.
+**Current status: Phase 05 advisory anomaly detection in development.** This branch includes the dashboard/API/worker, Compose and kind/Helm definitions, AWS Terraform source, observability and incident ingestion, plus causal features, rules, robust statistics and Isolation Forest. The ML evaluation uses explicitly **synthetic** telemetry and does not establish real-cluster accuracy. Rules remain the default; no model executes remediation. See the [Phase 05 guide](docs/runbooks/anomaly-detection.md), [model card](ml/models/model-card.md) and [verification record](docs/reports/phase-05-validation.md). Production identity and remediation remain future work. AWS infrastructure has **not** been deployed.
 
-The repository retains its original GitHub name and Apache 2.0 license. Renaming it to **KubeSentinel-AI** is recommended; no remote rename has been performed. See the [repository audit and rename procedure](docs/repository-audit.md).
+The repository is now [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI). The original Apache 2.0 license and Git history are preserved. See the [repository audit](docs/repository-audit.md).
 
 ## Start here
 
@@ -30,14 +30,14 @@ The larger platform is a target design. Implemented local components are listed 
 | Directory | Responsibility |
 | --- | --- |
 | `apps/` | Running dashboard/API and worker; future isolated fault workload |
-| `services/` | Future telemetry, detection, correlation, policy/recovery, assistant, notification, and audit |
+| `services/` | Advisory anomaly detector and responsibility notes for future domain services |
 | `operator/` | Future controllers, policy integration, CRDs, reconciliation |
 | `ml/` | Dataset governance, features, training, evaluation, model lineage |
-| `infrastructure/` | Future local cluster, Terraform, Kubernetes, Helm, GitOps, monitoring |
+| `infrastructure/` | Local Kubernetes/Helm, observability stack and undeployed AWS Terraform source |
 | `docs/` | Audit, C4 architecture, ADRs, roadmap, development, security, costs, validation |
 | `scripts/` | Foundation validation tooling and future development automation |
-| `tests/` | Validator tests and the future application test strategy |
-| `.github/` | Documentation CI and issue/PR templates |
+| `tests/` | Application, migration, feature, model and integration tests |
+| `.github/` | Application, Kubernetes, Terraform, observability and ML checks |
 
 Responsibility notes identify future components without empty placeholder files. No cloud manifests or fabricated report/presentation binaries are included.
 
