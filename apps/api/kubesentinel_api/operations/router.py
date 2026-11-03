@@ -180,7 +180,11 @@ def view(db: Db, user: User, mode: Mode = "real", namespace: str = "all") -> Vie
     pods = [r for r in rows if r.kind == "Pod"]
     action_rows = [r for r in rows if r.kind == "RemediationAction"]
     healthy = sum(bool(r.data.get("healthy")) for r in deployments)
-    last = max((utc(r.collected_at) for r in rows), default=None)
+    # Fresh nodes must not hide stale workloads after a partially delivered collection.
+    # Historical actions remain inspectable without falsely making current inventory stale.
+    inventory = [r for r in rows if r.kind in {"Node", "Deployment", "Pod"}]
+    last = max((utc(r.collected_at) for r in inventory), default=None)
+    oldest = min((utc(r.collected_at) for r in inventory), default=None)
     now = datetime.now(UTC)
     return ViewOutput(
         mode=mode,
@@ -231,7 +235,7 @@ def view(db: Db, user: User, mode: Mode = "real", namespace: str = "all") -> Vie
         },
         bridge={
             "last_collected_at": last,
-            "stale": last is None or (now - last).total_seconds() > 30,
+            "stale": oldest is None or (now - oldest).total_seconds() > 30,
             "resource_limit": 1000,
             "source": "synthetic fixture" if mode == "demo" else "Kubernetes bridge",
             "limited": len(rows) >= 1000 or any(r.data.get("collection_truncated") for r in rows),

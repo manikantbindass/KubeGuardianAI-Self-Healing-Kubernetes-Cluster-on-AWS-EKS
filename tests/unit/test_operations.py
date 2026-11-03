@@ -293,3 +293,15 @@ def test_snapshot_full_scope_prunes_deleted_pods(client: TestClient) -> None:
         r["kind"] == "Pod"
         for r in client.get("/api/v1/ops/view", headers=ADMIN).json()["resources"]
     )
+
+
+def test_fresh_nodes_do_not_hide_stale_workloads(client: TestClient, db: Session) -> None:
+    view = seed(client, "real")
+    row = next(r for r in view["resources"] if r["kind"] == "Deployment")
+    snapshot = db.get(Snapshot, row["id"])
+    assert snapshot is not None
+    snapshot.collected_at = datetime.now(UTC) - timedelta(seconds=90)
+    db.commit()
+    result = client.get("/api/v1/ops/view", headers=ADMIN).json()
+    assert result["bridge"]["last_collected_at"] is not None
+    assert result["bridge"]["stale"] is True
