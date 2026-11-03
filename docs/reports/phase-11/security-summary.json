@@ -23,5 +23,27 @@
     "reason": "No cached DB; mirror.gcr.io download exceeded timeout",
     "clean_scan_claimed": false
   },
-  "image_security": "Five inherited PR 13 image jobs fail; release remains blocked"
+  "image_security": "Five inherited PR 13 image jobs fail; release remains blocked",
+  "fresh_ci": {
+    "source_commit": "33533e11a391263778d5f20a1e40f986b3fce0ae",
+    "job": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41693243322/job/126116972678",
+    "state": "blocking dependency findings",
+    "high_critical_counts_by_target": {
+      "docs/portfolio/uv.lock": 48,
+      "operator/go.mod": 8,
+      ".github/security/uv.lock": 1
+    },
+    "documentation_fix": {
+      "pillow": "13.0.0",
+      "pypdf": "6.21.4",
+      "local_artifact_validation": "passed",
+      "final_commit_scan": "pending"
+    },
+    "inherited_blockers": [
+      "ecdsa 0.19.2 in security-tool lock",
+      "golang.org/x/net v0.47.0",
+      "golang.org/x/text v0.31.0",
+      "image-security findings"
+    ]
+  }
 }

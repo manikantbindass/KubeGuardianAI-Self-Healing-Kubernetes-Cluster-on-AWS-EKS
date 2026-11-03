@@ -7,6 +7,7 @@
 - Rewrite the README with portfolio previews, actual application screenshots, capability states, quickstarts and release limitations; retain animated banners.
 - Add artifact/source hashes, structural validation, documentation dependency lock and a blocked v1.0.0 publication checklist. Preserve original LICENSE/history.
 - Fix Terraform workflow shell quoting and capture real kind status artifacts. Security vulnerability enforcement remains blocking; no merge, release or AWS deployment.
+- Update documentation Pillow/pypdf pins after the first Linux scan; retain inherited dependency/image failures as release blockers.
 
 ## Unreleased - Phase 10 incident intelligence
 

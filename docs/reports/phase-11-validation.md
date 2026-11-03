@@ -56,4 +56,10 @@ Markdown lint passes for 71 files; all 13 Mermaid files and the README's inline 
 
 Text provenance uses Git LF normalization so validation works on Windows and Linux. A new CI portfolio job verifies committed binary/source hashes and artifact structure from the locked documentation environment; deck regeneration itself requires the documented Codex authoring runtime.
 
+## Fresh Phase 11 CI follow-up
+
+The [portfolio job on commit 33533e1](https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41693243205/job/126116974043) passed on Linux. The repaired static-security workflow passed actionlint and reached the [dependency scan](https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41693243322/job/126116972678), which correctly blocked vulnerable dependencies. The new documentation pins were updated to Pillow 13.0.0 and pypdf 6.21.4, matching the [Pillow security release](https://pillow.readthedocs.io/en/stable/releasenotes/13.0.0.html) and [pypdf maintainer advisory](https://github.com/py-pdf/pypdf/security/advisories/GHSA-mfr5-77xh-9j7h). The updated lock and artifact hashes were revalidated locally; fresh CI must confirm the final commit.
+
+The initial scan also reports inherited `ecdsa` 0.19.2 in the Checkov tooling lock (no fixed version supplied) and `golang.org/x/net` / `golang.org/x/text` in the operator. Those and image findings remain blocking; no new vulnerability exception or relaxed severity gate is added. The local Trivy DB timeout does not hide the available Linux scan evidence. The repository is a reviewable release preparation package, not a passing release candidate.
+
 See the [release checklist](../releases/v1.0.0-candidate.md) for publication requirements and the [portfolio build guide](../portfolio/README.md) for exact regeneration commands and runtime limitations.

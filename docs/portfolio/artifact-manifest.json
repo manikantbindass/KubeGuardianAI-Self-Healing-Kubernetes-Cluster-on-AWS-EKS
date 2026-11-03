@@ -1,7 +1,7 @@
 {
   "hash_normalization": "UTF-8 text uses Git LF line endings; binaries use exact bytes",
   "generation_date": "2026-11-03",
-  "base_source_commit": "afa9867c887819969ac40830cac171914027a720",
+  "base_source_commit": "33533e11a391263778d5f20a1e40f986b3fce0ae",
   "working_tree_changes": true,
   "toolchain": {
     "artifact_tool": "2.8.106",
@@ -9,6 +9,8 @@
     "codex_primary_runtime": "26.1026.10807",
     "reportlab": "4.4.9",
     "matplotlib": "3.11.2",
+    "validation_pypdf": "6.21.4",
+    "locked_pillow": "13.0.0",
     "font": "Arial",
     "slide_pdf_export": "installed Microsoft PowerPoint, Windows"
   },
@@ -71,18 +73,18 @@
     },
     {
       "path": "docs/portfolio/pyproject.toml",
-      "sha256": "832bfc8bfba7cb9885db3a2551d469256e57478d3d344b3a223c34a5d6774815",
+      "sha256": "64c23a4c225ce977a0322cb357c78fc8468493ac89baf9471aa719b03094a94c",
       "bytes": 224
     },
     {
       "path": "docs/portfolio/uv.lock",
-      "sha256": "626be5747cd0c0eb74df4a13782981ff9b918749ca8b8460866b53965439f30e",
-      "bytes": 124134
+      "sha256": "7c1e537192878e88154e2b2dce08dc7004ca68cd4ac71d70c1e1bc2b4a74165e",
+      "bytes": 125779
     },
     {
       "path": "docs/portfolio/write_manifest.py",
-      "sha256": "6bf3a55500f43ea5e0ab924ca4040c9b7ca2e304dbcbb1deef859b6874527b70",
-      "bytes": 1944
+      "sha256": "ee7236e4b25cc43735e56d31283ef4779be4fda97c16dcd99b18bc4fe738cadd",
+      "bytes": 2017
     },
     {
       "path": "docs/portfolio/validate_artifacts.py",

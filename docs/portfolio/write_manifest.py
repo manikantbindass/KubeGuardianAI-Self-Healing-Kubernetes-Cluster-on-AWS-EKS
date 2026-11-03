@@ -37,6 +37,8 @@ manifest = {
         "codex_primary_runtime": "26.1026.10807",
         "reportlab": "4.4.9",
         "matplotlib": "3.11.2",
+        "validation_pypdf": "6.21.4",
+        "locked_pillow": "13.0.0",
         "font": "Arial",
         "slide_pdf_export": "installed Microsoft PowerPoint, Windows",
     },
