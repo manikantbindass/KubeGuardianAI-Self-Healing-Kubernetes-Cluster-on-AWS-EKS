@@ -1,0 +1,62 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "AppProject",
+  "metadata": {
+    "name": "sentinel-staging",
+    "namespace": "argocd"
+  },
+  "spec": {
+    "description": "KubeSentinel staging; platform team owns cluster resources",
+    "sourceRepos": [
+      "https://github.com/manikantbindass/KubeSentinel-AI.git"
+    ],
+    "destinations": [
+      {
+        "server": "https://kubernetes.default.svc",
+        "namespace": "sentinel-staging"
+      }
+    ],
+    "clusterResourceWhitelist": [],
+    "namespaceResourceWhitelist": [
+      {
+        "group": "",
+        "kind": "ConfigMap"
+      },
+      {
+        "group": "",
+        "kind": "Service"
+      },
+      {
+        "group": "",
+        "kind": "ServiceAccount"
+      },
+      {
+        "group": "apps",
+        "kind": "Deployment"
+      },
+      {
+        "group": "batch",
+        "kind": "Job"
+      },
+      {
+        "group": "networking.k8s.io",
+        "kind": "NetworkPolicy"
+      },
+      {
+        "group": "networking.k8s.io",
+        "kind": "Ingress"
+      },
+      {
+        "group": "policy",
+        "kind": "PodDisruptionBudget"
+      },
+      {
+        "group": "autoscaling",
+        "kind": "HorizontalPodAutoscaler"
+      }
+    ],
+    "orphanedResources": {
+      "warn": true
+    }
+  }
+}

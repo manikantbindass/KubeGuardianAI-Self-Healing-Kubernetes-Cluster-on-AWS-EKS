@@ -1,0 +1,16 @@
+# Merge into an administrator-owned Argo CD configuration after mapping real OIDC groups.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.default: ""
+  scopes: '[groups]'
+  policy.csv: |
+    p, role:sentinel-staging-reviewer, applications, get, sentinel-staging/*, allow
+    p, role:sentinel-staging-reviewer, applications, sync, sentinel-staging/*, allow
+    p, role:sentinel-production-reviewer, applications, get, sentinel-production/*, allow
+    p, role:sentinel-production-reviewer, applications, sync, sentinel-production/*, allow
+    g, REPLACE_STAGING_OIDC_GROUP, role:sentinel-staging-reviewer
+    g, REPLACE_PRODUCTION_OIDC_GROUP, role:sentinel-production-reviewer

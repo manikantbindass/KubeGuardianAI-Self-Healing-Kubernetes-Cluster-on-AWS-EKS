@@ -135,3 +135,13 @@ output "guardrails" {
     node_metadata_tokens  = module.eks.node_metadata_tokens
   }
 }
+
+module "delivery_identity" {
+  count             = var.enable_delivery_roles ? 1 : 0
+  source            = "../delivery_identity"
+  name              = var.name
+  oidc_provider_arn = var.github_oidc_provider_arn
+  repository        = var.github_repository
+  ecr_arns          = module.ecr.arns
+}
+output "delivery_roles" { value = try(module.delivery_identity[0].roles, {}) }

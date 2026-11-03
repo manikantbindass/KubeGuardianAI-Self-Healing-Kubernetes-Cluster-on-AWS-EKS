@@ -29,6 +29,14 @@ resource "aws_kms_key" "state" {
   description             = "Terraform remote state encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 30
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "AccountKeyAdministration", Effect = "Allow",
+      Principal = { AWS = "arn:aws:iam::${var.account_id}:root" },
+      Action    = "kms:*", Resource = "*"
+    }]
+  })
   lifecycle { prevent_destroy = true }
 }
 resource "aws_kms_alias" "state" {
@@ -54,6 +62,15 @@ resource "aws_s3_bucket_ownership_controls" "state" {
 resource "aws_s3_bucket_versioning" "state" {
   bucket = aws_s3_bucket.state.id
   versioning_configuration { status = "Enabled" }
+}
+resource "aws_s3_bucket_lifecycle_configuration" "state" {
+  bucket = aws_s3_bucket.state.id
+  rule {
+    id     = "abort-incomplete-uploads"
+    status = "Enabled"
+    filter {}
+    abort_incomplete_multipart_upload { days_after_initiation = 7 }
+  }
 }
 resource "aws_s3_bucket_server_side_encryption_configuration" "state" {
   bucket = aws_s3_bucket.state.id

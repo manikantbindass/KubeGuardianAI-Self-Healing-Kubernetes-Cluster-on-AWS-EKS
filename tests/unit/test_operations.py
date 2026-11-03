@@ -72,7 +72,7 @@ def decision(row: dict[str, Any], decision: str = "reject", **updates: Any) -> d
         "reason": "Reviewed exact immutable plan",
         "expected_uid": row["uid"],
         "expected_version": row["resource_version"],
-        "idempotency_key": "test-unique-decision-001",
+        "idempotency_key": "00000000-0000-4000-8000-000000000001",
         **updates,
     }
 

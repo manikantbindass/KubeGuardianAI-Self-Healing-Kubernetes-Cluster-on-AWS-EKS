@@ -1,7 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.migration.gitopsHook }}
+  name: {{ .Values.nameOverride }}-migrate
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+  {{- else }}
   name: {{ .Values.nameOverride }}-migrate-{{ .Release.Revision }}
+  {{- end }}
 spec:
   backoffLimit: 5
   activeDeadlineSeconds: 180
@@ -16,7 +24,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: migrate
-          image: "{{ .Values.image.api }}:{{ .Values.image.tag }}"
+          image: {{ include "sentinel.image" (list .Values "api") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [alembic, -c, alembic.ini, upgrade, head]
           envFrom:

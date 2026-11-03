@@ -1,0 +1,6 @@
+* @manikantbindass
+/.github/ @manikantbindass
+/infrastructure/ @manikantbindass
+/scripts/*delivery* @manikantbindass
+/scripts/security* @manikantbindass
+/scripts/verify_release.py @manikantbindass

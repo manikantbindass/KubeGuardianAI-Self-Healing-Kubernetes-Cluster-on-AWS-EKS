@@ -41,3 +41,7 @@ Start from this branch's architecture and preserve existing files/history. Add r
 - Keep dataset provenance/licenses and redact telemetry. Split by time and incident lineage; report failed trials and false positives.
 - Evaluate risk from telemetry gaps, correlated faults, privilege creep, unsafe loops, model drift, prompt injection, GitOps conflicts, and cloud cost.
 - Pin dependencies and artifacts with locks/digests as components are introduced; update supported versions through reviewed changes.
+
+## Requested Phase 08: secure delivery and GitOps
+
+The user-directed implementation sequence now includes [secure delivery](runbooks/secure-delivery.md): immutable action/base pins, blocking security and image gates, SBOMs, OIDC ECR publishing/signing, separately approved staging/production promotion and manual-sync Argo configuration. These are delivered source/configuration capabilities; cloud publication, administrator protections, live Argo reconciliation and production certification remain explicit operator gates. The original milestone table above is retained as the initial architecture roadmap, rather than evidence of live deployment.

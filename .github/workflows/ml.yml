@@ -1,5 +1,7 @@
 name: Anomaly detection
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -12,11 +14,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version-file: .python-version
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           version: 0.13.6
           enable-cache: true
@@ -26,7 +28,7 @@ jobs:
       - run: uv run --extra ml python scripts/ml.py generate
       - run: uv run --extra ml python scripts/ml.py train
       - run: uv run --extra ml python scripts/ml.py evaluate --output .cache/ml/repeated
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ml-evaluation-${{ matrix.os }}
           path: .cache/ml/evaluation
@@ -35,11 +37,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version-file: .python-version
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           version: 0.13.6
       - run: uv sync --frozen --extra ml
@@ -56,7 +58,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ml.yml up --wait --wait-timeout 60 detector
           uv run python scripts/test_detector_http.py --expected-mode rules_fallback --output .cache/ml/http-fallback.json
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: detector-http-measurements
           path: .cache/ml/http*.json

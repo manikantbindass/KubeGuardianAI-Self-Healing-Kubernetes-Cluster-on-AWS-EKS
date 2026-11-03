@@ -74,3 +74,11 @@ operations-dashboard:
 	$(UV) run python scripts/setup/run_operations_dashboard.py
 operations-e2e:
 	npm run test:e2e:operations
+
+.PHONY: delivery-test security-tools
+security-tools:
+	$(UV) run python scripts/security_tools.py actionlint gitleaks trivy kubeconform
+	$(UV) sync --project .github/security --frozen
+delivery-test:
+	$(UV) run pytest tests/unit/test_delivery.py -q
+	$(UV) run --project .github/security python scripts/validate_delivery.py

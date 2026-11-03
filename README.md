@@ -10,6 +10,10 @@ Local full-stack foundation for a planned AI-powered, safely self-healing Kubern
 
 The repository is now [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI). The original Apache 2.0 license and Git history are preserved. See the [repository audit](docs/repository-audit.md).
 
+## Secure delivery (Phase 08)
+
+SHA-pinned Actions now add blocking image/dependency/secret/IaC gates, CycloneDX SBOM artifacts and offline GitOps validation. Manual, protected-environment workflows support ECR OIDC publishing, keyless signatures/provenance, and reviewed digest promotion to separate staging/production Argo applications. Delivery starts disabled; no live AWS publication or Argo sync is claimed. See the [delivery runbook](docs/runbooks/secure-delivery.md), [ADR](docs/architecture/0008-secure-gitops-delivery.md) and [security examples](infrastructure/kubernetes/security/README.md).
+
 ## Phase 07 operations workspace
 
 The dashboard now has twelve functional sections, a canvas-neutral cluster overview, workload gallery, telemetry charts, incident and recovery inspection, version-fenced decisions, audit, cost scenarios and saved preferences. Real API data is the default; synthetic fixtures require explicit enablement. The previous greeting demo is at `/status`.

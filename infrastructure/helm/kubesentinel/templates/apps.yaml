@@ -2,6 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   name: {{ .Values.nameOverride }}-api
 spec:
   replicas: {{ .Values.replicas }}
@@ -19,7 +21,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: api
-          image: "{{ .Values.image.api }}:{{ .Values.image.tag }}"
+          image: {{ include "sentinel.image" (list .Values "api") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
@@ -66,6 +68,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   name: {{ .Values.nameOverride }}-dashboard
 spec:
   replicas: {{ .Values.replicas }}
@@ -83,7 +87,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 1000, fsGroup: 1000, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: dashboard
-          image: "{{ .Values.image.dashboard }}:{{ .Values.image.tag }}"
+          image: {{ include "sentinel.image" (list .Values "dashboard") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
@@ -122,6 +126,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   name: {{ .Values.nameOverride }}-worker
 spec:
   replicas: {{ .Values.replicas }}
@@ -139,7 +145,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: worker
-          image: "{{ .Values.image.api }}:{{ .Values.image.tag }}"
+          image: {{ include "sentinel.image" (list .Values "api") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           startupProbe:
             exec:

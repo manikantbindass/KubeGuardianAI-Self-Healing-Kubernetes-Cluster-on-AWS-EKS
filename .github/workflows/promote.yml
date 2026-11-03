@@ -1,0 +1,107 @@
+name: Reviewed GitOps promotion
+on:
+  workflow_dispatch:
+    inputs:
+      release_run_id:
+        description: Successful Approved ECR release run ID
+        required: true
+        type: string
+      environment:
+        description: Destination (production requires staged verification)
+        required: true
+        type: choice
+        options: [staging, production]
+permissions:
+  contents: read
+concurrency:
+  group: gitops-promotion-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  preflight:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version-file: .python-version
+      - name: Check independent approval and main-only environment policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          DELIVERY_ENABLED: ${{ vars.DELIVERY_ENABLED }}
+        run: |
+          test "$DELIVERY_ENABLED" = true
+          python scripts/delivery.py check-environment --environment "$ENVIRONMENT"
+  promotion:
+    needs: preflight
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version-file: .python-version
+      - run: python scripts/security_tools.py cosign
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5
+        with:
+          role-to-assume: ${{ vars.AWS_VERIFY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          allowed-account-ids: ${{ vars.AWS_ACCOUNT_ID }}
+          role-session-name: sentinel-verify-${{ github.run_id }}
+          unset-current-credentials: true
+      - name: Read approved registry
+        env:
+          ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+      - name: Download and verify release evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: |
+          [[ "$RELEASE_RUN_ID" =~ ^[1-9][0-9]{0,19}$ ]]
+          gh run download "$RELEASE_RUN_ID" --name verified-release --dir .cache/delivery/candidate
+          python scripts/verify_release.py --release .cache/delivery/candidate/release.json
+      - name: Prepare one environment only
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: python scripts/delivery.py promote --release .cache/delivery/candidate/release.json --environment "$ENVIRONMENT"
+      - name: Scoped short-lived promotion token (allows PR checks to trigger)
+        id: app-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.PROMOTION_APP_ID }}
+          private-key: ${{ secrets.PROMOTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: KubeSentinel-AI
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Open reviewable promotion pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: |
+          branch="delivery/$ENVIRONMENT-$RELEASE_RUN_ID-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "infrastructure/argocd/environments/$ENVIRONMENT/application.json" "infrastructure/argocd/environments/$ENVIRONMENT/images.json" "infrastructure/argocd/environments/$ENVIRONMENT/release.json"
+          git commit -m "chore(gitops): promote verified $ENVIRONMENT release"
+          gh auth setup-git
+          git push origin "$branch"
+          printf 'Promotes verified release run %s to %s. Review digest diff and staging evidence. Merge and Argo CD manual sync require independent authorization.\n' "$RELEASE_RUN_ID" "$ENVIRONMENT" > .cache/delivery/promotion-body.md
+          gh pr create --base main --head "$branch" --title "Promote verified release to $ENVIRONMENT" --body-file .cache/delivery/promotion-body.md
+      - if: always()
+        run: docker logout
