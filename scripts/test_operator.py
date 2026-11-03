@@ -1,6 +1,7 @@
 """Real, destructive fault tests restricted to the dedicated disposable recovery kind cluster."""
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -95,6 +96,9 @@ def ready() -> None:
 
 
 def main() -> None:
+    os.environ.setdefault("GOTOOLCHAIN", "go1.26.8")
+    os.environ.setdefault("GOCACHE", str(ROOT / ".cache/gobuild"))
+    os.environ.setdefault("GOMODCACHE", str(ROOT / ".cache/gomod"))
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     assert (
         json.loads(kube("config", "view", "--minify", "-o", "json"))["contexts"][0]["name"]

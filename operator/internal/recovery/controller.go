@@ -202,6 +202,13 @@ func (r *Reconciler) advance(ctx context.Context, d *apps.Deployment, a *v1.Reme
 	if reason := Check(p, fresh, a.Spec, records, r.Now()); reason != "" {
 		return r.audit(ctx, a, "Rejected", reason)
 	}
+	confirmed, err := Observe(ctx, r.Client, fresh, r.Now())
+	if err != nil {
+		return err
+	}
+	if confirmed == nil || confirmed.Type != a.Spec.Incident.Type || confirmed.ID != a.Spec.Incident.ID {
+		return r.audit(ctx, a, "Rejected", "IncidentResolvedDuringProbe")
+	}
 	a.Status.ExpectedReplicas = Replicas(fresh)
 	template := fresh.Spec.Template.DeepCopy()
 	switch a.Spec.Kind {
