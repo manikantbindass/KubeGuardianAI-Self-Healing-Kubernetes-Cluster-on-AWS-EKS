@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased - Phase 06
+
+- Add a namespace-scoped Go recovery controller with typed policy/action/approval/verified-revision CRDs, Lease leadership and independently allowlisted Deployment mutation.
+- Add dry-run defaults, Ed25519 exact-plan approval, native incident revalidation, stale/availability/maintenance/cooldown/budget guards, optimistic API patch preconditions and durable pre-mutation audit intent.
+- Add rollout/replica/HTTP error-p95 verification, verified-template rollback and approved budgeted undo. Ambiguous or failed outcomes hold and escalate instead of blindly retrying.
+- Add isolated crash/OOM/readiness fault fixtures, RBAC/admission checks, Helm installation, cross-platform Go checks, safety runbooks and empirical validation. ML output never executes cluster changes; no AWS resources are created.
+
 ## Unreleased - Phase 05
 
 - Add redacted telemetry exports, provenance, bounded UTC windows, missing-data handling, physical caps and past-only lag/rolling features.

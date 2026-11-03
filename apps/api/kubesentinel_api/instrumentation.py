@@ -19,7 +19,9 @@ LATENCY = Histogram(
 INCIDENTS = Gauge("sentinel_incidents", "Durable incidents", ["source", "severity", "status"])
 STORE_UP = Gauge("sentinel_incident_store_up", "Incident metrics database query availability")
 REMEDIATIONS = Counter(
-    "sentinel_remediation_actions_total", "Executed recovery actions; none implemented", ["outcome"]
+    "sentinel_remediation_actions_total",
+    "API-local counters; operator outcomes use CRD audit",
+    ["outcome"],
 )
 for outcome in ("completed", "failed", "denied"):
     REMEDIATIONS.labels(outcome).inc(0)

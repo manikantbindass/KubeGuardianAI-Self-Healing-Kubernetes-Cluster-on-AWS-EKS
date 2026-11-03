@@ -2,6 +2,8 @@
 
 ## Executed request sequence
 
+Phase 06 now implements the local guarded recovery operator: typed policies, signed plan approvals, durable CRD audit, native revalidation, verified mutations/undo and fail-closed safety holds. Its [validation record](reports/phase-06-validation.md) is the authority for completed tests; this does not authorize production or cloud execution. Production identity/admission, external audit/notifications and broader real-workload evaluation remain separate gates.
+
 The current implementation requests use: 00 repository architecture, 01 full-stack foundation, 02 local Kubernetes, 03 AWS infrastructure code, 04 full-stack observability, and **05 advisory anomaly detection**. The historical milestone table below is retained as design history; its older phase numbers are not the current execution sequence.
 
 Phase 05 delivers feature windows, baseline/statistical/Isolation Forest scoring, reproducible synthetic evaluation, a bounded advisory service and incident evidence. See its [acceptance record](reports/phase-05-validation.md) and [model card](../ml/models/model-card.md). Its synthetic ML results do not justify replacing rules or enabling remediation. Next gates are independently labeled real-workload validation, identity/tenant controls, durable incident lifecycle and separately authorized policy/operator work. No live AWS deployment or advanced sequence model is implied.

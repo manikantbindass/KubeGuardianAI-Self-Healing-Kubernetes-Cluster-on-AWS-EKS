@@ -1,0 +1,250 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.20.1
+  name: remediationactions.recovery.kubesentinel.ai
+spec:
+  group: recovery.kubesentinel.ai
+  names:
+    kind: RemediationAction
+    listKind: RemediationActionList
+    plural: remediationactions
+    shortNames:
+    - raction
+    singular: remediationaction
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.phase
+      name: State
+      type: string
+    - jsonPath: .spec.kind
+      name: Action
+      type: string
+    - jsonPath: .spec.target.name
+      name: Workload
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ActionSpec is immutable, including policy/workload versions
+              and rollback consent.
+            properties:
+              beforeRevision:
+                type: string
+              budgetCost:
+                type: integer
+              expiresAt:
+                format: date-time
+                type: string
+              incident:
+                properties:
+                  id:
+                    maxLength: 256
+                    type: string
+                  observedAt:
+                    format: date-time
+                    type: string
+                  severity:
+                    enum:
+                    - warning
+                    - critical
+                    type: string
+                  source:
+                    description: ML/LLM sources are intentionally not accepted here.
+                    enum:
+                    - kubernetes
+                    - alertmanager
+                    - service-probe
+                    type: string
+                  type:
+                    enum:
+                    - CrashLoopBackOff
+                    - OOMKilled
+                    - ReadinessProbeFailure
+                    - StuckRollout
+                    - ExcessiveRestarts
+                    - ReplicaShortage
+                    - SustainedPressure
+                    - LatencyDegradation
+                    type: string
+                required:
+                - id
+                - observedAt
+                - severity
+                - source
+                - type
+                type: object
+              kind:
+                enum:
+                - Restart
+                - Scale
+                - Rollback
+                - Escalate
+                type: string
+              policyName:
+                type: string
+              policyUID:
+                type: string
+              policyVersion:
+                type: string
+              revisionName:
+                type: string
+              rollbackEnabled:
+                type: boolean
+              scaleTo:
+                format: int32
+                type: integer
+              target:
+                properties:
+                  generation:
+                    format: int64
+                    type: integer
+                  name:
+                    type: string
+                  replicas:
+                    format: int32
+                    type: integer
+                  templateDigest:
+                    type: string
+                  uid:
+                    type: string
+                required:
+                - generation
+                - name
+                - replicas
+                - templateDigest
+                - uid
+                type: object
+            required:
+            - budgetCost
+            - expiresAt
+            - incident
+            - kind
+            - policyName
+            - policyUID
+            - policyVersion
+            - rollbackEnabled
+            - target
+            type: object
+          status:
+            properties:
+              after:
+                properties:
+                  at:
+                    format: date-time
+                    type: string
+                  errors:
+                    type: integer
+                  p95Milliseconds:
+                    type: integer
+                  requests:
+                    type: integer
+                required:
+                - at
+                - errors
+                - p95Milliseconds
+                - requests
+                type: object
+              appliedGeneration:
+                format: int64
+                type: integer
+              approvalActor:
+                type: string
+              approvalUID:
+                type: string
+              attemptedAt:
+                format: date-time
+                type: string
+              audit:
+                items:
+                  properties:
+                    actor:
+                      type: string
+                    at:
+                      format: date-time
+                      type: string
+                    reason:
+                      type: string
+                    state:
+                      type: string
+                  required:
+                  - actor
+                  - at
+                  - reason
+                  - state
+                  type: object
+                maxItems: 64
+                type: array
+              before:
+                properties:
+                  at:
+                    format: date-time
+                    type: string
+                  errors:
+                    type: integer
+                  p95Milliseconds:
+                    type: integer
+                  requests:
+                    type: integer
+                required:
+                - at
+                - errors
+                - p95Milliseconds
+                - requests
+                type: object
+              completedAt:
+                format: date-time
+                type: string
+              expectedReplicas:
+                format: int32
+                type: integer
+              expectedTemplate:
+                type: string
+              hold:
+                description: Blocks competing actions after an ambiguous timeout or
+                  external mutation.
+                type: boolean
+              mutationCount:
+                type: integer
+              phase:
+                type: string
+              reason:
+                type: string
+              successes:
+                type: integer
+              verificationStartedAt:
+                format: date-time
+                type: string
+            type: object
+        required:
+        - spec
+        type: object
+        x-kubernetes-validations:
+        - message: action plans are immutable
+          rule: self.spec == oldSelf.spec
+    served: true
+    storage: true
+    subresources:
+      status: {}

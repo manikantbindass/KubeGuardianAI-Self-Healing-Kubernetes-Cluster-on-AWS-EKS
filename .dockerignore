@@ -13,6 +13,5 @@
 *.log
 docs
 infrastructure
-operator
 ml/datasets
 ml/models

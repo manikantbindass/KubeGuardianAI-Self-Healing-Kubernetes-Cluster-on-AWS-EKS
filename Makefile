@@ -51,3 +51,14 @@ ml-serve:
 	$(UV) run python scripts/serve_detector.py
 ml-test:
 	$(UV) run --extra ml pytest -m "not postgres"
+
+.PHONY: operator-test operator-generate operator-lab operator-clean
+operator-test:
+	go -C operator test ./... -count=1
+	go -C operator vet ./...
+operator-generate:
+	$(UV) run python scripts/recovery_lab.py generate
+operator-lab:
+	$(UV) run python scripts/recovery_lab.py bootstrap
+operator-clean:
+	$(UV) run python scripts/recovery_lab.py clean

@@ -1,3 +1,7 @@
-# Kubernetes operator (future)
+# Policy-driven recovery operator
 
-Planned Go/controller-runtime controller, versioned CRDs, scoped RBAC and default-deny execution policy. No controller or CRD is implemented or installed. Controllers must reconcile immutable approved requests, check target preconditions and policy expiry, bound retries/cooldowns/budgets, audit intent/results, verify effects and stop on ambiguous state. Separate policy/approval from detection and execution. Activation requires Phase 07 evidence in the [roadmap](../docs/roadmap.md).
+Phase 06 implements a Go/controller-runtime controller for explicitly allowlisted Deployments in one non-critical namespace. Typed CRDs define policies, immutable action plans, signed approvals and independently verified template snapshots. Two replicas share a Lease; only the leader reconciles, with one active reconciliation and optimistic API mutation preconditions.
+
+Execution requires both `--execute` and policy `dryRun: false`. Scale, rollback and automatic undo always require offline Ed25519 approval. ML/LLM outputs cannot select or execute actions. No pod deletion, system-namespace mutation, secret read or self-approval permission exists.
+
+See [installation and safety runbook](../docs/runbooks/recovery-operator.md), [architecture](../docs/architecture/recovery-operator.md), [state machine](../docs/diagrams/recovery-state-machine.mmd), [example policy](policies/dry-run.yaml) and [validation](../docs/reports/phase-06-validation.md). The default example is dry-run. The separate recovery kind lab is disposable and never targets AWS.

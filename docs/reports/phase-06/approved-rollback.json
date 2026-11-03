@@ -1,0 +1,95 @@
+{
+  "apiVersion": "recovery.kubesentinel.ai/v1alpha1",
+  "kind": "RemediationAction",
+  "metadata": {
+    "creationTimestamp": "2026-11-03T02:46:01Z",
+    "generation": 1,
+    "name": "recovery-1f5657865a3ea5058185f8bf73aff92c",
+    "namespace": "sentinel-lab",
+    "resourceVersion": "1159",
+    "uid": "25a3ed3c-a424-48db-a474-49de1e819062"
+  },
+  "spec": {
+    "beforeRevision": "verified-6d752857405d8853f88c7a246347af3a",
+    "budgetCost": 1,
+    "expiresAt": "2026-11-03T02:51:01Z",
+    "incident": {
+      "id": "c30354d9dc4bc6988e88b5d6f24c89939f6c00361574cd4ad7394eb1b6d229ea",
+      "observedAt": "2026-11-03T02:46:01Z",
+      "severity": "critical",
+      "source": "kubernetes",
+      "type": "OOMKilled"
+    },
+    "kind": "Rollback",
+    "policyName": "lab-safe",
+    "policyUID": "dca6e28a-b1ec-47fe-bf4a-5c508840aeaa",
+    "policyVersion": "1041",
+    "revisionName": "verified-6d752857405d8853f88c7a246347af3a",
+    "rollbackEnabled": false,
+    "target": {
+      "generation": 4,
+      "name": "demo-recovery",
+      "replicas": 2,
+      "templateDigest": "70f2791eb34cdc4f8ae39a290d040c9e5df43f817e7b599fd2eed4b557cb4acf",
+      "uid": "1dec9f2d-70d6-42bc-9941-a895bb615ca5"
+    }
+  },
+  "status": {
+    "after": {
+      "at": "2026-11-03T02:46:17Z",
+      "errors": 0,
+      "p95Milliseconds": 1,
+      "requests": 5
+    },
+    "appliedGeneration": 5,
+    "approvalActor": "local-operator",
+    "approvalUID": "21a3dcb8-475a-4400-8417-4d0c24197f1d",
+    "attemptedAt": "2026-11-03T02:46:17Z",
+    "audit": [
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:46:01Z",
+        "reason": "NativeIncidentDetected",
+        "state": "Observing"
+      },
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:46:06Z",
+        "reason": "SignedPlanApprovalRequired",
+        "state": "AwaitingApproval"
+      },
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:46:17Z",
+        "reason": "IntentPersistedBeforeMutation",
+        "state": "Applying"
+      },
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:46:17Z",
+        "reason": "MutationObservedByAPIServer",
+        "state": "Verifying"
+      },
+      {
+        "actor": "sentinel-recovery-5666c59bf7-gbhld",
+        "at": "2026-11-03T02:46:17Z",
+        "reason": "RolloutReplicasAndSampledSLIVerified",
+        "state": "Succeeded"
+      }
+    ],
+    "before": {
+      "at": "2026-11-03T02:46:17Z",
+      "errors": 0,
+      "p95Milliseconds": 1,
+      "requests": 5
+    },
+    "completedAt": "2026-11-03T02:46:17Z",
+    "expectedReplicas": 2,
+    "expectedTemplate": "f0b6c539cc267d113d5a3c51b1e34d1d5055614463ebfef2ac697dc09c59b7c8",
+    "mutationCount": 1,
+    "phase": "Succeeded",
+    "reason": "RolloutReplicasAndSampledSLIVerified",
+    "successes": 2,
+    "verificationStartedAt": "2026-11-03T02:46:17Z"
+  }
+}
