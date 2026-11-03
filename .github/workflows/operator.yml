@@ -1,0 +1,69 @@
+name: Recovery operator
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  go-checks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.8'
+          cache-dependency-path: operator/go.sum
+      - run: go mod verify
+        working-directory: operator
+      - run: go test ./... -count=1
+        working-directory: operator
+      - run: go vet ./...
+        working-directory: operator
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/recovery_lab.py generate
+      - run: git diff --exit-code -- operator/api operator/crds infrastructure/helm/recovery-operator/crds
+  isolated-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.8'
+          cache-dependency-path: operator/go.sum
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - name: Install pinned kind
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 -o /tmp/kind
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+      - run: helm lint infrastructure/helm/recovery-operator --namespace sentinel-lab
+      - run: helm template sentinel-recovery infrastructure/helm/recovery-operator --namespace sentinel-lab --include-crds > /tmp/recovery.yaml
+      - run: python scripts/recovery_lab.py bootstrap --execute
+      - run: python -u scripts/test_operator.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actual-recovery-evidence
+          path: .cache/operator/evidence
+          include-hidden-files: true
+          if-no-files-found: warn
+      - name: Diagnostics
+        if: failure()
+        run: |
+          kubectl --context kind-kubesentinel-recovery -n sentinel-lab get pods,events,remediationactions
+          kubectl --context kind-kubesentinel-recovery -n sentinel-lab logs -l app=sentinel-recovery --all-containers --tail=100
+          kubectl --context kind-kubesentinel-recovery -n sentinel-lab get remediationactions -o yaml
+      - if: always()
+        run: python scripts/recovery_lab.py clean

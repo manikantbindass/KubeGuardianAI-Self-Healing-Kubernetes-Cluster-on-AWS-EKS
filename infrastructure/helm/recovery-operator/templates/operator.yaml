@@ -1,0 +1,181 @@
+{{- if has .Release.Namespace (list "default" "kubesentinel" "sentinel-telemetry" "cert-manager" "ingress-nginx" "argocd") }}
+{{- fail "protected namespace" }}
+{{- end }}
+{{- if hasPrefix "kube-" .Release.Namespace }}{{ fail "protected namespace" }}{{ end }}
+{{- if not .Values.workloads }}{{ fail "explicit workload allowlist required" }}{{ end }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sentinel-recovery
+automountServiceAccountToken: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-approval-keys
+data:
+  keys.json: {{ .Values.approvalPublicKeys | toJson | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sentinel-recovery
+rules:
+  - apiGroups: [apps]
+    resources: [deployments, replicasets]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments]
+    resourceNames: {{ .Values.workloads | toJson }}
+    verbs: [patch]
+  - apiGroups: [""]
+    resources: [pods, services, events]
+    verbs: [get, list, watch]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationpolicies, remediationapprovals, remediationactions, verifiedrevisions]
+    verbs: [get, list, watch]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationactions, verifiedrevisions]
+    verbs: [create]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationactions/status, verifiedrevisions/status]
+    verbs: [get, update, patch]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [create]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    resourceNames: [kubesentinel-recovery]
+    verbs: [get, update, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sentinel-recovery
+subjects:
+  - kind: ServiceAccount
+    name: sentinel-recovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sentinel-recovery
+---
+# Applying approval objects and owning signing keys are separate permissions.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sentinel-recovery-approver
+rules:
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationactions]
+    verbs: [get, list]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationapprovals]
+    verbs: [create, get, list]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-recovery
+  labels:
+    app.kubernetes.io/part-of: kubesentinel
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: sentinel-recovery
+  template:
+    metadata:
+      labels:
+        app: sentinel-recovery
+      annotations:
+        checksum/keys: {{ .Values.approvalPublicKeys | toJson | sha256sum }}
+    spec:
+      serviceAccountName: sentinel-recovery
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: controller
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --namespace={{ .Release.Namespace }}
+            - --workloads={{ join "," .Values.workloads }}
+            - --execute={{ .Values.executionEnabled }}
+            - --approval-keys=/keys/keys.json
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - name: health
+              containerPort: 8081
+          startupProbe:
+            httpGet: {path: /healthz, port: health}
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            httpGet: {path: /readyz, port: health}
+          livenessProbe:
+            httpGet: {path: /healthz, port: health}
+          volumeMounts:
+            - name: keys
+              mountPath: /keys
+              readOnly: true
+      volumes:
+        - name: keys
+          configMap:
+            name: sentinel-approval-keys
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sentinel-recovery
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: sentinel-recovery
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sentinel-recovery
+spec:
+  podSelector:
+    matchLabels:
+      app: sentinel-recovery
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - ports:
+        - {protocol: TCP, port: 8081}
+  egress:
+    {{- range .Values.apiServerCIDRs }}
+    - to:
+        - ipBlock:
+            cidr: {{ . | quote }}
+      ports:
+        - {protocol: TCP, port: 443}
+        - {protocol: TCP, port: 6443}
+    {{- end }}
+    - to:
+        - podSelector:
+            matchLabels:
+              recovery.kubesentinel.ai/enabled: "true"
+      ports:
+        {{- range .Values.probePorts }}
+        - {protocol: TCP, port: {{ . }}}
+        {{- end }}

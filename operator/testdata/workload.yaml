@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-recovery
+  namespace: sentinel-lab
+  labels:
+    app: demo-recovery
+    recovery.kubesentinel.ai/enabled: "true"
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  minReadySeconds: 3
+  progressDeadlineSeconds: 35
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: demo-recovery
+  template:
+    metadata:
+      labels:
+        app: demo-recovery
+        recovery.kubesentinel.ai/enabled: "true"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: demo
+          image: kubesentinel/recovery-demo:phase06-local
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MODE
+              value: healthy
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: {cpu: 10m, memory: 24Mi}
+            limits: {cpu: 200m, memory: 48Mi}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          startupProbe:
+            httpGet: {path: /health, port: 8080}
+            periodSeconds: 2
+            failureThreshold: 20
+          readinessProbe:
+            httpGet: {path: /ready, port: 8080}
+            periodSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: {path: /health, port: 8080}
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-recovery
+  namespace: sentinel-lab
+spec:
+  selector:
+    app: demo-recovery
+  ports:
+    - port: 8080
+      targetPort: 8080

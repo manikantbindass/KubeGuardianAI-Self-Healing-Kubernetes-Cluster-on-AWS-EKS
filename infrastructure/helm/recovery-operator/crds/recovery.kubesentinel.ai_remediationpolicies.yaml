@@ -1,0 +1,327 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.20.1
+  name: remediationpolicies.recovery.kubesentinel.ai
+spec:
+  group: recovery.kubesentinel.ai
+  names:
+    kind: RemediationPolicy
+    listKind: RemediationPolicyList
+    plural: remediationpolicies
+    shortNames:
+    - rpolicy
+    singular: remediationpolicy
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              actionWindowSeconds:
+                default: 3600
+                maximum: 86400
+                minimum: 60
+                type: integer
+              allowedActions:
+                items:
+                  enum:
+                  - Restart
+                  - Scale
+                  - Rollback
+                  - Escalate
+                  type: string
+                maxItems: 4
+                minItems: 1
+                type: array
+              approvalRequired:
+                default: true
+                description: False only permits unsigned Restart. Scale/Rollback/automatic
+                  undo always require approval.
+                type: boolean
+              cooldownSeconds:
+                default: 300
+                maximum: 86400
+                minimum: 0
+                type: integer
+              dryRun:
+                default: true
+                type: boolean
+              escalationDestination:
+                maxLength: 128
+                minLength: 1
+                type: string
+              incidentTypes:
+                items:
+                  enum:
+                  - CrashLoopBackOff
+                  - OOMKilled
+                  - ReadinessProbeFailure
+                  - StuckRollout
+                  - ExcessiveRestarts
+                  - ReplicaShortage
+                  - SustainedPressure
+                  - LatencyDegradation
+                  type: string
+                maxItems: 8
+                minItems: 1
+                type: array
+              maintenanceWindows:
+                description: Empty maintenance windows means no execution time is
+                  authorized.
+                items:
+                  properties:
+                    endHour:
+                      maximum: 24
+                      minimum: 1
+                      type: integer
+                    startHour:
+                      maximum: 23
+                      minimum: 0
+                      type: integer
+                    weekdays:
+                      description: 'Weekdays are UTC: Sunday=0 through Saturday=6.
+                        Empty means no permitted days.'
+                      items:
+                        maximum: 6
+                        minimum: 0
+                        type: integer
+                      maxItems: 7
+                      minItems: 1
+                      type: array
+                  required:
+                  - endHour
+                  - startHour
+                  - weekdays
+                  type: object
+                maxItems: 16
+                type: array
+              maxActionsPerWindow:
+                default: 2
+                maximum: 20
+                minimum: 1
+                type: integer
+              maxIncidentAgeSeconds:
+                default: 300
+                maximum: 3600
+                minimum: 30
+                type: integer
+              maximumReplicas:
+                default: 4
+                format: int32
+                maximum: 100
+                minimum: 1
+                type: integer
+              minimumHealthyReplicas:
+                default: 1
+                format: int32
+                maximum: 100
+                minimum: 1
+                type: integer
+              minimumReplicas:
+                default: 1
+                format: int32
+                maximum: 100
+                minimum: 1
+                type: integer
+              minimumSeverity:
+                default: warning
+                enum:
+                - warning
+                - critical
+                type: string
+              namespaceAllowlist:
+                items:
+                  type: string
+                maxItems: 16
+                minItems: 1
+                type: array
+              rollback:
+                properties:
+                  enabled:
+                    default: false
+                    description: Enabling this reserves two budget units and always
+                      requires signed approval.
+                    type: boolean
+                  maxRevisionAgeSeconds:
+                    default: 3600
+                    maximum: 86400
+                    minimum: 60
+                    type: integer
+                required:
+                - enabled
+                - maxRevisionAgeSeconds
+                type: object
+              scaleStep:
+                default: 1
+                format: int32
+                maximum: 5
+                minimum: 1
+                type: integer
+              sustainSeconds:
+                default: 60
+                maximum: 600
+                minimum: 2
+                type: integer
+              verification:
+                properties:
+                  consecutiveSuccesses:
+                    default: 3
+                    maximum: 10
+                    minimum: 2
+                    type: integer
+                  maxErrorBasisPoints:
+                    default: 100
+                    description: Integer basis points avoid ambiguous probability/float
+                      policy encodings.
+                    maximum: 1000
+                    minimum: 0
+                    type: integer
+                  maxLatencyPercent:
+                    default: 150
+                    description: Maximum increase over a healthy baseline. Both relative
+                      and absolute bounds apply.
+                    maximum: 300
+                    minimum: 100
+                    type: integer
+                  maxP95Milliseconds:
+                    default: 500
+                    maximum: 5000
+                    minimum: 1
+                    type: integer
+                  path:
+                    default: /health
+                    enum:
+                    - /health
+                    - /ready
+                    type: string
+                  samples:
+                    default: 5
+                    maximum: 20
+                    minimum: 3
+                    type: integer
+                  servicePort:
+                    default: 8080
+                    description: Service must have the same name as the allowed Deployment;
+                      ExternalName is rejected.
+                    maximum: 65535
+                    minimum: 1
+                    type: integer
+                  timeoutSeconds:
+                    default: 120
+                    maximum: 900
+                    minimum: 10
+                    type: integer
+                required:
+                - consecutiveSuccesses
+                - maxErrorBasisPoints
+                - maxLatencyPercent
+                - maxP95Milliseconds
+                - path
+                - samples
+                - servicePort
+                - timeoutSeconds
+                type: object
+              workloadSelector:
+                description: |-
+                  A label selector is a label query over a set of resources. The result of matchLabels and
+                  matchExpressions are ANDed. An empty label selector matches all objects. A null
+                  label selector matches no objects.
+                properties:
+                  matchExpressions:
+                    description: matchExpressions is a list of label selector requirements.
+                      The requirements are ANDed.
+                    items:
+                      description: |-
+                        A label selector requirement is a selector that contains values, a key, and an operator that
+                        relates the key and values.
+                      properties:
+                        key:
+                          description: key is the label key that the selector applies
+                            to.
+                          type: string
+                        operator:
+                          description: |-
+                            operator represents a key's relationship to a set of values.
+                            Valid operators are In, NotIn, Exists and DoesNotExist.
+                          type: string
+                        values:
+                          description: |-
+                            values is an array of string values. If the operator is In or NotIn,
+                            the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                            the values array must be empty. This array is replaced during a strategic
+                            merge patch.
+                          items:
+                            type: string
+                          type: array
+                          x-kubernetes-list-type: atomic
+                      required:
+                      - key
+                      - operator
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  matchLabels:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                      map is equivalent to an element of matchExpressions, whose key field is "key", the
+                      operator is "In", and the values array contains only "value". The requirements are ANDed.
+                    type: object
+                type: object
+                x-kubernetes-map-type: atomic
+                x-kubernetes-validations:
+                - message: explicit workload labels required
+                  rule: size(self.matchLabels) > 0
+            required:
+            - actionWindowSeconds
+            - allowedActions
+            - approvalRequired
+            - cooldownSeconds
+            - dryRun
+            - escalationDestination
+            - incidentTypes
+            - maintenanceWindows
+            - maxActionsPerWindow
+            - maxIncidentAgeSeconds
+            - maximumReplicas
+            - minimumHealthyReplicas
+            - minimumReplicas
+            - minimumSeverity
+            - namespaceAllowlist
+            - rollback
+            - scaleStep
+            - sustainSeconds
+            - verification
+            - workloadSelector
+            type: object
+        required:
+        - spec
+        type: object
+        x-kubernetes-validations:
+        - message: replica bounds inverted
+          rule: self.spec.minimumReplicas <= self.spec.maximumReplicas
+    served: true
+    storage: true

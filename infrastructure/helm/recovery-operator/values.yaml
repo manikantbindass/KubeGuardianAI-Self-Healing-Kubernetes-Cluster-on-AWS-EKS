@@ -1,0 +1,18 @@
+image:
+  repository: kubesentinel/operator
+  tag: phase06-local
+  pullPolicy: IfNotPresent
+replicas: 2
+executionEnabled: false
+workloads: [demo-recovery]
+approvalPublicKeys: {}
+# Installer supplies Kubernetes Service + API endpoint CIDRs; empty is fail-closed egress.
+apiServerCIDRs: []
+probePorts: [8080]
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    cpu: 500m
+    memory: 192Mi
