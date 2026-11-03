@@ -1,0 +1,13 @@
+flowchart LR
+  Auth[Viewer authentication and scope] --> Limit[Atomic read rate limit]
+  Limit --> View[Bounded incident and snapshot read model]
+  View --> Identity[Exact identity and time-window correlation]
+  Identity --> Evidence[Incident / event / anomaly references]
+  Evidence --> Rank[Deterministic hypothesis ranking]
+  Catalog[Fixed internal runbook catalog] --> Rank
+  Rank --> Output[Typed explanations with uncertainty]
+  Output --> Human[Human investigation]
+  Human --> Feedback[Operator feedback and audit]
+  Human -. Separate authorization .-> Policy[Deterministic recovery policy and approvals]
+  Policy --> Verify[Scoped operator and verification]
+  Selector[Optional known-ID selector; API disabled] -. Fallback on error .-> Rank

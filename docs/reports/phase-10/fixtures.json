@@ -1,0 +1,66 @@
+[
+  {
+    "id": "one",
+    "namespace": "lab",
+    "resource": "checkout",
+    "reason": "OOMKilled",
+    "first_seen": "2026-11-03T10:00:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "two",
+    "namespace": "lab",
+    "resource": "checkout",
+    "reason": "ReadinessFailure",
+    "first_seen": "2026-11-03T10:01:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "cross",
+    "namespace": "other",
+    "resource": "checkout",
+    "reason": "OOMKilled",
+    "first_seen": "2026-11-03T10:00:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "prefix",
+    "namespace": "lab",
+    "resource": "checkout-api",
+    "reason": "OOMKilled",
+    "first_seen": "2026-11-03T10:00:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "old",
+    "namespace": "lab",
+    "resource": "checkout",
+    "reason": "OOMKilled",
+    "first_seen": "2026-11-02T10:00:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "latency",
+    "namespace": "lab",
+    "resource": "checkout",
+    "reason": "LatencyDegradation",
+    "first_seen": "2026-11-03T10:02:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "unknown",
+    "namespace": "lab",
+    "resource": "other-pod",
+    "reason": "Unknown",
+    "first_seen": "2026-11-03T10:00:00Z",
+    "severity": "warning"
+  },
+  {
+    "id": "duplicate",
+    "namespace": "lab",
+    "resource": "checkout",
+    "reason": "OOMKilled",
+    "first_seen": "2026-11-03T10:00:30Z",
+    "severity": "warning"
+  }
+]

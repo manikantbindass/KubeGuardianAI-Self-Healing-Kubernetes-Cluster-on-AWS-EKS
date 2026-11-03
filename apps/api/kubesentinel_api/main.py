@@ -29,6 +29,7 @@ from kubesentinel_api.instrumentation import (
     STORE_UP,
     configure_tracing,
 )
+from kubesentinel_api.intelligence_api import router as intelligence_router
 from kubesentinel_api.models import GreetingJob, Incident
 from kubesentinel_api.observability import configure_logging
 from kubesentinel_api.operations.router import router as operations_router
@@ -225,6 +226,7 @@ app.include_router(router)
 app.include_router(telemetry_router)
 app.include_router(anomaly_router)
 app.include_router(operations_router)
+app.include_router(intelligence_router)
 
 
 @app.get("/metrics", include_in_schema=False)
