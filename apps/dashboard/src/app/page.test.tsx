@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import Home from "./page";
+import Home from "@/components/legacy-status";
 import { api, ApiError } from "@/lib/api";
 
 vi.mock("@/lib/api", async importOriginal => ({ ...(await importOriginal<typeof import("@/lib/api")>()), api: { health: vi.fn(), ready: vi.fn(), version: vi.fn(), jobs: vi.fn(), createJob: vi.fn(), incidents: vi.fn() } }));

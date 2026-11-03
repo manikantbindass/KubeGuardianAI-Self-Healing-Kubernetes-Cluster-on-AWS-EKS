@@ -33,3 +33,21 @@ pdb:
 observability:
   enabled: false
   annotations: {}
+
+# Opt-in authenticated operations UI. Secret objects are supplied out of band.
+operations:
+  enabled: false
+  authMode: oidc
+  issuer: ""
+  audience: kubesentinel-api
+  jwksURL: ""
+  rolesClaim: kubesentinel_roles
+  namespaces: [kubesentinel, sentinel-lab]
+  demoEnabled: false
+  publicURL: https://sentinel.example.invalid
+  apiSecretName: sentinel-operations-api
+  dashboardSecretName: sentinel-operations-web
+  approvalSecretName: ""
+  approvalKeyID: dashboard-approver
+  detectorURL: ""
+  lokiURL: ""

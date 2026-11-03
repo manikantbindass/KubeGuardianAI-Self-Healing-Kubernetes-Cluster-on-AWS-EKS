@@ -9,6 +9,24 @@ data:
   PROMETHEUS_URL: http://prometheus:9090
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel.sentinel-telemetry.svc:4318
   {{- end }}
+  {{- if .Values.operations.enabled }}
+  OPS_AUTH_MODE: {{ .Values.operations.authMode | quote }}
+  OPS_OIDC_ISSUER: {{ .Values.operations.issuer | quote }}
+  OIDC_ISSUER: {{ .Values.operations.issuer | quote }}
+  OPS_OIDC_AUDIENCE: {{ .Values.operations.audience | quote }}
+  OPS_OIDC_JWKS_URL: {{ .Values.operations.jwksURL | quote }}
+  OPS_OIDC_ROLES_CLAIM: {{ .Values.operations.rolesClaim | quote }}
+  OPS_NAMESPACES: {{ .Values.operations.namespaces | toJson | quote }}
+  OPS_DEMO_ENABLED: {{ .Values.operations.demoEnabled | quote }}
+  APP_PUBLIC_URL: {{ .Values.operations.publicURL | quote }}
+  APP_COOKIE_SECURE: "true"
+  OPS_DETECTOR_URL: {{ .Values.operations.detectorURL | quote }}
+  OPS_LOKI_URL: {{ .Values.operations.lokiURL | quote }}
+  OPS_APPROVAL_KEY_ID: {{ .Values.operations.approvalKeyID | quote }}
+  {{- if .Values.operations.approvalSecretName }}
+  OPS_APPROVAL_KEY_PATH: /run/approval/approver.key
+  {{- end }}
+  {{- end }}
   API_BASE_URL: http://{{ .Values.nameOverride }}-api:8000
   CORS_ORIGINS: {{ .Values.corsOrigins | toJson | quote }}
 ---

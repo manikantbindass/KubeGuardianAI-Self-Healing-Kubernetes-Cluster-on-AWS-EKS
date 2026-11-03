@@ -158,6 +158,9 @@ func (r *Reconciler) advance(ctx context.Context, d *apps.Deployment, a *v1.Reme
 	if phase == "Applying" || phase == "Verifying" || phase == "RollingBack" || phase == "VerifyingRollback" {
 		return r.resume(ctx, d, p, a)
 	}
+	if actor := a.Annotations["recovery.kubesentinel.ai/rejected-by"]; actor != "" {
+		return r.audit(ctx, a, "Rejected", "RejectedByAuthorizedGateway:"+actor)
+	}
 	if reason := Check(p, d, a.Spec, records, r.Now()); reason != "" {
 		return r.audit(ctx, a, "Rejected", reason)
 	}

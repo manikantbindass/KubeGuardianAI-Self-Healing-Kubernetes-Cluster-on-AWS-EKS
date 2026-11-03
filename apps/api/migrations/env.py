@@ -2,6 +2,7 @@ from alembic import context
 from kubesentinel_api.config import get_settings
 from kubesentinel_api.database import Base
 from kubesentinel_api.models import GreetingJob  # noqa: F401
+from kubesentinel_api.operations.models import Snapshot  # noqa: F401
 from sqlalchemy import create_engine, pool
 
 target_metadata = Base.metadata

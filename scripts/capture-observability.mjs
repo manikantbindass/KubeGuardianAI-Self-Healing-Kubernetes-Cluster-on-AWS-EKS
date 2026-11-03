@@ -13,7 +13,7 @@ try {
     await page.waitForTimeout(6000);
     await page.screenshot({ path: `${directory}/${uid}.png`, fullPage: true });
   }
-  await page.goto("http://127.0.0.1:3200", { waitUntil: "networkidle" });
+  await page.goto("http://127.0.0.1:3200/status", { waitUntil: "networkidle" });
   await page.getByText("Telemetry incidents", { exact: true }).waitFor();
   await page.screenshot({ path: `${directory}/incident-app.png`, fullPage: true });
 } finally { await browser.close(); }

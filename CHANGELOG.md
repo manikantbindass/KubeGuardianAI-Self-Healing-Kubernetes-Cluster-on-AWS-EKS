@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased - Phase 07
+
+- Add twelve-section operations dashboard with canvas-neutral design, responsive gallery, accessible controls and explicit real/demo modes.
+- Add OIDC/PKCE BFF, independently authorized API reads/mutations, persistent snapshot/audit/outbox/preferences schema, scoped bridge and signed approval delivery.
+- Add SSE/polling, fixed metrics/log queries, real model evidence, heuristic insights, user-priced cost scenarios and operator rejection handling.
+- Add browser/accessibility/responsive tests, production PostgreSQL/Redis and isolated-kind CI, Helm configuration, runbook and ADR.
+- Retain the public greeting/status slice at `/status`; no AWS resources provisioned.
+
 ## Unreleased - Phase 06
 
 - Add a namespace-scoped Go recovery controller with typed policy/action/approval/verified-revision CRDs, Lease leadership and independently allowlisted Deployment mutation.

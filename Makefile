@@ -62,3 +62,15 @@ operator-lab:
 	$(UV) run python scripts/recovery_lab.py bootstrap
 operator-clean:
 	$(UV) run python scripts/recovery_lab.py clean
+
+.PHONY: operations-setup operations-demo operations-dashboard operations-e2e
+operations-setup:
+	$(UV) sync --frozen --extra ops
+	$(UV) run python scripts/setup/operations_env.py --development
+operations-demo:
+	$(UV) run python scripts/setup/operations_env.py --development --demo
+	$(UV) run python scripts/seed_operations_demo.py
+operations-dashboard:
+	$(UV) run python scripts/setup/run_operations_dashboard.py
+operations-e2e:
+	npm run test:e2e:operations

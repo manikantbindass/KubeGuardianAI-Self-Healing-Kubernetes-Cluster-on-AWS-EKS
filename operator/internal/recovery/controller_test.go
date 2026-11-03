@@ -289,3 +289,23 @@ func TestNativeOOMIdentitySurvivesRestartCounterChanges(t *testing.T) {
 		t.Fatal("same ongoing OOM fault invalidated plan", second, err)
 	}
 }
+
+func TestGatewayRejectionCannotMutateWorkload(t *testing.T) {
+	r, p, d, _ := testController(t)
+	p.Spec.DryRun = false
+	_ = r.Client.Update(context.Background(), p)
+	a := newAction(t, r, p, d)
+	a.Annotations = map[string]string{"recovery.kubesentinel.ai/rejected-by": "oidc-subject"}
+	_ = r.Client.Update(context.Background(), a)
+	if err := r.advance(context.Background(), d, a, nil); err != nil {
+		t.Fatal(err)
+	}
+	if a.Status.Phase != "Rejected" || a.Status.AttemptedAt != nil {
+		t.Fatalf("rejection failed: %#v", a.Status)
+	}
+	fresh := &apps.Deployment{}
+	_ = r.Client.Get(context.Background(), client.ObjectKeyFromObject(d), fresh)
+	if Replicas(fresh) != 2 {
+		t.Fatal("rejected action changed replicas")
+	}
+}

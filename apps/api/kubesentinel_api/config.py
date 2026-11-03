@@ -17,6 +17,20 @@ class Settings(BaseSettings):
     prometheus_url: str = "http://127.0.0.1:9090"
     telemetry_token: SecretStr = SecretStr("")
     otel_exporter_otlp_endpoint: str = ""
+    ops_auth_mode: str = "oidc"
+    ops_dev_token: SecretStr = SecretStr("")
+    ops_dev_viewer_token: SecretStr = SecretStr("")
+    ops_oidc_issuer: str = ""
+    ops_oidc_audience: str = "kubesentinel-api"
+    ops_oidc_jwks_url: str = ""
+    ops_oidc_roles_claim: str = "kubesentinel_roles"
+    ops_bridge_token: SecretStr = SecretStr("")
+    ops_namespaces: list[str] = ["kubesentinel", "sentinel-lab"]
+    ops_demo_enabled: bool = False
+    ops_approval_key_path: str = ""
+    ops_approval_key_id: str = "local-operator"
+    ops_detector_url: str = ""
+    ops_loki_url: str = ""
 
 
 @lru_cache

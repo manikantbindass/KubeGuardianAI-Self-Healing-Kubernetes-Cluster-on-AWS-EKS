@@ -1,0 +1,105 @@
+name: Operations dashboard
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.10-bookworm
+        env: {POSTGRES_USER: sentinel, POSTGRES_PASSWORD: sentinel_local, POSTGRES_DB: sentinel}
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U sentinel" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8.2.2-bookworm
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.13.6
+      - run: npm install --global npm@11.11.0
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: uv sync --frozen --extra ops
+      - run: uv run python scripts/setup/operations_env.py --development --demo
+      - run: uv run alembic -c apps/api/alembic.ini upgrade head
+      - run: npm run build
+      - run: uv run python scripts/test_operations_dashboard.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operations-browser-evidence
+          path: |
+            .cache/operations/e2e-results.json
+            .cache/operations/api.log
+            .cache/operations/web.log
+            docs/screenshots/phase-07
+          include-hidden-files: true
+          if-no-files-found: warn
+  cluster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17.10-bookworm
+        env: {POSTGRES_USER: sentinel, POSTGRES_PASSWORD: sentinel_local, POSTGRES_DB: sentinel}
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U sentinel" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8.2.2-bookworm
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.8'
+          cache-dependency-path: operator/go.sum
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.13.6
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - name: Install pinned kind
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 -o /tmp/kind
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+      - run: uv sync --frozen --extra ops
+      - run: uv run python scripts/setup/operations_env.py --development
+      - run: uv run alembic -c apps/api/alembic.ini upgrade head
+      - run: python scripts/recovery_lab.py bootstrap --execute
+      - run: uv run python scripts/test_operations_cluster.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operations-real-kind-evidence
+          path: |
+            .cache/operations/cluster-results.json
+            .cache/operations/cluster-api.log
+          include-hidden-files: true
+          if-no-files-found: warn
+      - name: Diagnostics
+        if: failure()
+        run: |
+          kubectl --context kind-kubesentinel-recovery -n sentinel-lab get pods,events,remediationactions
+          kubectl --context kind-kubesentinel-recovery -n sentinel-lab logs -l app=sentinel-recovery --all-containers --tail=100
+      - if: always()
+        run: python scripts/recovery_lab.py clean

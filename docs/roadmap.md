@@ -2,6 +2,8 @@
 
 ## Executed request sequence
 
+Phase 07 adds the authenticated operations dashboard and scoped read/decision transport. The [validation record](reports/phase-07-validation.md) separates browser-preview evidence from PostgreSQL/Redis/kind acceptance. Next production gates include live OIDC certification, per-user namespace grants, audit retention/immutable export, broader workload scaling and independent labeled detection evaluation.
+
 Phase 06 now implements the local guarded recovery operator: typed policies, signed plan approvals, durable CRD audit, native revalidation, verified mutations/undo and fail-closed safety holds. Its [validation record](reports/phase-06-validation.md) is the authority for completed tests; this does not authorize production or cloud execution. Production identity/admission, external audit/notifications and broader real-workload evaluation remain separate gates.
 
 The current implementation requests use: 00 repository architecture, 01 full-stack foundation, 02 local Kubernetes, 03 AWS infrastructure code, 04 full-stack observability, and **05 advisory anomaly detection**. The historical milestone table below is retained as design history; its older phase numbers are not the current execution sequence.
