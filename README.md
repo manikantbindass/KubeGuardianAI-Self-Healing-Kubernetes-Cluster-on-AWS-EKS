@@ -4,11 +4,19 @@
 
 Local full-stack foundation for a planned AI-powered, safely self-healing Kubernetes platform.
 
-**Current status: Phase 06 guarded local recovery in development.** This branch includes the dashboard/API/worker, Compose and kind/Helm definitions, AWS Terraform source, observability/incident ingestion, causal features and rules/statistical/Isolation Forest scoring. The ML evaluation uses explicitly **synthetic** telemetry and does not establish real-cluster accuracy. Rules remain the detector default; no model executes remediation. See the [Phase 05 guide](docs/runbooks/anomaly-detection.md), [model card](ml/models/model-card.md) and [ML verification](docs/reports/phase-05-validation.md). The separately scoped recovery operator is described below. Production identity and promotion remain future work. AWS infrastructure has **not** been deployed.
+**Current status: Phase 07 operations dashboard in development.** This branch includes the dashboard/API/worker, Compose and kind/Helm definitions, AWS Terraform source, observability/incident ingestion, temporal features and rules/statistical/Isolation Forest scoring. The ML evaluation uses explicitly **synthetic** telemetry and does not establish real-cluster accuracy. Rules remain the detector default; no model executes remediation. See the [Phase 05 guide](docs/runbooks/anomaly-detection.md), [model card](ml/models/model-card.md) and [ML verification](docs/reports/phase-05-validation.md). The separately scoped recovery operator is described below. OIDC-compatible identity is implemented; live provider certification and production promotion remain future gates. AWS infrastructure has **not** been deployed.
 
 **Phase 06 adds an isolated, policy-driven recovery operator verified in Linux kind CI.** It defaults to dry-run, scopes execution to named opted-in Deployments, requires signed approvals for risky actions, and verifies recovery before success. Actual fault tests passed approved rollback, bounded scale-up, verified undo and safety rejection. No ML/LLM output can directly execute actions. See the [operator guide](docs/runbooks/recovery-operator.md), [safety architecture](docs/architecture/recovery-operator.md) and [actual validation status](docs/reports/phase-06-validation.md). This is not production authorization or an AWS deployment.
 
 The repository is now [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI). The original Apache 2.0 license and Git history are preserved. See the [repository audit](docs/repository-audit.md).
+
+## Phase 07 operations workspace
+
+The dashboard now has twelve functional sections, a canvas-neutral cluster overview, workload gallery, telemetry charts, incident and recovery inspection, version-fenced decisions, audit, cost scenarios and saved preferences. Real API data is the default; synthetic fixtures require explicit enablement. The previous greeting demo is at `/status`.
+
+Follow the [operations setup guide](docs/runbooks/operations-dashboard.md) for Windows/Linux/macOS, OIDC or explicit trusted-local authentication, PostgreSQL/Redis, real Kubernetes collection and approval-key setup. See the [architecture](docs/architecture/0007-operations-read-model.md), [data flow](docs/diagrams/operations-dashboard.mmd) and [validation record](docs/reports/phase-07-validation.md) for evidence and limits. No AWS deployment is implied.
+
+![Operations dashboard, explicitly synthetic demo](docs/screenshots/phase-07/desktop.png)
 
 ## Start here
 
@@ -65,7 +73,7 @@ docker compose up --build --wait --wait-timeout 180
 py -3.12 scripts/setup/smoke.py
 ```
 
-Open [dashboard](http://localhost:3000), [health](http://localhost:8000/api/v1/health), [readiness](http://localhost:8000/api/v1/ready), or [OpenAPI docs](http://localhost:8000/docs). Queue a greeting in the dashboard; the worker completes it and the result persists in PostgreSQL. The one-shot migrator must complete before the API and worker start. Containers publish only loopback ports. This unauthenticated demo is for trusted local development, not public exposure.
+Open [legacy greeting/status](http://localhost:3000/status), [health](http://localhost:8000/api/v1/health), [readiness](http://localhost:8000/api/v1/ready), or [OpenAPI docs](http://localhost:8000/docs). Queue a greeting on `/status`; the worker completes it and the result persists in PostgreSQL. The one-shot migrator must complete before the API and worker start. Containers publish only loopback ports. This unauthenticated demo is for trusted local development, not public exposure.
 
 See the [development guide](docs/development-guide.md) for native hot reload, Compose hot reload, all configuration, API examples, database tests, cleanup, and troubleshooting. Commands are provided for Windows and Linux/macOS. The [service diagram](docs/diagrams/local-services.mmd) shows actual local dependencies.
 

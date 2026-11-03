@@ -27,7 +27,7 @@ def main() -> None:
     parser.add_argument("--dashboard", default="http://127.0.0.1:3000")
     parser.add_argument("--expect-unavailable", action="store_true")
     args = parser.parse_args()
-    status, page = request(args.dashboard)
+    status, page = request(args.dashboard.rstrip("/") + "/status")
     assert status == 200 and "System status" in page, "Dashboard did not render"
     status, proxied = request(f"{args.dashboard}/api/backend/health")
     if args.expect_unavailable:

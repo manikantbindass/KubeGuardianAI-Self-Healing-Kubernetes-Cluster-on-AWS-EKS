@@ -1,0 +1,34 @@
+# Optional authenticated operations UI. Run the credential setup first; real API mode is default.
+services:
+  api:
+    # Match the unprivileged key owner on native Linux; never set this to UID 0.
+    user: "${OPS_RUNTIME_UID:-10001}:${OPS_RUNTIME_GID:-10001}"
+    environment:
+      OPS_AUTH_MODE: ${OPS_AUTH_MODE:-oidc}
+      OPS_DEV_TOKEN: ${OPS_DEV_TOKEN:-}
+      OPS_DEV_VIEWER_TOKEN: ${OPS_DEV_VIEWER_TOKEN:-}
+      OPS_OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OPS_OIDC_AUDIENCE: ${OPS_OIDC_AUDIENCE:-kubesentinel-api}
+      OPS_OIDC_JWKS_URL: ${OPS_OIDC_JWKS_URL:-}
+      OPS_OIDC_ROLES_CLAIM: ${OPS_OIDC_ROLES_CLAIM:-kubesentinel_roles}
+      OPS_BRIDGE_TOKEN: ${OPS_BRIDGE_TOKEN:-}
+      OPS_DEMO_ENABLED: ${OPS_DEMO_ENABLED:-false}
+      OPS_APPROVAL_KEY_PATH: /run/approval/approver.key
+      OPS_APPROVAL_KEY_ID: ${OPS_APPROVAL_KEY_ID:-dashboard-approver}
+      OPS_DETECTOR_URL: ${OPS_DETECTOR_URL:-}
+      OPS_LOKI_URL: ${OPS_LOKI_URL:-}
+      PROMETHEUS_URL: ${PROMETHEUS_URL:-http://host.docker.internal:9090}
+    volumes:
+      - type: bind
+        source: ./.cache/operations/approver.key
+        target: /run/approval/approver.key
+        read_only: true
+  dashboard:
+    environment:
+      OPS_AUTH_MODE: ${OPS_AUTH_MODE:-oidc}
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:-}
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:3000}
+      APP_COOKIE_SECURE: ${APP_COOKIE_SECURE:-false}

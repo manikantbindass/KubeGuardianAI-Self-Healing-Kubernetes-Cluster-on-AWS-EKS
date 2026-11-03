@@ -15,6 +15,7 @@ dependencies = [
   "prometheus-client==0.26.0",
   "opentelemetry-sdk==1.45.2",
   "opentelemetry-exporter-otlp-proto-http==1.45.2",
+  "PyJWT[crypto]==2.15.1",
 ]
 
 [dependency-groups]
@@ -22,6 +23,7 @@ dev = ["httpx2==2.16.0", "pytest==9.2.0", "ruff==0.17.3", "mypy==2.4.1"]
 
 [project.optional-dependencies]
 ml = ["numpy==2.5.4", "scikit-learn==1.9.1", "matplotlib==3.11.2"]
+ops = ["kubernetes==35.0.0"]
 
 [tool.uv]
 package = false
@@ -46,6 +48,10 @@ files = ["apps/api/kubesentinel_api", "scripts", "tests", "ml/kubesentinel_ml", 
 
 [[tool.mypy.overrides]]
 module = ["sklearn.*", "numpy.*", "matplotlib.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["kubernetes.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

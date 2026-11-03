@@ -1,0 +1,40 @@
+{
+  "source_commit": "024ee9c6cd31e154e2d906e687ac7ae523a9252c",
+  "ci_run": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41607540612",
+  "storage": "PostgreSQL 17.10 and Redis 8.2.2; actual FastAPI and production Next.js",
+  "data_mode": "explicit synthetic fixtures, not production telemetry",
+  "stats": {
+    "startTime": "2026-11-03T09:02:18.101Z",
+    "duration": 27925.615,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "name": "real mode, authentication boundary, and explicit demo gallery",
+      "passed": true
+    },
+    {
+      "name": "all twelve views, source failures, search and keyboard dialog",
+      "passed": true
+    },
+    {
+      "name": "preferences persist, cost scenario computes, demo decision creates audit",
+      "passed": true
+    },
+    {
+      "name": "viewer cannot mutate recovery resources even through direct API",
+      "passed": true
+    },
+    {
+      "name": "offline state stays real, refresh restores actual data",
+      "passed": true
+    },
+    {
+      "name": "responsive screenshots, reduced motion and layout budget",
+      "passed": true
+    }
+  ]
+}

@@ -31,6 +31,7 @@ from kubesentinel_api.instrumentation import (
 )
 from kubesentinel_api.models import GreetingJob, Incident
 from kubesentinel_api.observability import configure_logging
+from kubesentinel_api.operations.router import router as operations_router
 from kubesentinel_api.schemas import GreetingInput, GreetingOutput, Health, Readiness
 from kubesentinel_api.telemetry import router as telemetry_router
 
@@ -149,7 +150,7 @@ def ready(db: Db, cache: Cache, response: Response) -> Readiness:
     try:
         db.execute(text("SELECT 1 FROM greeting_jobs LIMIT 1"))
         revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        dependencies["postgresql"] = "ok" if revision == "0003_anomaly_evidence" else "unavailable"
+        dependencies["postgresql"] = "ok" if revision == "0004_operations" else "unavailable"
     except SQLAlchemyError:
         dependencies["postgresql"] = "unavailable"
     try:
@@ -206,6 +207,7 @@ def get_job(job_id: uuid.UUID, db: Db, cache: Cache) -> GreetingOutput:
 app.include_router(router)
 app.include_router(telemetry_router)
 app.include_router(anomaly_router)
+app.include_router(operations_router)
 
 
 @app.get("/metrics", include_in_schema=False)

@@ -24,6 +24,9 @@ spec:
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
             - secretRef: {name: {{ .Values.secretName }}}
+            {{- if .Values.operations.enabled }}
+            - secretRef: {name: {{ .Values.operations.apiSecretName }}}
+            {{- end }}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources: {{ toYaml .Values.resources | nindent 12 }}
           ports: [{containerPort: 8000, name: http}]
@@ -40,8 +43,17 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - {name: tmp, mountPath: /tmp}
+            {{- if and .Values.operations.enabled .Values.operations.approvalSecretName }}
+            - {name: approval, mountPath: /run/approval, readOnly: true}
+            {{- end }}
       volumes:
         - {name: tmp, emptyDir: {sizeLimit: 64Mi}}
+        {{- if and .Values.operations.enabled .Values.operations.approvalSecretName }}
+        - name: approval
+          secret:
+            secretName: {{ .Values.operations.approvalSecretName }}
+            defaultMode: 288
+        {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -75,6 +87,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
+            {{- if .Values.operations.enabled }}
+            - secretRef: {name: {{ .Values.operations.dashboardSecretName }}}
+            {{- end }}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources: {{ toYaml .Values.resources | nindent 12 }}
           ports: [{containerPort: 3000, name: http}]

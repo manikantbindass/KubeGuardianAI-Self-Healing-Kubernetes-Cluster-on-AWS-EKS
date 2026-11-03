@@ -10,3 +10,5 @@ Accepted records describe the design baseline, not implemented functionality. Ne
 - [0005: Advisory models and portable artifacts](0005-advisory-ml.md)
 - [0006: Fenced recovery operator](0006-recovery-operator.md)
 - [System overview](system-overview.md)
+
+- [0007: Authenticated operations read model](0007-operations-read-model.md)

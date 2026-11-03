@@ -1,0 +1,32 @@
+flowchart LR
+  subgraph browser[Browser trust boundary]
+    UI[Next.js operations UI]
+  end
+  IDP[OIDC provider RS256]
+  subgraph application[Application boundary]
+    BFF[Next.js BFF HttpOnly cookies PKCE]
+    API[FastAPI role and namespace checks]
+    PG[(PostgreSQL snapshots incidents audit outbox)]
+    R[(Redis atomic mutation limits)]
+  end
+  subgraph collection[Scoped collection identity]
+    BR[Explicit context Kubernetes bridge]
+  end
+  subgraph cluster[Isolated Kubernetes cluster]
+    CRD[Policies actions signed approvals]
+    OP[Guarded Go operator]
+    W[Opted-in workload]
+  end
+  UI --> BFF
+  BFF --> IDP
+  BFF --> API
+  API --> PG
+  API --> R
+  BR -->|redacted snapshots| API
+  BR -->|pending commands and delivery results| API
+  BR -->|UID and version fenced CRD writes| CRD
+  OP -->|revalidate signature and policy| CRD
+  OP -->|bounded mutation and verification| W
+  API -->|fixed bounded read queries| MET[Prometheus Loki detector]
+  API -->|SSE change cursors| BFF
+  BFF --> UI

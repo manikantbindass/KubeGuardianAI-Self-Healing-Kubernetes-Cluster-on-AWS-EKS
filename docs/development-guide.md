@@ -1,6 +1,6 @@
 # Development guide
 
-Phase 01 runs a local dashboard/API, PostgreSQL, Redis, one-shot migrator, and greeting worker. No authentication, cluster integration, or cloud resources. Never expose these services publicly. The [verification record](validation.md) distinguishes checked commands from blocked integration tests.
+This guide preserves the Phase 01 public greeting/health slice at `/status`, PostgreSQL, Redis, one-shot migrator and worker. For the Phase 07 authenticated operations UI, explicit demo mode, cluster bridge and approval setup, follow the [operations guide](runbooks/operations-dashboard.md). The legacy slice does not acquire global OIDC protection from the new operations routes. No cloud resources are required. Never expose these services publicly. The [verification record](validation.md) distinguishes checked commands from blocked integration tests.
 
 ## Toolchain
 

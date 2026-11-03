@@ -13,3 +13,5 @@ The C4 and remediation diagrams show the **proposed target architecture**, not i
 | [recovery-state-machine.mmd](recovery-state-machine.mmd) | Phase 06 approval, intent, verification, undo and safety-hold states |
 
 The [system overview](../architecture/system-overview.md) explains relationships, interfaces, failure behavior, environments, and alternatives. Run `npm run diagrams` to parse all `.mmd` sources. A successful parse checks grammar, not visual layout or architectural correctness; use a Mermaid-enabled editor to preview when changing layout.
+
+- [Operations dashboard trust boundaries and data flow](operations-dashboard.mmd): authenticated BFF, durable read/outbox model, scoped collection and independently guarded operator.
