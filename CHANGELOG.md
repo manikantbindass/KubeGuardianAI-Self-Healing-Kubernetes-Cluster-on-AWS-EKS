@@ -74,3 +74,10 @@ Cluster telemetry, anomaly models, Kubernetes controllers, remediation, identity
 - Add stabilized API HPA and opt-in multi-replica lab profile/quota example.
 - Add safe HTTP benchmarks with raw JSON/CSV/chart evidence, k6 suites and guarded disposable-cluster chaos tooling.
 - Record unexecuted cluster, database, recovery-comparison and SLO measurements without invented results.
+
+## Phase 10 — Evidence-constrained AIOps
+
+- Add scoped, bounded incident grouping, duplicate candidates, historical categorical similarity and ranked uncertainty-bearing hypotheses.
+- Add fixed runbook retrieval, read admission limits and role-checked persistent/audited feedback without recovery commands.
+- Add an optional known-ID-only assistant interface with invalid-output/outage fallback; no remote provider is enabled.
+- Add synthetic correlation/retrieval evaluation and adversarial/permission tests, with explicit logs, causality and live accuracy limits.

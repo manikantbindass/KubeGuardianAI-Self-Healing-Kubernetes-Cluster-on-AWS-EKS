@@ -112,3 +112,7 @@ Read [CONTRIBUTING](CONTRIBUTING.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [SE
 ## Phase 09 resilience work
 
 Queue backpressure, bounded database pools, an ordered queue index, stabilized API HPA and safe loopback benchmarking are implemented. [Resilience instructions and measured limits](docs/runbooks/resilience.md) include k6 suites and explicitly gated disposable-cluster fault scripts. The committed 900-request health benchmark does not measure database/cluster capacity. Destructive chaos, recovery comparisons and production SLO acceptance remain unverified; Phase 08 vulnerability gates still block releases.
+
+## Phase 10 incident intelligence
+
+Authenticated read-only intelligence correlates exact workload/time-window evidence, ranks explicitly uncertain investigation hypotheses and cites a fixed internal runbook catalog. Operator feedback is persisted/audited separately from recovery approval. The API uses a deterministic local fallback with no remote LLM spend or privileged actions. [Architecture, API and limitations](docs/architecture/0010-aiops-intelligence.md) and [synthetic evaluation](docs/reports/phase-10/results.json) distinguish fixture results from unmeasured real-world accuracy. Raw logs/live metric series, remote LLMs and multi-cluster grouping are not implemented by this engine.
