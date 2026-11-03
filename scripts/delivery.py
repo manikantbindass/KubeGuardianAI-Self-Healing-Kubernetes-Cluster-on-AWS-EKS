@@ -32,6 +32,7 @@ REQUIRED_CHECKS = {
     "detector-container",
     "validate",
     "security-static",
+    "resilience",
     *(f"image-security ({name})" for name in COMPONENTS),
 }
 

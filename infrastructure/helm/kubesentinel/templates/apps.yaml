@@ -6,7 +6,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "2"
   name: {{ .Values.nameOverride }}-api
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicas }}
+  {{- end }}
   revisionHistoryLimit: 3
   selector:
     matchLabels: {app: {{ .Values.nameOverride }}, component: api}

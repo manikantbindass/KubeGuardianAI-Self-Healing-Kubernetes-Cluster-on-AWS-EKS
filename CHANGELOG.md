@@ -67,3 +67,10 @@
 - Add locked Markdown/Mermaid tooling, repository validation, and tests for the validator.
 
 Cluster telemetry, anomaly models, Kubernetes controllers, remediation, identity, and cloud provisioning are not implemented.
+
+## Phase 09 — Resilience engineering (partial acceptance)
+
+- Add bounded durable queue admission, configurable database connection ceilings and migration `0005_queue_index`.
+- Add stabilized API HPA and opt-in multi-replica lab profile/quota example.
+- Add safe HTTP benchmarks with raw JSON/CSV/chart evidence, k6 suites and guarded disposable-cluster chaos tooling.
+- Record unexecuted cluster, database, recovery-comparison and SLO measurements without invented results.

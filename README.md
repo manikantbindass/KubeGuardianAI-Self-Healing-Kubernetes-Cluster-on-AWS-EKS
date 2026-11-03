@@ -108,3 +108,7 @@ Make targets: `setup`, `dev`, `test`, `lint`, `build`, `clean`, `health`, plus `
 Read [CONTRIBUTING](CONTRIBUTING.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [SECURITY](SECURITY.md), and [CHANGELOG](CHANGELOG.md). Branch from `main` using `feat/`, `fix/`, `docs/`, `chore/`, or `ci/` and use Conventional Commits. Preserve [LICENSE](LICENSE) and existing Git ancestry.
 
 ![Animated Kubernetes engineering footer](docs/assets/footer.svg)
+
+## Phase 09 resilience work
+
+Queue backpressure, bounded database pools, an ordered queue index, stabilized API HPA and safe loopback benchmarking are implemented. [Resilience instructions and measured limits](docs/runbooks/resilience.md) include k6 suites and explicitly gated disposable-cluster fault scripts. The committed 900-request health benchmark does not measure database/cluster capacity. Destructive chaos, recovery comparisons and production SLO acceptance remain unverified; Phase 08 vulnerability gates still block releases.
