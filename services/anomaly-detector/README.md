@@ -1,3 +1,5 @@
-# anomaly-detector
+# Advisory anomaly detector
 
-Phase 04: score versioned feature windows using a declared statistical baseline. Phase 08 adds evaluated models. Emit scores and evidence, never execute actions. Require leakage checks and false-positive/latency evaluation.
+Phase 05 implements a FastAPI service with bounded batch scoring, real telemetry polling, rules/robust-statistics/Isolation Forest options, JSON models and rule fallback. Rules are the default because the synthetic benchmark does not justify promoting ML above them. No Kubernetes write or remediation interface exists.
+
+See the [operating guide](../../docs/runbooks/anomaly-detection.md), [model card](../../ml/models/model-card.md), [validation](../../docs/reports/phase-05-validation.md) and [architecture](../../docs/architecture/anomaly-detection.md). Synthetic telemetry/models are separated from live incident publishing.

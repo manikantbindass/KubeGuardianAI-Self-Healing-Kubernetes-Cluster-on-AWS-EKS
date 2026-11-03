@@ -1,0 +1,96 @@
+{
+  "model_version": "bbe9c67cd86dc60a7fcbd013713f054aaa2025afc3abd5c9f09461d69a736154",
+  "feature_version": "1.0.0",
+  "feature_order": [
+    "cpu_ratio",
+    "memory_ratio",
+    "restarts",
+    "error_ratio",
+    "latency_p95_ms",
+    "pending_seconds",
+    "availability_ratio",
+    "deployment_changes",
+    "node_pressure_ratio",
+    "saturation_ratio",
+    "log_errors",
+    "warning_events",
+    "cpu_ratio_lag1",
+    "cpu_ratio_mean3",
+    "cpu_ratio_std3",
+    "cpu_ratio_delta",
+    "memory_ratio_lag1",
+    "memory_ratio_mean3",
+    "memory_ratio_std3",
+    "memory_ratio_delta",
+    "error_ratio_lag1",
+    "error_ratio_mean3",
+    "error_ratio_std3",
+    "error_ratio_delta",
+    "latency_p95_ms_lag1",
+    "latency_p95_ms_mean3",
+    "latency_p95_ms_std3",
+    "latency_p95_ms_delta"
+  ],
+  "window_seconds": 60,
+  "statistical_threshold": 99.73634830748004,
+  "forest_threshold": 0.46971988492149863,
+  "dataset_sha256": "33e2047bc6d8ecbc0650224e925cfeae12602c851765f3e4a759dee969748fd5",
+  "dataset_id": "synthetic-v1-seed-42",
+  "provenance": "synthetic",
+  "code_sha256": "9a076217a6a4349086f23bfbf5f4db7117e9272dd6c91be7a183677d889d5279",
+  "python": "3.12.4",
+  "packages": {
+    "numpy": "2.5.4",
+    "scikit-learn": "1.9.1"
+  },
+  "parameters": {
+    "seed": 42,
+    "trees": 64,
+    "max_samples": 256,
+    "validation_max_fpr": 0.1,
+    "minimum_coverage": 0.75
+  },
+  "splits": {
+    "train": {
+      "windows": 540,
+      "start": "2026-01-01T00:00:00+00:00",
+      "end": "2026-01-01T09:00:00+00:00",
+      "labeled_positive": 60,
+      "labeled_negative": 480,
+      "incident_ids": [
+        "fault-0",
+        "fault-1",
+        "fault-2",
+        "fault-3",
+        "fault-4",
+        "fault-5"
+      ]
+    },
+    "validation": {
+      "windows": 177,
+      "start": "2026-01-01T09:03:00+00:00",
+      "end": "2026-01-01T12:00:00+00:00",
+      "labeled_positive": 20,
+      "labeled_negative": 157,
+      "incident_ids": [
+        "fault-6",
+        "fault-7"
+      ]
+    },
+    "test": {
+      "windows": 177,
+      "start": "2026-01-01T12:03:00+00:00",
+      "end": "2026-01-01T15:00:00+00:00",
+      "labeled_positive": 20,
+      "labeled_negative": 157,
+      "incident_ids": [
+        "fault-8",
+        "fault-9"
+      ]
+    }
+  },
+  "training_baseline_windows": 480,
+  "training_label_policy": "exclude known positives; unlabeled assumed baseline",
+  "score_kind": "uncalibrated_anomaly_score",
+  "calibration": "none; scores and severities are not incident probabilities"
+}

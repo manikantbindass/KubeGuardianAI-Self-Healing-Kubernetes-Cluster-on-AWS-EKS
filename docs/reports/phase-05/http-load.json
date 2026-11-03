@@ -1,0 +1,18 @@
+{
+  "requests": 40,
+  "concurrency": 4,
+  "windows_per_request": 4,
+  "provenance": "synthetic",
+  "mode": "trained",
+  "http_latency_ms": {
+    "p50": 8.98149999557063,
+    "p95": 29.619299981277436
+  },
+  "drift": {
+    "windows_scored": 160,
+    "extreme_shift_windows": 160,
+    "shift_rate": 1.0,
+    "policy": "robust deviation >12; advisory, no automatic retraining",
+    "persistence": "process-lifetime counters reset on restart"
+  }
+}

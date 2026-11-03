@@ -1,7 +1,8 @@
 import uuid
 from datetime import UTC, datetime
+from typing import Any
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from kubesentinel_api.database import Base
@@ -39,3 +40,15 @@ class Incident(Base):
     last_seen: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
+
+
+class AnomalyEvidence(Base):
+    __tablename__ = "anomaly_evidence"
+
+    incident_id: Mapped[str] = mapped_column(ForeignKey("incidents.id"), primary_key=True)
+    detector: Mapped[str] = mapped_column(String(32))
+    model_version: Mapped[str] = mapped_column(String(128))
+    score: Mapped[float] = mapped_column(Float)
+    threshold: Mapped[float] = mapped_column(Float)
+    provenance: Mapped[str] = mapped_column(String(16))
+    explanations: Mapped[list[dict[str, Any]]] = mapped_column(JSON)

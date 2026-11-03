@@ -1,0 +1,102 @@
+{
+  "model_version": "bbe9c67cd86dc60a7fcbd013713f054aaa2025afc3abd5c9f09461d69a736154",
+  "provenance": "synthetic",
+  "dataset_sha256": "33e2047bc6d8ecbc0650224e925cfeae12602c851765f3e4a759dee969748fd5",
+  "scope": "held-out windows; synthetic fixture results do not establish real-world accuracy",
+  "score_kind": "uncalibrated_anomaly_score",
+  "test_windows": 177,
+  "runtime": {
+    "python": "3.12.4",
+    "system": "Windows",
+    "machine": "AMD64",
+    "timing": "serial warm-process; per-window"
+  },
+  "detectors": {
+    "rules": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": [
+        [
+          157,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "incident_count": 2,
+      "detected_incidents": 2,
+      "missed_incidents": [],
+      "mean_detection_delay_seconds": 60.0,
+      "delay_definition": "first positive window END minus fault start; excludes misses",
+      "inference_latency_ms": {
+        "p50": 0.003,
+        "p95": 0.0073
+      },
+      "threshold": 0.5,
+      "insufficient_data_windows": 0,
+      "extreme_shift_window_rate": 0.0
+    },
+    "robust_statistics": {
+      "precision": 0.875,
+      "recall": 0.35,
+      "f1": 0.5,
+      "false_positive_rate": 0.006369426751592357,
+      "confusion_matrix": [
+        [
+          156,
+          1
+        ],
+        [
+          13,
+          7
+        ]
+      ],
+      "incident_count": 2,
+      "detected_incidents": 1,
+      "missed_incidents": [
+        "fault-9"
+      ],
+      "mean_detection_delay_seconds": 240.0,
+      "delay_definition": "first positive window END minus fault start; excludes misses",
+      "inference_latency_ms": {
+        "p50": 0.1597,
+        "p95": 0.3293
+      },
+      "threshold": 99.73634830748004,
+      "insufficient_data_windows": 0,
+      "extreme_shift_window_rate": 0.14124293785310735
+    },
+    "isolation_forest": {
+      "precision": 0.6666666666666666,
+      "recall": 0.9,
+      "f1": 0.7659574468085106,
+      "false_positive_rate": 0.05732484076433121,
+      "confusion_matrix": [
+        [
+          148,
+          9
+        ],
+        [
+          2,
+          18
+        ]
+      ],
+      "incident_count": 2,
+      "detected_incidents": 2,
+      "missed_incidents": [],
+      "mean_detection_delay_seconds": 120.0,
+      "delay_definition": "first positive window END minus fault start; excludes misses",
+      "inference_latency_ms": {
+        "p50": 0.159,
+        "p95": 0.4318
+      },
+      "threshold": 0.46971988492149863,
+      "insufficient_data_windows": 0,
+      "extreme_shift_window_rate": 0.14124293785310735
+    }
+  }
+}

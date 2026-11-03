@@ -171,7 +171,7 @@ variable "github_oidc_provider_arn" {
 variable "github_repository" {
   description = "github repository; see the module reference for restrictions."
   type        = string
-  default     = "manikantbindass/KubeGuardianAI-Self-Healing-Kubernetes-Cluster-on-AWS-EKS"
+  default     = "manikantbindass/KubeSentinel-AI"
   validation {
     condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.github_repository))
     error_message = "Invalid github_repository; review documented scope, pins and safety limits."
