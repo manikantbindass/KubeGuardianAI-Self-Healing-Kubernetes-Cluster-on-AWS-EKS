@@ -111,7 +111,10 @@ async def correlation(
 
 @app.exception_handler(StarletteHTTPException)
 async def http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    return error_response(request, exc.status_code, "request_error", str(exc.detail))
+    response = error_response(request, exc.status_code, "request_error", str(exc.detail))
+    if exc.headers and "Retry-After" in exc.headers:
+        response.headers["Retry-After"] = exc.headers["Retry-After"]
+    return response
 
 
 @app.exception_handler(RequestValidationError)
@@ -150,7 +153,7 @@ def ready(db: Db, cache: Cache, response: Response) -> Readiness:
     try:
         db.execute(text("SELECT 1 FROM greeting_jobs LIMIT 1"))
         revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        dependencies["postgresql"] = "ok" if revision == "0004_operations" else "unavailable"
+        dependencies["postgresql"] = "ok" if revision == "0005_queue_index" else "unavailable"
     except SQLAlchemyError:
         dependencies["postgresql"] = "unavailable"
     try:
@@ -169,6 +172,20 @@ def list_jobs(db: Db) -> list[GreetingJob]:
 
 @router.post("/jobs", response_model=GreetingOutput, status_code=202, tags=["demo"])
 def create_job(payload: GreetingInput, db: Db, cache: Cache) -> GreetingJob:
+    # Serialize admission only, across API replicas; workers retain SKIP LOCKED concurrency.
+    if db.get_bind().dialect.name == "postgresql":
+        db.execute(text("SELECT pg_advisory_xact_lock(970901)"))
+    pending = (
+        db.scalar(
+            select(func.count()).select_from(GreetingJob).where(GreetingJob.status == "queued")
+        )
+        or 0
+    )
+    if pending >= settings.queue_max_pending:
+        db.rollback()
+        raise HTTPException(
+            429, "Durable queue is full; retry later.", headers={"Retry-After": "2"}
+        )
     job = GreetingJob(name=payload.name.strip())
     db.add(job)
     db.commit()

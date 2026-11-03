@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from kubesentinel_api.database import Base
@@ -10,6 +10,7 @@ from kubesentinel_api.database import Base
 
 class GreetingJob(Base):
     __tablename__ = "greeting_jobs"
+    __table_args__ = (Index("ix_jobs_status_created", "status", "created_at"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str] = mapped_column(String(80))
