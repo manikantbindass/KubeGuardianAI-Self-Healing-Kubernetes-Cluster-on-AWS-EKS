@@ -19,7 +19,7 @@ docker compose -f docker-compose.yml -f docker-compose.operations.yml up --build
 uv run python scripts/seed_operations_demo.py
 ```
 
-Open `http://localhost:3000`. Enter the `OPS_DEV_TOKEN` from your ignored `.env` in the password field. Use `OPS_DEV_VIEWER_TOKEN` to check read-only access. Select **Synthetic demo** explicitly to view fixtures. Without `--demo`, the selector is unavailable. Keep tokens and signing keys out of issues, recordings and screenshots.
+Open `http://localhost:3000`. Enter the `OPS_DEV_TOKEN` from your ignored `.env` in the password field. Use `OPS_DEV_VIEWER_TOKEN` to check read-only access. Select **Synthetic demo** explicitly to view fixtures. A fresh configuration without `--demo` keeps the selector unavailable; set `OPS_DEMO_ENABLED=false` to disable an already enabled fixture partition. Keep tokens and signing keys out of issues, recordings and screenshots.
 
 ## Linux/macOS
 

@@ -108,6 +108,10 @@ test("preferences persist, cost scenario computes, demo decision creates audit",
   page,
 }) => {
   await login(page);
+  await page.request.post("/api/backend/ops/preferences", {
+    headers: { Origin: new URL(page.url()).origin },
+    data: { refresh_seconds: 15, compact_tables: false, timezone: "UTC" },
+  });
   await page.goto("/settings");
   await page.getByLabel("Polling interval").selectOption("30");
   await page.getByRole("button", { name: "Save preferences" }).click();

@@ -650,13 +650,20 @@ export function OperationsApp({ section = "overview" }: { section?: Section }) {
                 {section === "infrastructure" && (
                   <InfrastructureView view={data} />
                 )}{" "}
-                {section === "settings" && (
-                  <SettingsView
-                    key={JSON.stringify(preferences.data ?? null)}
-                    session={session.data}
-                    preferences={preferences.data}
-                  />
-                )}
+                {section === "settings" &&
+                  (preferences.isPending ? (
+                    <Skeleton />
+                  ) : preferences.isError ? (
+                    <ErrorState
+                      message="Unable to load saved preferences"
+                      retry={() => void preferences.refetch()}
+                    />
+                  ) : (
+                    <SettingsView
+                      session={session.data}
+                      preferences={preferences.data}
+                    />
+                  ))}
               </>
             )
           )}

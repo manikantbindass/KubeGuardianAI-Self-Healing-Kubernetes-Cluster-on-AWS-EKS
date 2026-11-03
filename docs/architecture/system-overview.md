@@ -1,6 +1,6 @@
 # System overview
 
-Status: target architecture accepted as the Phase 00 design baseline on 2026-11-02. Phase 01 now implements the local dashboard, API, greeting worker, PostgreSQL schema/migration, and Redis cache/wake-ups; see the [local service diagram](../diagrams/local-services.mmd) and [verification record](../validation.md). All cluster, identity, detection, correlation, remediation, notification/audit, GitOps, and cloud components below remain proposed. Significant changes require an ADR.
+Status: target architecture accepted as the Phase 00 design baseline on 2026-11-02. Phase 01 now implements the local dashboard, API, greeting worker, PostgreSQL schema/migration, and Redis cache/wake-ups; see the [local service diagram](../diagrams/local-services.mmd) and [verification record](../validation.md). Later phases add local cluster orchestration, telemetry/incidents, advisory detection, the guarded recovery operator and the [authenticated operations read model](0007-operations-read-model.md). The [Phase 07 guide](../runbooks/operations-dashboard.md) and phase validation records distinguish shipped slices from the remaining target architecture. Notifications, broader correlation, immutable audit export, live identity-provider certification, GitOps promotion and cloud deployment remain future gates. Significant changes require an ADR.
 
 ## Purpose and scope
 
