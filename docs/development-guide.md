@@ -4,7 +4,7 @@ This guide preserves the Phase 01 public greeting/health slice at `/status`, Pos
 
 ## Toolchain
 
-- Node 24.14.1 (`.nvmrc`) and npm 11.11.0. Linux/macOS: `nvm install && nvm use`; Windows: use nvm-windows or the Node installer. Run `npm install --global npm@11.11.0` if needed.
+- Node 24.22.2 (`.nvmrc`) and npm 11.11.0. Linux/macOS: `nvm install && nvm use`; Windows: use nvm-windows or the Node installer. Run `npm install --global npm@11.11.0` if needed.
 - Python 3.12 recommended; project range is 3.12-3.14. Install uv 0.13.6 with `python3 -m pip install uv==0.13.6` (Linux/macOS) or `py -3.12 -m pip install uv==0.13.6` (Windows). If pip is unavailable, create a tool virtual environment with `py -3.12 -m venv .tools` and use `.tools\Scripts\python -m pip install uv==0.13.6`.
 - Docker Engine/Compose v2 or Docker Desktop with a running **Linux** engine. Make is optional.
 

@@ -28,6 +28,22 @@ VIEWER = {"Authorization": "Bearer test-viewer"}
 BRIDGE = {"Authorization": "Bearer test-bridge"}
 
 
+@pytest.mark.parametrize("insecure", ["OPS_OIDC_ISSUER", "OPS_OIDC_JWKS_URL"])
+def test_oidc_rejects_insecure_key_transport_before_fetch(
+    insecure: str, client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("OPS_AUTH_MODE", "oidc")
+    monkeypatch.setenv("OPS_OIDC_ISSUER", "https://issuer.invalid")
+    monkeypatch.setenv("OPS_OIDC_JWKS_URL", "https://issuer.invalid/keys")
+    monkeypatch.setenv(insecure, "http://issuer.invalid/keys")
+    get_settings.cache_clear()
+    lookup = Mock(side_effect=AssertionError("Untrusted key transport must not be contacted"))
+    monkeypatch.setattr(auth, "jwks", lookup)
+    response = client.get("/api/v1/ops/session", headers=ADMIN)
+    assert response.status_code == 503
+    lookup.assert_not_called()
+
+
 @pytest.fixture(autouse=True)
 def operations_config(monkeypatch: pytest.MonkeyPatch, cache: Any) -> Generator[None]:
     for key, value in {

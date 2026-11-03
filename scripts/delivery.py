@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = {"api", "dashboard", "operator", "detector", "demo-workload"}
 REPO = "manikantbindass/KubeSentinel-AI"
 REQUIRED_CHECKS = {
+    "portfolio",
     "api (ubuntu-latest)",
     "api (windows-latest)",
     "dashboard",

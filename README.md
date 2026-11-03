@@ -6,11 +6,13 @@
 
 A Kubernetes operations platform with a real full-stack dashboard, explainable anomaly detection and a policy-driven recovery operator. Detection supplies evidence; deterministic policy and human approval control execution.
 
-[![Foundation checks](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Fphase-11-portfolio)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml)
-[![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Fphase-11-portfolio)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
+[![Foundation checks](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Frelease-audit)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml)
+[![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Frelease-audit)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 **Release status:** development portfolio; v1.0.0 is unpublished and blocked by security findings. Local and Linux CI evidence exists for selected flows. AWS is **not deployed**. Synthetic evaluations and demo telemetry do not establish production accuracy or readiness. See the [release checklist](docs/releases/v1.0.0-candidate.md) and [dated validation matrix](docs/reports/phase-11-validation.md).
+
+See the [phase completion and release audit](docs/audits/PHASE_COMPLETION_AUDIT.md) for current findings and merge gates.
 
 ## Presentation and technical report
 
@@ -102,7 +104,7 @@ CPU/memory overhead, repeated native-versus-KubeSentinel recovery, full-stack sa
 
 ## Validate and contribute
 
-Toolchain: Node **24.14.1**, npm **11.11.0**, Python **3.12**, uv **0.13.6**. Explicit dependencies and transitive locks are committed. Go, Terraform, Helm and security tool pins live with their workflows/configuration.
+Toolchain: Node **24.22.2**, npm **11.11.0**, Python **3.12**, uv **0.13.6**. Explicit dependencies and transitive locks are committed. Go, Terraform, Helm and security tool pins live with their workflows/configuration.
 
 ```sh
 npm ci

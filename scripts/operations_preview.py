@@ -15,6 +15,7 @@ import uvicorn  # noqa: E402
 from fastapi import FastAPI, Request  # noqa: E402
 from kubesentinel_api.config import get_settings  # noqa: E402
 from kubesentinel_api.database import Base, get_db, get_redis  # noqa: E402
+from kubesentinel_api.intelligence_api import router as intelligence_router  # noqa: E402
 from kubesentinel_api.models import Incident  # noqa: E402, F401
 from kubesentinel_api.operations import router as ops  # noqa: E402
 from kubesentinel_api.operations.demo import fixture  # noqa: E402
@@ -68,6 +69,7 @@ def create_preview() -> FastAPI:
         return await call_next(request)
 
     app.include_router(ops.router)
+    app.include_router(intelligence_router)
     with Session(engine) as db:
         ops.ingest(SnapshotBatch.model_validate(fixture()), db)
     return app

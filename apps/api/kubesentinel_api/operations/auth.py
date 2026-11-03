@@ -4,6 +4,7 @@ import hashlib
 import hmac
 from functools import lru_cache
 from typing import Annotated
+from urllib.parse import urlsplit
 
 import jwt
 from fastapi import Depends, Header, HTTPException
@@ -59,6 +60,11 @@ def principal(authorization: Annotated[str | None, Header()] = None) -> Principa
         or not settings.ops_oidc_jwks_url
     ):
         raise HTTPException(503, "Operations authentication requires OIDC configuration")
+    if any(
+        urlsplit(url).scheme != "https" or not urlsplit(url).hostname
+        for url in (settings.ops_oidc_issuer, settings.ops_oidc_jwks_url)
+    ):
+        raise HTTPException(503, "Operations OIDC issuer and JWKS require HTTPS")
     try:
         key = jwks(settings.ops_oidc_jwks_url).get_signing_key_from_jwt(token)
         claims = jwt.decode(

@@ -11,10 +11,49 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from delivery import ROOT, digest, promote, validate_receipt, validate_release, write
+from delivery import (
+    REQUIRED_CHECKS,
+    ROOT,
+    check_source,
+    digest,
+    promote,
+    validate_receipt,
+    validate_release,
+    write,
+)
 from security_gate import exceptions, findings
 from validate_delivery import fixture_release
 from verify_release import verify_origin, verify_predicate
+
+
+def test_release_rejects_missing_or_failed_portfolio_check(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from unittest.mock import Mock
+
+    checks = [
+        {"name": name, "id": index, "app": {"slug": "github-actions"}, "conclusion": "success"}
+        for index, name in enumerate(sorted(REQUIRED_CHECKS), start=1)
+    ]
+    monkeypatch.setattr("delivery.subprocess.run", Mock())
+    output = Mock()
+    monkeypatch.setattr("delivery.subprocess.check_output", output)
+    for conclusion in (None, "failure"):
+        remaining = [check for check in checks if check["name"] != "portfolio"]
+        if conclusion:
+            remaining.append(
+                {
+                    "name": "portfolio",
+                    "id": 100,
+                    "app": {"slug": "github-actions"},
+                    "conclusion": conclusion,
+                }
+            )
+        output.return_value = json.dumps([{"check_runs": remaining}])
+        with pytest.raises(ValueError, match="portfolio"):
+            check_source("a" * 40)
+    output.return_value = json.dumps([{"check_runs": checks}])
+    check_source("a" * 40)
 
 
 def test_staging_promotion_preserves_all_production_files(tmp_path: Path) -> None:

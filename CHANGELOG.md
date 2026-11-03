@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased - Phase 11 portfolio and release preparation
+## Unreleased - release audit and portfolio preparation
+
+- Integrate main without losing development history; preserve the original Apache-2.0 license.
+- Require portfolio CI at release time; restore authenticated intelligence in local preview.
+- Reject insecure OIDC key transport and add safety/integration regression tests.
+- Refresh runtime image digests and fixed Go modules/compiler; keep vulnerability gates blocking.
+- Add per-phase completion evidence and explicit unmet release requirements.
 
 - Add a root editable 25-slide PowerPoint with notes and native chart workbooks, slide PDF export, technical report and reviewable generation source.
 - Derive figures from recorded synthetic ML, isolated recovery and health-only load evidence; label cost assumptions and missing experiments explicitly.

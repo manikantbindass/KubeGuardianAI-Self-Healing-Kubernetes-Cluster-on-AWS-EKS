@@ -50,7 +50,7 @@ def main() -> None:
     args = parser.parse_args()
     artifact_dir = ROOT / ".cache/operator"
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    os.environ.setdefault("GOTOOLCHAIN", "go1.26.8")
+    os.environ.setdefault("GOTOOLCHAIN", "go1.26.10")
     os.environ.setdefault("GOCACHE", str(ROOT / ".cache/gobuild"))
     os.environ.setdefault("GOMODCACHE", str(ROOT / ".cache/gomod"))
     if args.action == "generate":
