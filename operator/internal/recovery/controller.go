@@ -105,8 +105,13 @@ func (r *Reconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.
 	if incident == nil {
 		return result, nil
 	}
-	// Sustain evidence in the object itself; no process-memory debounce that resets approvals.
-	name := "pending-" + incident.ID[:32]
+	previous, err := r.previous(ctx, d, policy, KindFor(incident.Type) != "Rollback")
+	if err != nil {
+		return result, err
+	}
+	plan := Plan(policy, d, *incident, previous, r.Now())
+	// A policy edit requires a new exact plan/approval but retains the same UID action budget.
+	name := ActionName(plan)
 	a := &v1.RemediationAction{}
 	if err := r.Client.Get(ctx, types.NamespacedName{Namespace: r.Namespace, Name: name}, a); err == nil {
 		if Terminal(a.Status.Phase) {
@@ -116,11 +121,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.
 	} else if !apierrors.IsNotFound(err) {
 		return result, err
 	}
-	previous, err := r.previous(ctx, d, policy, KindFor(incident.Type) != "Rollback")
-	if err != nil {
-		return result, err
-	}
-	plan := Plan(policy, d, *incident, previous, r.Now())
 	a = &v1.RemediationAction{ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: r.Namespace}, Spec: plan}
 	if err := r.Client.Create(ctx, a); err != nil {
 		return result, client.IgnoreAlreadyExists(err)

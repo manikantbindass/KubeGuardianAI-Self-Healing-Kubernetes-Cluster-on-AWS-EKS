@@ -140,3 +140,19 @@ func TestFixedScenarioActionsKeepPressureAndLatencyAlertOnly(t *testing.T) {
 		}
 	}
 }
+
+func TestPolicyEditRequiresNewApprovalIdentityButCannotResetBudget(t *testing.T) {
+	p, d, i, now := fixtures()
+	old := Plan(p, d, i, "", now)
+	p.ResourceVersion = "2"
+	p.Spec.CooldownSeconds = 0
+	p.Spec.MaxActionsPerWindow = 1
+	current := Plan(p, d, i, "", now)
+	if ActionName(old) == ActionName(current) {
+		t.Fatal("policy edit reused approved action identity")
+	}
+	record := v1.RemediationAction{Spec: old, Status: v1.ActionStatus{Phase: "Succeeded", AttemptedAt: &metav1.Time{Time: now.Add(-time.Minute)}}}
+	if reason := Check(p, d, current, []v1.RemediationAction{record}, now); reason != "ActionBudgetExhausted" {
+		t.Fatal("policy edit bypassed budget", reason)
+	}
+}

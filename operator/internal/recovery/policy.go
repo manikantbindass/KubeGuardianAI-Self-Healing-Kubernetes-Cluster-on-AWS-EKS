@@ -179,6 +179,6 @@ func Plan(p *v1.RemediationPolicy, d *apps.Deployment, incident v1.Incident, pre
 }
 
 func ActionName(plan v1.ActionSpec) string {
-	// Same incident/workload generation/policy cannot execute again after spec edits or replay.
-	return "recovery-" + Digest([]string{plan.Incident.ID, plan.Target.UID, fmt.Sprint(plan.Target.Generation), plan.PolicyUID})[:32]
+	// Replays share an identity; policy edits require fresh approval, not a reset action budget.
+	return "recovery-" + Digest([]string{plan.Incident.ID, plan.Target.UID, fmt.Sprint(plan.Target.Generation), plan.PolicyUID, plan.PolicyVersion})[:32]
 }
