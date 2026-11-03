@@ -215,3 +215,13 @@ variable "internal_load_balancer_dns_name" {
   type        = string
   default     = ""
 }
+
+variable "enable_delivery_roles" {
+  description = "Opt-in environment-bound ECR roles; requires protected main-only GitHub environments."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.enable_delivery_roles || can(regex("^arn:aws:iam::[0-9]{12}:oidc-provider/token.actions.githubusercontent.com$", var.github_oidc_provider_arn))
+    error_message = "Delivery requires the existing approved GitHub OIDC provider ARN."
+  }
+}

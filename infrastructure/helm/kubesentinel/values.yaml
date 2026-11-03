@@ -12,6 +12,10 @@ image:
   dashboard: kubesentinel/dashboard
   tag: phase02
   pullPolicy: IfNotPresent
+  requireDigests: false
+  digests: {api: "", dashboard: ""}
+migration:
+  gitopsHook: false
 replicas: 1
 localStores: true
 postgresImage: postgres:17.10-bookworm

@@ -1,0 +1,47 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "name": "sentinel-staging",
+    "namespace": "argocd",
+    "annotations": {
+      "delivery.kubesentinel.ai/state": "awaiting-first-verified-release"
+    }
+  },
+  "spec": {
+    "project": "sentinel-staging",
+    "sources": [
+      {
+        "repoURL": "https://github.com/manikantbindass/KubeSentinel-AI.git",
+        "targetRevision": "release-not-configured",
+        "path": "infrastructure/helm/kubesentinel",
+        "helm": {
+          "releaseName": "sentinel",
+          "valueFiles": [
+            "$values/infrastructure/argocd/environments/staging/values.json",
+            "$values/infrastructure/argocd/environments/staging/images.json"
+          ]
+        }
+      },
+      {
+        "repoURL": "https://github.com/manikantbindass/KubeSentinel-AI.git",
+        "targetRevision": "main",
+        "ref": "values"
+      }
+    ],
+    "destination": {
+      "server": "https://kubernetes.default.svc",
+      "namespace": "sentinel-staging"
+    },
+    "syncPolicy": {
+      "syncOptions": [
+        "FailOnSharedResource=true",
+        "PruneLast=true"
+      ],
+      "retry": {
+        "limit": 2
+      }
+    },
+    "revisionHistoryLimit": 10
+  }
+}

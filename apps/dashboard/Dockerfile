@@ -1,4 +1,4 @@
-FROM node:24.14.1-bookworm-slim AS dependencies
+FROM node:24.14.1-bookworm-slim@sha256:b506e7321f176aae77317f99d67a24b272c1f09f1d10f1761f2773447d8da26c AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 COPY apps/dashboard/package.json ./apps/dashboard/package.json
@@ -9,7 +9,7 @@ COPY apps/dashboard ./apps/dashboard
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM node:24.14.1-bookworm-slim AS runtime
+FROM node:24.14.1-bookworm-slim@sha256:b506e7321f176aae77317f99d67a24b272c1f09f1d10f1761f2773447d8da26c AS runtime
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
 COPY --from=builder --chown=node:node /app/apps/dashboard/.next/standalone ./

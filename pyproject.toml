@@ -30,7 +30,7 @@ package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit", "tests/integration"]
-pythonpath = ["apps/api", "ml", "services/anomaly-detector"]
+pythonpath = ["scripts", "apps/api", "ml", "services/anomaly-detector"]
 addopts = "-ra --strict-markers"
 markers = ["postgres: requires TEST_DATABASE_URL pointing at a disposable PostgreSQL database"]
 

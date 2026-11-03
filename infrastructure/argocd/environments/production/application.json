@@ -1,0 +1,47 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "name": "sentinel-production",
+    "namespace": "argocd",
+    "annotations": {
+      "delivery.kubesentinel.ai/state": "awaiting-first-verified-release"
+    }
+  },
+  "spec": {
+    "project": "sentinel-production",
+    "sources": [
+      {
+        "repoURL": "https://github.com/manikantbindass/KubeSentinel-AI.git",
+        "targetRevision": "release-not-configured",
+        "path": "infrastructure/helm/kubesentinel",
+        "helm": {
+          "releaseName": "sentinel",
+          "valueFiles": [
+            "$values/infrastructure/argocd/environments/production/values.json",
+            "$values/infrastructure/argocd/environments/production/images.json"
+          ]
+        }
+      },
+      {
+        "repoURL": "https://github.com/manikantbindass/KubeSentinel-AI.git",
+        "targetRevision": "main",
+        "ref": "values"
+      }
+    ],
+    "destination": {
+      "server": "https://kubernetes.default.svc",
+      "namespace": "sentinel-production"
+    },
+    "syncPolicy": {
+      "syncOptions": [
+        "FailOnSharedResource=true",
+        "PruneLast=true"
+      ],
+      "retry": {
+        "limit": 2
+      }
+    },
+    "revisionHistoryLimit": 10
+  }
+}

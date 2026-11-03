@@ -48,6 +48,7 @@ module "platform" {
   autoscaling_service_linked_role_arn = var.autoscaling_service_linked_role_arn
   view_principal_arns                 = var.view_principal_arns
   deploy_principal_arns               = var.deploy_principal_arns
+  enable_delivery_roles               = var.enable_delivery_roles
   enable_github_role                  = var.enable_github_role
   github_oidc_provider_arn            = var.github_oidc_provider_arn
   github_repository                   = var.github_repository
@@ -70,3 +71,5 @@ output "platform" { value = {
   log_groups              = module.platform.log_groups
   dns_name                = module.platform.dns_name
 } }
+
+output "delivery_roles" { value = module.platform.delivery_roles }

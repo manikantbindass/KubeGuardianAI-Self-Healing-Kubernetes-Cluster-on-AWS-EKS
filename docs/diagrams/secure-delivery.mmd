@@ -1,0 +1,17 @@
+flowchart LR
+  PR[Reviewed source PR] --> Checks[Quality and integration checks]
+  Checks --> Security[Secrets / dependencies / IaC / image gates]
+  Security --> Merge[Protected main]
+  Merge --> Approval[Manual staging approval]
+  Approval --> OIDC[GitHub OIDC / ECR-only role]
+  OIDC --> Build[Build and scan immutable images]
+  Build --> Sign[Sign + SBOM + source/run provenance]
+  Sign --> Artifact[Verified release artifact / draft release]
+  Artifact --> StagePR[Signature-verified staging promotion PR]
+  StagePR --> Stage[Reviewed merge / manual Argo sync]
+  Stage --> Evidence[Readiness evidence + operator smoke/SLO review]
+  Evidence --> ProdGate[Independent production approval]
+  ProdGate --> ProdPR[Exact staged digests / production PR]
+  ProdPR --> Prod[Reviewed merge / explicit production sync]
+  Terraform[Terraform platform ownership] -. EKS / IAM / ECR .-> OIDC
+  Terraform -. No application ownership .-> Stage

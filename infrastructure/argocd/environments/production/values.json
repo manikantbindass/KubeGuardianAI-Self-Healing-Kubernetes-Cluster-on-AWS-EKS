@@ -1,0 +1,30 @@
+{
+  "nameOverride": "sentinel",
+  "environment": "production",
+  "localStores": false,
+  "replicas": 2,
+  "rbac": {
+    "create": false
+  },
+  "image": {
+    "requireDigests": true,
+    "pullPolicy": "IfNotPresent"
+  },
+  "migration": {
+    "gitopsHook": true
+  },
+  "pdb": {
+    "enabled": true
+  },
+  "operations": {
+    "enabled": true,
+    "authMode": "oidc",
+    "demoEnabled": false,
+    "namespaces": [
+      "sentinel-production"
+    ],
+    "issuer": "https://configure-issuer.example.invalid",
+    "jwksURL": "https://configure-issuer.example.invalid/.well-known/jwks.json",
+    "publicURL": "https://configure-production.example.invalid"
+  }
+}

@@ -8,7 +8,7 @@ variable "retain_images" {
   }
 }
 resource "aws_ecr_repository" "this" {
-  for_each             = toset(["api", "dashboard"])
+  for_each             = toset(["api", "dashboard", "operator", "detector", "demo-workload"])
   name                 = "${var.name}/${each.key}"
   image_tag_mutability = "IMMUTABLE"
   force_delete         = false

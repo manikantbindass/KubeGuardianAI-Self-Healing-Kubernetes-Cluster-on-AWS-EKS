@@ -1,5 +1,14 @@
 # Changelog
 
+## Phase 08 — Secure delivery and GitOps
+
+- Pin actions and application base images by immutable digest; add locked tool/checksum metadata.
+- Add blocking Trivy/Gitleaks/Checkov checks, CycloneDX SBOMs, native kind admission tests and source-bound release signatures/provenance.
+- Add disabled-by-default ECR OIDC release and reviewed staging/production promotion workflows with exact staged-release verification.
+- Add manual-sync, namespace-scoped Argo applications/projects, digest-aware Helm and ordered migration hooks.
+- Add optional secret Pod Identity/External Secrets integration, explicit state KMS policy and safe incomplete-upload lifecycle rule.
+- Document administrator gates, ownership, rollback, limits and seven expiring Terraform findings tracked in issue #10. No AWS resources or releases were created.
+
 ## Unreleased - Phase 07
 
 - Add twelve-section operations dashboard with canvas-neutral design, responsive gallery, accessible controls and explicit real/demo modes.
