@@ -729,8 +729,9 @@ function IncidentDialog({
   const related = view.resources.filter(
     (r) =>
       r.kind === "RemediationAction" &&
-      (r.data.spec?.target?.name === incident.resource ||
-        incident.resource === r.data.spec?.target?.name),
+      r.namespace === incident.namespace &&
+      (r.data.spec?.incident?.id === incident.id ||
+        r.data.spec?.target?.name === incident.resource),
   );
   const explanation = /oom|memory/i.test(incident.reason)
     ? "Memory pressure or a recent workload change may explain the termination. Inspect the actual container limits and rollout history."
@@ -1195,8 +1196,8 @@ export function ResourceDetail({
     view?.resources.filter(
       (r) =>
         r.kind === "Event" &&
-        (r.data.owner === current.name ||
-          r.data.message?.includes(current.name)),
+        (current.kind === "Node" || r.namespace === current.namespace) &&
+        r.data.owner === current.name,
     ) ?? [];
   return (
     <Dialog title={current.name} close={close}>
