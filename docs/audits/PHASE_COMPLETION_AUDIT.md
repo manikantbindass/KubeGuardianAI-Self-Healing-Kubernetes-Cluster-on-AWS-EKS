@@ -1,5 +1,33 @@
 # Phase completion and release-readiness audit
 
+## Current security remediation — 2026-11-04
+
+The previous blocking HIGH/CRITICAL findings are resolved on `f882be6`.
+[Fresh security evidence](../reports/release-audit/security-remediation.json)
+records zero HIGH/CRITICAL findings and zero detected secrets in all five
+application images, plus a successful source dependency scan. Four application
+runtimes now use official digest-pinned Alpine 3.24 images. Checkov is the
+explicit reproducible downstream `3.4.3+sentinel.1` build described in
+[its source and tests](../../.github/security/checkov-patch), replacing
+python-ecdsa with OpenSSL-backed cryptography rather than suppressing the CVE.
+Signature acceptance/rejection regressions and the real Terraform scan pass in
+Linux CI. All severity gates and the existing Terraform exceptions remain
+unchanged. Python images still have five MEDIUM and one LOW entry; the operator
+has six UNKNOWN entries. These are not described as zero vulnerabilities.
+
+The owner's current instruction authorizes merging the security-remediated
+development integration after required checks and protections pass. PR #15 is
+kept closed until the full required set passes; final merge must use ordinary
+GitHub protections, with no administrator bypass or auto-deployment. Live PR/CI
+state determines eligibility. Earlier blocked decisions below are historical
+records of the pre-remediation commits, not the current security result.
+
+This development merge does not certify production readiness or complete the
+remaining phase acceptance work. Real AWS/OIDC/Argo, backup/restore, full-chain
+ML-to-recovery acceptance and production load evidence remain explicit gaps.
+The full portfolio release remains unpublished and requires its separate
+acceptance criteria and authorization.
+
 Audit date: 2026-11-04 (Asia/Calcutta). Target: `main` in
 `manikantbindass/KubeSentinel-AI`. Audit branch: `codex/release-audit`.
 
@@ -56,7 +84,7 @@ identify the executed jobs. It is not approval of the changed audit commit.
 | 05 Anomaly detection | PARTIAL | Feature/leakage/serialization/fallback/reproducibility tests pass; measured accuracy is synthetic, not validated on representative labeled production data |
 | 06 Recovery operator | PARTIAL | Native evidence, deterministic policy and approval checks, rollback and isolated baseline tests exist; broad fault/recovery comparisons and renewed compiler/module cluster verification remain required |
 | 07 Dashboard | PARTIAL | Twelve routes, API integration, browser/accessibility baseline tests pass; preview intelligence wiring fixed; live external OIDC tenant and current full runtime verification remain open |
-| 08 DevSecOps | FAIL | Six baseline security jobs fail; patched images/modules need rescans, Checkov dependency has no supplied fix; cloud provenance/GitOps promotions remain undeployed |
+| 08 DevSecOps | PARTIAL | Fresh six-job security workflow passes after runtime/cryptography replacements; live cloud provenance/GitOps promotion remains undeployed |
 | 09 Resilience | PARTIAL | Bounded SQL queue, pooling, worker replicas, HPA and local load harness exist; no full-stack saturation/HPA/HA/restore or repeated native-recovery benchmark evidence |
 | 10 AIOps | PARTIAL | Deterministic evidence correlation/retrieval, feedback and safety tests pass; eight-incident synthetic evaluation cannot establish real correlation accuracy; remote LLM is unimplemented/optional |
 | 11 Portfolio/release | PARTIAL | Root editable PPTX/report, slide PDF, source hashes and diagrams validate; release security gates and final integration review remain incomplete |

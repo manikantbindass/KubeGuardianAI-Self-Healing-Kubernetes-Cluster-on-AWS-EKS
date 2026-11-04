@@ -1,0 +1,50 @@
+{
+  "source_commit": "f882be62f030f95ff836adbad202d59d295824b3",
+  "run_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41767298832",
+  "images": [
+    {
+      "component": "api",
+      "severity_counts": {
+        "MEDIUM": 5,
+        "LOW": 1
+      },
+      "high_critical": 0,
+      "secrets": 0
+    },
+    {
+      "component": "dashboard",
+      "severity_counts": {},
+      "high_critical": 0,
+      "secrets": 0
+    },
+    {
+      "component": "demo-workload",
+      "severity_counts": {
+        "MEDIUM": 5,
+        "LOW": 1
+      },
+      "high_critical": 0,
+      "secrets": 0
+    },
+    {
+      "component": "detector",
+      "severity_counts": {
+        "MEDIUM": 5,
+        "LOW": 1
+      },
+      "high_critical": 0,
+      "secrets": 0
+    },
+    {
+      "component": "operator",
+      "severity_counts": {
+        "UNKNOWN": 6
+      },
+      "high_critical": 0,
+      "secrets": 0
+    }
+  ],
+  "source_dependency_high_critical": 0,
+  "checkov_build": "3.4.3+sentinel.1",
+  "exceptions": "seven existing exact-resource Checkov exceptions; no new CVE exceptions"
+}

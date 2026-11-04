@@ -2,6 +2,8 @@
 
 ## Unreleased - release audit and portfolio preparation
 
+- Resolve blocking source/image findings using official digest-pinned Alpine runtimes and a reproducible Checkov cryptography replacement; preserve strict gates and negative signature tests.
+
 - Integrate main without losing development history; preserve the original Apache-2.0 license.
 - Require portfolio CI at release time; restore authenticated intelligence in local preview.
 - Wire dashboard Insights to scoped backend correlation, hypotheses and runbook evidence, with regression tests.

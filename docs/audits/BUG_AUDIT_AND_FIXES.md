@@ -2,7 +2,7 @@
 
 Date: 2026-11-04. Branch: `codex/release-audit`. Integration PR:
 [PR #15](https://github.com/manikantbindass/KubeSentinel-AI/pull/15).
-Release recommendation remains **NOT READY** while mandatory security gates fail.
+Historical unresolved statuses below refer to their original scans. The security follow-up at the end records the verified remediation and supersedes AUD-005/AUD-006 blocking statuses.
 
 ## AUD-001: insecure API signing-key transport
 
@@ -143,3 +143,7 @@ See the [phase audit](PHASE_COMPLETION_AUDIT.md) and
 Candidate changes replace the four Debian application image runtimes with official digest-pinned Alpine 3.24 equivalents. They must pass musl dependency installation, application startup, browser/cluster tests and Trivy gates before any clean-scan claim. No suppressions are added.
 
 Checkov is now an explicit downstream `3.4.3+sentinel.1` build: the two public-key verification modules use OpenSSL-backed cryptography, and python-ecdsa is removed entirely. The checksum-verified wheel builder, retained upstream license, regenerated wheel RECORD and signature boundary regressions are in [.github/security/checkov-patch](../../.github/security/checkov-patch). Four regression groups pass locally; real scanner and fresh CI validation remain required. This is not claimed as an upstream fix.
+
+## Verified resolution of AUD-005 and AUD-006
+
+Both blocking findings are **RESOLVED** on `f882be6`. All five final image reports have zero HIGH/CRITICAL findings and zero detected secrets; the dependency scan and patched Checkov Terraform/crypto checks pass. See [machine-readable evidence](../reports/release-audit/security-remediation.json). The package replacement removes the vulnerable module and preserves signature verification rather than excluding findings. The runtime changes remove vulnerable Debian packages rather than editing scanner databases. MEDIUM/LOW/UNKNOWN findings remain recorded. AUD-008 moderate lint-tool risk remains separate from the HIGH/CRITICAL gate.

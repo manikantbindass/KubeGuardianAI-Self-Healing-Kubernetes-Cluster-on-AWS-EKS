@@ -1,5 +1,33 @@
 # Final release readiness
 
+## Current security remediation — 2026-11-04
+
+The previous blocking HIGH/CRITICAL findings are resolved on `f882be6`.
+[Fresh security evidence](../reports/release-audit/security-remediation.json)
+records zero HIGH/CRITICAL findings and zero detected secrets in all five
+application images, plus a successful source dependency scan. Four application
+runtimes now use official digest-pinned Alpine 3.24 images. Checkov is the
+explicit reproducible downstream `3.4.3+sentinel.1` build described in
+[its source and tests](../../.github/security/checkov-patch), replacing
+python-ecdsa with OpenSSL-backed cryptography rather than suppressing the CVE.
+Signature acceptance/rejection regressions and the real Terraform scan pass in
+Linux CI. All severity gates and the existing Terraform exceptions remain
+unchanged. Python images still have five MEDIUM and one LOW entry; the operator
+has six UNKNOWN entries. These are not described as zero vulnerabilities.
+
+The owner's current instruction authorizes merging the security-remediated
+development integration after required checks and protections pass. PR #15 is
+kept closed until the full required set passes; final merge must use ordinary
+GitHub protections, with no administrator bypass or auto-deployment. Live PR/CI
+state determines eligibility. Earlier blocked decisions below are historical
+records of the pre-remediation commits, not the current security result.
+
+This development merge does not certify production readiness or complete the
+remaining phase acceptance work. Real AWS/OIDC/Argo, backup/restore, full-chain
+ML-to-recovery acceptance and production load evidence remain explicit gaps.
+The full portfolio release remains unpublished and requires its separate
+acceptance criteria and authorization.
+
 Date: 2026-11-04 (Asia/Calcutta). Repository:
 [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI).
 Audited implementation commit: `6822b8495b83bb11c6fa2396f6471aef111b0bb3`.
@@ -11,7 +39,7 @@ after all mandatory gates pass. Known HIGH/CRITICAL security failures do not
 satisfy that condition. Neither branch protection nor the security policy is
 bypassed. No AWS deployment, GitHub release or branch deletion is authorized.
 
-## Mandatory gate decisions
+## Historical full-release gate decisions (before security remediation)
 
 | Gate | Decision | Evidence / required next action |
 | --- | --- | --- |

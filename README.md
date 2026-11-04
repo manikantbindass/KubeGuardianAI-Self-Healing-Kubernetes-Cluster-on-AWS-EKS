@@ -10,7 +10,7 @@ A Kubernetes operations platform with a real full-stack dashboard, explainable a
 [![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Frelease-audit)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**Release status:** development portfolio; v1.0.0 is unpublished and blocked by security findings. Local and Linux CI evidence exists for selected flows. AWS is **not deployed**. Synthetic evaluations and demo telemetry do not establish production accuracy or readiness. See the [release checklist](docs/releases/v1.0.0-candidate.md) and [dated validation matrix](docs/reports/phase-11-validation.md).
+**Release status:** development portfolio; v1.0.0 is unpublished. The latest [security remediation](docs/reports/release-audit/security-remediation.json) passes source and all five image gates with no HIGH/CRITICAL findings; final integration checks and the remaining release acceptance criteria still apply. Local and Linux CI evidence exists for selected flows. AWS is **not deployed**. Synthetic evaluations and demo telemetry do not establish production accuracy or readiness. See the [release checklist](docs/releases/v1.0.0-candidate.md) and [dated validation matrix](docs/reports/phase-11-validation.md).
 
 See the [phase completion and release audit](docs/audits/PHASE_COMPLETION_AUDIT.md) for current findings and merge gates.
 
