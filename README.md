@@ -58,6 +58,16 @@ flowchart LR
 
 The browser receives no Kubernetes credentials. The operator independently checks scope, workload identity, approval and safety constraints. ML/LLM output cannot directly execute changes. [C4 sources](docs/diagrams/README.md), [system design](docs/architecture/system-overview.md), [recovery architecture](docs/architecture/recovery-operator.md) and [threat model](docs/security/threat-model.md) explain the boundaries. Terraform owns cloud prerequisites; Argo CD owns reviewed application configuration.
 
+## Easy Windows CMD installation
+
+Install Git for Windows and Docker Desktop with a running Linux engine, then paste this into **Command Prompt** in a folder for a new checkout:
+
+```bat
+git clone --branch codex/windows-cmd-setup https://github.com/manikantbindass/KubeSentinel-AI.git && cd KubeSentinel-AI && scripts\setup\install.cmd --demo
+```
+
+The command selects the installer feature branch for review; use `--branch main` after it is merged. Open `http://localhost:3000`, read `OPS_DEV_TOKEN` from your ignored `.env`, sign in and select **Synthetic demo**. Host Python, Node and Make are not required. Omit `--demo` for a fresh real-data installation, which stays empty until collection is configured. The script preserves existing settings/volumes and does not enable cluster mutation or provision AWS. See the [CMD guide](docs/runbooks/windows-cmd.md) for prerequisites, checks, troubleshooting and validation limits.
+
 ## Quickstart: local vertical slice
 
 Install Docker Engine + Compose v2 on Linux, or Docker Desktop using **Linux containers** on Windows/macOS. No AWS account is required.
