@@ -28,6 +28,9 @@ spec:
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
             - secretRef: {name: {{ .Values.secretName }}}
+            {{- if .Values.escalation.enabled }}
+            - secretRef: {name: {{ required "escalation.secretName required when enabled" .Values.escalation.secretName }}}
+            {{- end }}
             {{- if .Values.operations.enabled }}
             - secretRef: {name: {{ .Values.operations.apiSecretName }}}
             {{- end }}
@@ -162,6 +165,9 @@ spec:
           envFrom:
             - configMapRef: {name: {{ .Values.nameOverride }}-config}
             - secretRef: {name: {{ .Values.secretName }}}
+            {{- if .Values.escalation.enabled }}
+            - secretRef: {name: {{ required "escalation.secretName required when enabled" .Values.escalation.secretName }}}
+            {{- end }}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources: {{ toYaml .Values.resources | nindent 12 }}
           readinessProbe:

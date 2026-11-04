@@ -2,6 +2,8 @@
 
 ## Unreleased - release audit and portfolio preparation
 
+- Add opt-in signed recovery escalation webhooks, durable attempt leases and retry/audit state, scoped delivery history, migration 0006 and Compose/Helm configuration. Notifications cannot mutate Kubernetes resources.
+
 - Add a Windows CMD container installer, one-line clone/start guide and orchestration regression tests. Host Python/Node are not required for this setup.
 
 - Resolve blocking source/image findings using official digest-pinned Alpine runtimes and a reproducible Checkov cryptography replacement; preserve strict gates and negative signature tests.

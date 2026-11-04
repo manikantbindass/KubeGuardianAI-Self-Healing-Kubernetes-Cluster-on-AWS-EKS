@@ -1,5 +1,15 @@
 # Development roadmap
 
+## Secure escalation extension
+
+The [signed webhook extension](runbooks/escalation-webhooks.md) adds an opt-in
+durable delivery path for real mirrored `Escalated`, `Failed` and `RolledBack`
+actions. It includes IP-pinned HTTPS, HMAC signatures, bounded retries/crash
+leases, duplicate suppression, delivery audit/history and PostgreSQL concurrency
+tests. External receiver deployment, provider-specific adapters and end-to-end
+production notification validation remain operator gates. It adds no action
+approval or Kubernetes mutation permissions.
+
 ## Current portfolio handoff: requested Phases 00-11
 
 The original milestone table is preserved below. User-directed phases subsequently delivered local full-stack services, kind/Helm packaging, undeployed EKS Terraform, telemetry ingestion, synthetic ML evaluation, guarded recovery, the operations dashboard, secure-delivery source, partial resilience tooling and bounded incident intelligence. These are separate evidence scopes rather than a claim that every original production milestone is complete.
