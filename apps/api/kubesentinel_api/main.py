@@ -154,7 +154,7 @@ def ready(db: Db, cache: Cache, response: Response) -> Readiness:
     try:
         db.execute(text("SELECT 1 FROM greeting_jobs LIMIT 1"))
         revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        dependencies["postgresql"] = "ok" if revision == "0005_queue_index" else "unavailable"
+        dependencies["postgresql"] = "ok" if revision == "0006_escalations" else "unavailable"
     except SQLAlchemyError:
         dependencies["postgresql"] = "unavailable"
     try:

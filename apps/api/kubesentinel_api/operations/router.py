@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 
 from kubesentinel_api.config import get_settings
 from kubesentinel_api.database import SessionLocal as SessionLocal
+from kubesentinel_api.escalations import Escalation, enqueue_escalation
 from kubesentinel_api.models import AnomalyEvidence, Incident
 from kubesentinel_api.operations.auth import Cache, User, authorize, bridge, mutation_limit
 from kubesentinel_api.operations.commands import audit, change_policy, command_output, decide
@@ -546,6 +547,7 @@ def ingest(payload: SnapshotBatch, db: Db) -> dict[str, int]:
         ).hexdigest()
         ids_by_scope.setdefault(f"{item.kind}:{item.namespace}", []).append(identity)
         row = db.get(Snapshot, identity)
+        accepted = row is None or utc(row.collected_at) <= item.collected_at
         if row is None:
             row = Snapshot(
                 id=identity,
@@ -566,6 +568,8 @@ def ingest(payload: SnapshotBatch, db: Db) -> dict[str, int]:
                 item.collected_at,
                 item.data,
             )
+        if accepted and item.kind == "RemediationAction":
+            enqueue_escalation(db, payload.mode, item.namespace, item.name, item.uid, item.data)
     for scope in payload.replace_scopes:
         kind, _, namespace = scope.partition(":")
         if namespace not in allowed and not (kind == "Node" and namespace == ""):
@@ -591,6 +595,29 @@ def ingest(payload: SnapshotBatch, db: Db) -> dict[str, int]:
     )
     db.commit()
     return {"accepted": len(payload.rows)}
+
+
+@router.get("/escalations")
+def escalation_history(db: Db, user: User) -> list[dict[str, Any]]:
+    """Authenticated bounded delivery history; destination secrets and payload are not exposed."""
+    return [
+        {
+            "id": row.id,
+            "namespace": row.namespace,
+            "state": row.state,
+            "attempts": row.attempts,
+            "created_at": row.created_at,
+            "next_attempt_at": row.next_attempt_at,
+            "completed_at": row.completed_at,
+            "last_status": row.last_status,
+        }
+        for row in db.scalars(
+            select(Escalation)
+            .where(Escalation.namespace.in_(get_settings().ops_namespaces))
+            .order_by(Escalation.created_at.desc())
+            .limit(100)
+        )
+    ]
 
 
 @router.get("/internal/commands", dependencies=[Depends(bridge)])

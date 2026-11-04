@@ -3,6 +3,7 @@
 ## Unreleased - release audit and portfolio preparation
 
 - Highlight measured outcomes and guarded recovery behavior after the README test instructions; link result provenance and update installer/badges to main.
+- Add opt-in signed recovery escalation webhooks, durable attempt leases and retry/audit state, scoped delivery history, migration 0006 and Compose/Helm configuration. Notifications cannot mutate Kubernetes resources.
 
 - Add a Windows CMD container installer, one-line clone/start guide and orchestration regression tests. Host Python/Node are not required for this setup.
 

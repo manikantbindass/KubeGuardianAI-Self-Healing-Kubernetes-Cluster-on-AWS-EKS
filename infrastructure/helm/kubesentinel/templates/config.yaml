@@ -5,6 +5,10 @@ metadata:
 data:
   APP_ENV: {{ .Values.environment | quote }}
   LOG_LEVEL: INFO
+  ESCALATION_ENABLED: {{ .Values.escalation.enabled | quote }}
+  ESCALATION_MAX_ATTEMPTS: {{ .Values.escalation.maxAttempts | quote }}
+  ESCALATION_MAX_PENDING: {{ .Values.escalation.maxPending | quote }}
+  ESCALATION_TIMEOUT_SECONDS: {{ .Values.escalation.timeoutSeconds | quote }}
   {{- if .Values.observability.enabled }}
   PROMETHEUS_URL: http://prometheus:9090
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel.sentinel-telemetry.svc:4318

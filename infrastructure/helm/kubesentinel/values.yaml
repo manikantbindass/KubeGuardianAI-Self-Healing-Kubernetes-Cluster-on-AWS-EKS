@@ -6,6 +6,13 @@ networkPolicy:
   extraIngress: []
   extraEgress: []
 environment: local
+escalation:
+  enabled: false
+  # Pre-created Secret: ESCALATION_URL, ESCALATION_IP, ESCALATION_SIGNING_SECRET.
+  secretName: ""
+  maxAttempts: 5
+  maxPending: 1000
+  timeoutSeconds: 3
 secretName: sentinel-runtime
 image:
   api: kubesentinel/api

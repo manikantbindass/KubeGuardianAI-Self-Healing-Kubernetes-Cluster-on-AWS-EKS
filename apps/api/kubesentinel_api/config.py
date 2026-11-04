@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field, PostgresDsn, RedisDsn, SecretStr
+from pydantic import Field, PostgresDsn, RedisDsn, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -34,6 +34,29 @@ class Settings(BaseSettings):
     ops_approval_key_id: str = "local-operator"
     ops_detector_url: str = ""
     ops_loki_url: str = ""
+    escalation_enabled: bool = False
+    escalation_url: SecretStr = SecretStr("")
+    escalation_ip: str = ""
+    escalation_signing_secret: SecretStr = SecretStr("")
+    escalation_local_http: bool = False
+    escalation_timeout_seconds: float = Field(default=3, ge=0.1, le=5)
+    escalation_max_attempts: int = Field(default=5, ge=1, le=8)
+    escalation_max_pending: int = Field(default=1000, ge=1, le=10000)
+
+    @model_validator(mode="after")
+    def escalation_destination(self) -> "Settings":
+        if self.escalation_enabled:
+            # Import a pure validator; it performs no DNS lookup or network access.
+            from kubesentinel_api.webhook_transport import validate_destination
+
+            validate_destination(
+                self.escalation_url.get_secret_value(),
+                self.escalation_ip,
+                self.escalation_local_http and self.app_env == "local",
+            )
+            if len(self.escalation_signing_secret.get_secret_value().encode()) < 32:
+                raise ValueError("Escalation signing secret requires at least 32 bytes")
+        return self
 
 
 @lru_cache

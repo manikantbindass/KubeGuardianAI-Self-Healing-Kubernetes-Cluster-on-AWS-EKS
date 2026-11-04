@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from kubesentinel_api.config import get_settings
 from kubesentinel_api.database import SessionLocal, redis_client
+from kubesentinel_api.escalations import process_escalation
 from kubesentinel_api.models import GreetingJob
 from kubesentinel_api.observability import configure_logging
 
@@ -52,7 +53,9 @@ def main() -> None:
         (Path(tempfile.gettempdir()) / "sentinel-worker-heartbeat").touch()
         try:
             with SessionLocal() as session:
-                if process_one(session):
+                # One notification per loop before greetings prevents starvation by greeting load.
+                notified = process_escalation(session)
+                if process_one(session) or notified:
                     continue
             try:
                 redis_client.blpop(["sentinel:jobs"], timeout=2)
