@@ -57,7 +57,7 @@ Release recommendation remains **NOT READY** while mandatory security gates fail
 
 ## AUD-005: stale runtime packages and unnecessary runtime npm
 
-- Severity: **High**. Root cause: old digest-pinned runtime snapshots retain
+- Severity: **Critical** (maximum dashboard image advisory severity). Root cause: old digest-pinned runtime snapshots retain
   patched OS vulnerabilities, and the standalone dashboard ships npm although
   it runs directly with Node.
 - Affected: API/detector/demo/dashboard Dockerfiles, base-image lock, `.nvmrc`
@@ -67,7 +67,7 @@ Release recommendation remains **NOT READY** while mandatory security gates fail
 - Verification: fresh Compose, detector, browser, telemetry and kind jobs pass;
   image rescans show all remaining HIGH/CRITICAL entries have no supplied fixed
   version. The operator image passes. API/detector/demo retain 45 findings each;
-  dashboard retains 33. Counts are advisory entries, not unique exploit paths.
+  dashboard retains 33, including CVE-2023-45853 in Debian 12 zlib. Counts are advisory entries, not unique exploit paths. A supported digest-pinned Debian 13 Node runtime is the next candidate; its build/scan must verify the change.
 - Status: **PARTIALLY RESOLVED / RELEASE BLOCKING**. Available fixed-version
   findings were removed; unfixed advisories require a supported clean runtime or
   explicit reviewed treatment. This audit adds no vulnerability exception.
@@ -101,9 +101,9 @@ Release recommendation remains **NOT READY** while mandatory security gates fail
   the authenticated scoped read but still rejects internal ingestion and
   intelligence POSTs.
 - Verification: frontend type-check and all 20 component/proxy tests pass.
-  Final clean-install/build and Linux browser recheck are recorded in the final
-  readiness document; no unexecuted browser PASS is implied here.
-- Status: **RESOLVED in tested source**, pending final runtime CI acceptance.
+  Clean installation, lint, build and fresh Linux frontend/browser checks pass
+  on `38e3e5a`; all 20 component/proxy tests pass.
+- Status: **RESOLVED**, including fresh frontend/browser CI acceptance.
 
 ## AUD-008: moderate lint-tool glob denial-of-service advisory
 

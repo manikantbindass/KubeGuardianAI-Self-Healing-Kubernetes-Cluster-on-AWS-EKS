@@ -1,0 +1,111 @@
+{
+  "kind": "loopback-health-only",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.4",
+  "url": "http://127.0.0.1:18090/api/v1/health",
+  "source_commit": "38e3e5a0c3bc7dde41e0bf6527aea8dae4cd086f",
+  "working_tree_changes": false,
+  "database_exercised": false,
+  "cluster_exercised": false,
+  "summaries": [
+    {
+      "concurrency": 1,
+      "repetition": 0,
+      "requests": 100,
+      "duration_seconds": 0.8049301999999443,
+      "requests_per_second": 124.23437460789386,
+      "error_rate": 0.0,
+      "p50_ms": 5.173300000024028,
+      "p95_ms": 23.589199998241384,
+      "p99_ms": 27.399599995987955
+    },
+    {
+      "concurrency": 1,
+      "repetition": 1,
+      "requests": 100,
+      "duration_seconds": 1.058855199997197,
+      "requests_per_second": 94.44161959091737,
+      "error_rate": 0.0,
+      "p50_ms": 5.334499997843523,
+      "p95_ms": 26.051799999549985,
+      "p99_ms": 28.869099995063152
+    },
+    {
+      "concurrency": 1,
+      "repetition": 2,
+      "requests": 100,
+      "duration_seconds": 0.8810574999952223,
+      "requests_per_second": 113.4999702068733,
+      "error_rate": 0.0,
+      "p50_ms": 5.389000005379785,
+      "p95_ms": 26.328200001444202,
+      "p99_ms": 27.767699997639284
+    },
+    {
+      "concurrency": 4,
+      "repetition": 0,
+      "requests": 100,
+      "duration_seconds": 0.43949650000286056,
+      "requests_per_second": 227.53309753171897,
+      "error_rate": 0.0,
+      "p50_ms": 15.816999999515247,
+      "p95_ms": 33.82769999734592,
+      "p99_ms": 37.82199999841396
+    },
+    {
+      "concurrency": 4,
+      "repetition": 1,
+      "requests": 100,
+      "duration_seconds": 0.5832028000004357,
+      "requests_per_second": 171.46694083074584,
+      "error_rate": 0.0,
+      "p50_ms": 18.89080000546528,
+      "p95_ms": 47.69469999882858,
+      "p99_ms": 54.98229999648174
+    },
+    {
+      "concurrency": 4,
+      "repetition": 2,
+      "requests": 100,
+      "duration_seconds": 0.574176099995384,
+      "requests_per_second": 174.1625957625264,
+      "error_rate": 0.0,
+      "p50_ms": 19.219200003135484,
+      "p95_ms": 39.01909999694908,
+      "p99_ms": 51.27380000340054
+    },
+    {
+      "concurrency": 8,
+      "repetition": 0,
+      "requests": 100,
+      "duration_seconds": 0.6609557999981917,
+      "requests_per_second": 151.296047330659,
+      "error_rate": 0.0,
+      "p50_ms": 52.30880000453908,
+      "p95_ms": 68.85540000075707,
+      "p99_ms": 74.79800000146497
+    },
+    {
+      "concurrency": 8,
+      "repetition": 1,
+      "requests": 100,
+      "duration_seconds": 0.6490169000026071,
+      "requests_per_second": 154.07919269836933,
+      "error_rate": 0.0,
+      "p50_ms": 43.17989999981364,
+      "p95_ms": 105.8679999987362,
+      "p99_ms": 115.1940999989165
+    },
+    {
+      "concurrency": 8,
+      "repetition": 2,
+      "requests": 100,
+      "duration_seconds": 0.5526874999995925,
+      "requests_per_second": 180.93407214759466,
+      "error_rate": 0.0,
+      "p50_ms": 32.5552000067546,
+      "p95_ms": 122.60600000445265,
+      "p99_ms": 128.16320000274573
+    }
+  ]
+}

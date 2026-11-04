@@ -2,6 +2,6 @@
   "ghcr.io/astral-sh/uv:0.13.6": "sha256:af22a52f5eafef3d78e551599d405c02df61919d18028f0cea8eda93bc9986d0",
   "gcr.io/distroless/static-debian12:nonroot": "sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab",
   "python:3.12.16-slim-trixie": "sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30",
-  "node:24.22.2-bookworm-slim": "sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c",
-  "golang:1.26.10-bookworm": "sha256:23ce71337b726608afb1bc00986e630a05034a87a87ea1fc2cd1ae5cf33387eb"
+  "golang:1.26.10-bookworm": "sha256:23ce71337b726608afb1bc00986e630a05034a87a87ea1fc2cd1ae5cf33387eb",
+  "node:24.22.2-trixie-slim": "sha256:54f84b4cf8432b21aaffd5d3ce8d41e12cea0d10d33c09d2f3c9879d49d6b446"
 }

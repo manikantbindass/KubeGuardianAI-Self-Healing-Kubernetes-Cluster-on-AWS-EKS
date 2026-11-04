@@ -17,9 +17,9 @@ bypassed. No AWS deployment, GitHub release or branch deletion is authorized.
 | Audit all twelve phases | PASS | [Phase completion audit](PHASE_COMPLETION_AUDIT.md), with scope and remaining requirements |
 | Every phase meets all required acceptance criteria | FAIL | Several phases remain PARTIAL; DevSecOps fails required security gates |
 | No unresolved Critical/High security defects | FAIL | Unfixed Checkov dependency and OS findings; no CVE waiver added |
-| No known source build failures | PASS | Python compile/type/lint, Go tests/vet and dashboard production build pass on audited source; final UI build recheck required |
+| No known source build failures | PASS | Python compile/type/lint, Go tests/vet and dashboard production build pass on audited source; clean-install final UI build verified |
 | All required tests pass | BLOCKED | Local PostgreSQL skipped, Docker unavailable; latest final-source CI must complete |
-| Actual frontend/backend integration | PASS | Real migrated API/Compose and browser jobs passed on `5ef44f5`; newer Insights source has type/component/proxy tests, pending runtime recheck |
+| Actual frontend/backend integration | PASS | Real migrated API/Compose and browser jobs passed on `5ef44f5`; newer Insights source also passed Linux frontend/browser checks on `38e3e5a` |
 | Fresh local kind deployment | BLOCKED | Docker Desktop Linux named pipe unavailable on this host; fresh Linux kind CI passed on `5ef44f5` |
 | Self-healing safety and controlled recovery | PASS | Fresh isolated-recovery and real cluster bridge CI passed on `5ef44f5`; evidence does not establish broad production recovery |
 | Documentation matches verified implementation | PASS | Planned/synthetic/undeployed capabilities labeled; current supplement records fixes and remaining gaps |
@@ -37,8 +37,7 @@ bypassed. No AWS deployment, GitHub release or branch deletion is authorized.
   Skip reason: `TEST_DATABASE_URL` unset, requiring disposable PostgreSQL.
   Ruff/format and mypy pass. The isolated migration job passes in Linux CI.
 - Frontend: clean `npm ci`, lint, type-check, 20 tests in six files and production
-  build pass after the Insights fix. Fresh `5ef44f5` browser CI passes; final
-  Insights runtime CI must also pass. Full npm audit reports 16 moderate tooling
+  build pass after the Insights fix. Fresh `38e3e5a` frontend/browser CI also passes. Full npm audit reports 16 moderate tooling
   advisories; `npm audit --omit=dev` reports zero runtime advisories.
 - Go: fixed dependencies verify; tests and vet pass with Go 1.26.10. Fresh
   Windows/Linux checks, operator image scan and controlled recovery CI pass.
@@ -127,9 +126,21 @@ production availability result exists. No new destructive chaos was executed.
 This is a scoped engineering review, not an OWASP certification, penetration
 test or claim that production exposure is safe.
 
+## Fresh measured audit benchmark
+
+On code commit `38e3e5a`, `python scripts/benchmark_http.py --start-api --output .cache/release-audit-health-benchmark` sent 900 loopback health requests, with three 100-request trials at concurrency 1, 4 and 8. There were zero HTTP errors; per-trial p95 ranged from **23.6 to 122.6 ms**. This is Windows/Python 3.12.4, without DB or cluster load. Larger jitter than the prior Phase 09 sample demonstrates why no improvement or production latency claim is justified.
+
+[Raw requests](../reports/release-audit/health-loopback-raw.csv), [trial summary](../reports/release-audit/health-loopback-summary.json) and [plot source](../reports/release-audit/plot_health.py) are committed.
+
+![Recorded health-only trial latency and throughput](../reports/release-audit/health-loopback.png)
+
 ## Final source follow-up
 
 The final audited SHA and check snapshot are recorded in the PR and accompanying
 machine-readable evidence after the Insights patch is pushed. A snapshot cannot
 claim to include a future documentation-only commit containing itself. Until
 the final checks finish, pending results remain BLOCKED rather than PASS.
+
+Current `main` was observed at `650ee4a` with `protected=false`. No protection settings were changed. This lack of repository-enforced checks is an operational risk; the audit still refuses the merge while mandatory gates fail. The five public HTTPS links/badges in README returned HTTP 200; local links and the original LICENSE also pass validation.
+
+The dashboard runtime is being moved from the supported Debian 12 image to the official Debian 13 Node 24.22.2 image, pinned by registry digest. This targets the remaining Debian 12 critical zlib entry; no removal or clean scan is claimed until new image CI verifies it.
