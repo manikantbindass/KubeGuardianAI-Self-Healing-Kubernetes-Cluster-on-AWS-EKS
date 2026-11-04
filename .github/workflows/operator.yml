@@ -54,7 +54,7 @@ jobs:
       - run: helm template sentinel-recovery infrastructure/helm/recovery-operator --namespace sentinel-lab --include-crds > /tmp/recovery.yaml
       - run: python scripts/recovery_lab.py bootstrap --execute
       - run: python -u scripts/test_operator.py
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: actual-recovery-evidence

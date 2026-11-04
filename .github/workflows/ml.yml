@@ -28,7 +28,7 @@ jobs:
       - run: uv run --extra ml python scripts/ml.py generate
       - run: uv run --extra ml python scripts/ml.py train
       - run: uv run --extra ml python scripts/ml.py evaluate --output .cache/ml/repeated
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ml-evaluation-${{ matrix.os }}
           path: .cache/ml/evaluation
@@ -58,7 +58,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ml.yml up --wait --wait-timeout 60 detector
           uv run python scripts/test_detector_http.py --expected-mode rules_fallback --output .cache/ml/http-fallback.json
       - if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: detector-http-measurements
           path: .cache/ml/http*.json
