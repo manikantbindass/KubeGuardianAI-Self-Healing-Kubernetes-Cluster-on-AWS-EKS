@@ -27,6 +27,31 @@ export type Explanation = {
   reference: number;
   detail: string;
 };
+export type IncidentIntelligence = {
+  engine_version: string;
+  mode: Mode;
+  assistant: string;
+  remote_requests: number;
+  explanations: {
+    incident_id: string;
+    namespace: string;
+    resource: string;
+    related_ids: string[];
+    duplicate_ids: string[];
+    historical_similar_ids: string[];
+    summary: string;
+    evidence_ids: string[];
+    hypotheses: {
+      id: string;
+      label: string;
+      rank_score: number;
+      evidence: string[];
+      uncertainty: string;
+    }[];
+    runbooks: { id: string; title: string; path: string; steps: string[] }[];
+  }[];
+  limitations: string[];
+};
 export type OpsIncident = {
   id: string;
   source: string;
@@ -249,6 +274,10 @@ export async function opsRequest<T>(
 }
 export const operations = {
   session: () => opsRequest<Session>("session"),
+  intelligence: (mode: Mode, namespace: string) =>
+    opsRequest<IncidentIntelligence>(
+      `intelligence?mode=${mode}&namespace=${encodeURIComponent(namespace)}`,
+    ),
   view: (mode: Mode, namespace: string) =>
     opsRequest<View>(
       `view?mode=${mode}&namespace=${encodeURIComponent(namespace)}`,

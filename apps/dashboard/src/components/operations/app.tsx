@@ -645,7 +645,9 @@ export function OperationsApp({ section = "overview" }: { section?: Section }) {
                 {section === "policies" && (
                   <PolicyCenter view={data} session={session.data} />
                 )}{" "}
-                {section === "insights" && <InsightsView view={data} go={go} />}{" "}
+                {section === "insights" && (
+                  <InsightsView view={data} go={go} namespace={namespace} />
+                )}{" "}
                 {section === "audit" && <AuditView view={data} />}{" "}
                 {section === "infrastructure" && (
                   <InfrastructureView view={data} />

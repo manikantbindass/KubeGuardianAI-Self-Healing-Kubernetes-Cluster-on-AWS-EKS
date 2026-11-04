@@ -4,8 +4,8 @@ Audit date: 2026-11-04 (Asia/Calcutta). Target: `main` in
 `manikantbindass/KubeSentinel-AI`. Audit branch: `codex/release-audit`.
 
 **Merge recommendation: HOLD.** A passing test is scoped evidence, not proof of
-production readiness. No merge, release, cloud deployment or destructive chaos
-experiment is authorized by this audit. Results below distinguish the fresh
+production readiness. The owner conditionally authorizes merging only after all mandatory gates pass.
+No release, cloud deployment or destructive chaos experiment is authorized. Results below distinguish the fresh
 local checks from the complete baseline CI on `c10b24d`.
 
 ## Repository and integration evidence
@@ -268,5 +268,18 @@ Version remains `0.1.0`; no v1.0.0 release/tag is appropriate while security fai
    cost and infrastructure exceptions. Keep the existing stacked PRs/history.
 4. Record unmet production/benchmark requirements above as explicit follow-up
    scope. Local synthetic preview does not satisfy cloud/HA acceptance.
-5. Obtain explicit final merge authorization only after evidence supports a
-   concrete reviewed merge. No release publication is part of that approval.
+5. Apply the owner's conditional merge authorization only after all mandatory
+   gates and repository protections pass. No release publication is authorized.
+
+## Audit follow-up
+
+Fresh CI on `5ef44f5` passed 19 of 24 jobs, including the patched operator image,
+Compose, migrations, kind, telemetry, browsers, real cluster bridge and controlled
+recovery. Five security jobs remain failing. The static scan now reports only
+the unfixed Checkov `ecdsa` advisory. Patched runtime image findings all lack a
+supplied fixed version. This does not permit a merge.
+
+The Insights follow-up uses the scoped Phase 10 API rather than a name-only
+client graph, with a typed proxy/client and loading/empty/error states. Local
+frontend tests now total 20. See [bug resolutions](BUG_AUDIT_AND_FIXES.md) and
+[final gates](FINAL_RELEASE_READINESS.md).

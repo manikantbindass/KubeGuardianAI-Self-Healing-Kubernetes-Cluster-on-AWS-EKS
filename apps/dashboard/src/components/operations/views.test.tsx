@@ -1,8 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpsIncident, Resource, Session, View } from "@/lib/operations";
-import { IncidentCenter, ResourceDetail } from "./views";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type {
+  IncidentIntelligence,
+  OpsIncident,
+  Resource,
+  Session,
+  View,
+} from "@/lib/operations";
+import { IncidentCenter, InsightsView, ResourceDetail } from "./views";
 const session: Session = {
   subject: "viewer",
   name: "Viewer",
@@ -100,7 +106,74 @@ beforeEach(() => {
   });
   HTMLDialogElement.prototype.close = vi.fn();
 });
+afterEach(() => vi.unstubAllGlobals());
 describe("operations evidence boundaries", () => {
+  it("uses API evidence instead of linking same-name workloads across namespaces", async () => {
+    const data = view([]);
+    data.incidents = [
+      incident,
+      { ...incident, id: "foreign", namespace: "team-b" },
+    ];
+    const intelligence: IncidentIntelligence = {
+      engine_version: "rules-v1",
+      mode: "real",
+      assistant: "local-deterministic",
+      remote_requests: 0,
+      explanations: [
+        {
+          incident_id: incident.id,
+          namespace: "team-a",
+          resource: "checkout",
+          related_ids: [],
+          duplicate_ids: [],
+          historical_similar_ids: [],
+          summary: "API-backed investigation",
+          evidence_ids: ["incident:incident-1"],
+          hypotheses: [
+            {
+              id: "hypothesis",
+              label: "Memory pressure",
+              rank_score: 1,
+              evidence: ["incident:incident-1"],
+              uncertainty: "Cause unconfirmed",
+            },
+          ],
+          runbooks: [],
+        },
+      ],
+      limitations: ["Synthetic test fixture"],
+    };
+    const fetch = vi.fn().mockResolvedValue(Response.json(intelligence));
+    vi.stubGlobal("fetch", fetch);
+    mount(<InsightsView view={data} go={vi.fn()} namespace="all" />);
+    expect(
+      await screen.findByText("API-backed investigation"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", {
+        name: /2 incident records and 0 evidence-linked relationships/,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Evidence: incident:incident-1"),
+    ).toBeInTheDocument();
+    expect(fetch.mock.calls[0][0]).toBe(
+      "/api/backend/ops/intelligence?mode=real&namespace=all",
+    );
+  });
+  it("shows an analysis outage with a working retry control", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(Response.json({}, { status: 503 })),
+    );
+    mount(<InsightsView view={view([])} go={vi.fn()} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No correlations are inferred",
+    );
+    expect(
+      screen.getByRole("button", { name: "Retry incident analysis" }),
+    ).toBeInTheDocument();
+  });
   it("does not link same-name workloads across namespaces", () => {
     mount(
       <IncidentCenter

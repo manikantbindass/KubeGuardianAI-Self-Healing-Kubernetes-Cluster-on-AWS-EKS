@@ -10,7 +10,7 @@ async function proxy(request: NextRequest, context: Context) {
       path,
     );
   const operational =
-    /^ops\/(session|view|preferences|stream|model|resources\/[a-f0-9]{64}\/logs|metrics\/(cpu|memory|latency|requests)|cost-estimate|actions\/[a-f0-9]{64}\/decision|policies\/[a-f0-9]{64}|incidents\/[a-fA-F0-9-]{36}\/review)$/.test(
+    /^ops\/(session|view|preferences|stream|model|intelligence|intelligence\/runbooks|resources\/[a-f0-9]{64}\/logs|metrics\/(cpu|memory|latency|requests)|cost-estimate|actions\/[a-f0-9]{64}\/decision|policies\/[a-f0-9]{64}|incidents\/[a-fA-F0-9-]{36}\/review)$/.test(
       path,
     );
   const postAllowed =

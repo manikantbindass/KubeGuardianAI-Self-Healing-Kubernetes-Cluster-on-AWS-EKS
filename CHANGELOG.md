@@ -4,6 +4,7 @@
 
 - Integrate main without losing development history; preserve the original Apache-2.0 license.
 - Require portfolio CI at release time; restore authenticated intelligence in local preview.
+- Wire dashboard Insights to scoped backend correlation, hypotheses and runbook evidence, with regression tests.
 - Reject insecure OIDC key transport and add safety/integration regression tests.
 - Refresh runtime image digests and fixed Go modules/compiler; keep vulnerability gates blocking.
 - Add per-phase completion evidence and explicit unmet release requirements.

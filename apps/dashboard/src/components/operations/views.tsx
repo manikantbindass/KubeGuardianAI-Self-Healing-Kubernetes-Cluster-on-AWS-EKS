@@ -1654,15 +1654,27 @@ export function PolicyCenter({
 export function InsightsView({
   view,
   go,
+  namespace = "all",
 }: {
   view: View;
   go: (s: Section) => void;
+  namespace?: string;
 }) {
+  const intelligence = useQuery({
+    queryKey: ["ops", "intelligence", view.mode, namespace],
+    queryFn: () => operations.intelligence(view.mode, namespace),
+    refetchInterval: 30000,
+    retry: false,
+  });
   const incidents = view.incidents.slice(0, 10);
   const links = incidents.flatMap((a, i) =>
     incidents
       .slice(i + 1)
-      .filter((b) => a.resource === b.resource)
+      .filter((b) =>
+        intelligence.data?.explanations
+          .find((record) => record.incident_id === a.id)
+          ?.related_ids.includes(b.id),
+      )
       .map((b) => [a.id, b.id]),
   );
   return (
@@ -1682,14 +1694,14 @@ export function InsightsView({
         <section className="glass panel">
           <PanelTitle
             title="Incident relationship map"
-            detail="Edges mean shared affected resource, not confirmed causation"
+            detail="API associations require namespace, resource identity and a 15-minute window; not confirmed causation"
           />
           {incidents.length ? (
             <svg
               className="correlation-graph"
               viewBox="0 0 520 300"
               role="img"
-              aria-label={`${incidents.length} incident records and ${links.length} shared-resource relationships`}
+              aria-label={`${incidents.length} incident records and ${links.length} evidence-linked relationships`}
             >
               {links.map(([a, b], i) => {
                 const x = incidents.findIndex((n) => n.id === a),
@@ -1777,7 +1789,7 @@ export function InsightsView({
           <div className="insight-item">
             <GitBranch size={20} />
             <div>
-              <h3>{links.length} shared-workload links</h3>
+              <h3>{links.length} API-correlated links</h3>
               <p>
                 Temporal overlap and shared resources are clues, not proof of
                 causal incident correlation.
@@ -1786,6 +1798,72 @@ export function InsightsView({
           </div>
         </section>
       </div>
+      <section
+        className="glass panel"
+        aria-label="Incident intelligence evidence"
+      >
+        <PanelTitle
+          title="Incident intelligence evidence"
+          detail="Ranked hypotheses and citations from the deterministic API"
+        />
+        {intelligence.isPending ? (
+          <p role="status">Loading incident analysis…</p>
+        ) : intelligence.isError ? (
+          <div role="alert">
+            <p>
+              Incident analysis is unavailable. No correlations are inferred.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => void intelligence.refetch()}
+            >
+              Retry incident analysis
+            </Button>
+          </div>
+        ) : (
+          <>
+            {!intelligence.data.explanations.length && (
+              <Empty
+                title="No incident analysis yet"
+                detail="Analysis appears when scoped incident records are collected."
+              />
+            )}
+            {intelligence.data.explanations.slice(0, 10).map((record) => (
+              <article className="insight-item" key={record.incident_id}>
+                <div>
+                  <h3>
+                    {record.namespace}/{record.resource}
+                  </h3>
+                  <p>{record.summary}</p>
+                  {record.hypotheses.map((hypothesis) => (
+                    <p key={hypothesis.id}>
+                      {hypothesis.label} · Rank {hypothesis.rank_score}.{" "}
+                      {hypothesis.uncertainty}
+                    </p>
+                  ))}
+                  <p>Evidence: {record.evidence_ids.join(", ")}</p>
+                  {record.runbooks.map((runbook) => (
+                    <details key={runbook.id}>
+                      <summary>{runbook.title}</summary>
+                      <p>Source: {runbook.path}</p>
+                      <ul>
+                        {runbook.steps.map((step) => (
+                          <li key={step}>{step}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  ))}
+                </div>
+              </article>
+            ))}
+            {intelligence.data.limitations.map((limitation) => (
+              <p className="muted" key={limitation}>
+                {limitation}
+              </p>
+            ))}
+          </>
+        )}
+      </section>
     </>
   );
 }
