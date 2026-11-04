@@ -1,0 +1,14 @@
+{
+  "engine": "rules-v1",
+  "provenance": "explicit synthetic hand-authored fixtures",
+  "incidents": 8,
+  "correlation_true_positives": 12,
+  "correlation_false_positives": 0,
+  "correlation_false_negatives": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "retrieval_correct": 8,
+  "retrieval_total": 8,
+  "remote_requests": 0,
+  "limitations": "Synthetic contract fixtures; no production accuracy estimate."
+}

@@ -1,0 +1,2 @@
+# Historical non-secret idempotency test fixture, not an authentication credential.
+9bbfdcd6dad8992ffc9487a17cd925451c90bab5:tests/unit/test_operations.py:generic-api-key:75

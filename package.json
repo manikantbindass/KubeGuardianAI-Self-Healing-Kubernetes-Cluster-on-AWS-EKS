@@ -1,0 +1,38 @@
+{
+  "name": "kubesentinel-ai",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/dashboard"
+  ],
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.11.0",
+  "scripts": {
+    "test:e2e:operations": "playwright test --config playwright.operations.config.ts",
+    "dev": "npm run dev --workspace @kubesentinel/dashboard",
+    "build": "npm run build --workspace @kubesentinel/dashboard",
+    "start": "npm run start --workspace @kubesentinel/dashboard",
+    "lint": "npm run lint --workspaces",
+    "lint:docs": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.venv\" \"#apps/dashboard/.next\"",
+    "diagrams": "node scripts/validate-diagrams.mjs",
+    "check:lock": "node scripts/validate-lockfile.mjs",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "jsdom": "26.1.0",
+    "markdownlint-cli2": "0.24.0",
+    "mermaid": "12.2.0",
+    "next": "16.4.4",
+    "prettier": "3.6.2"
+  },
+  "overrides": {
+    "re2js": "2.9.1",
+    "katex": "0.18.2"
+  }
+}

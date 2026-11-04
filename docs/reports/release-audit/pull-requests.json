@@ -1,0 +1,134 @@
+[
+  {
+    "baseRefName": "codex/phase-10-aiops",
+    "headRefName": "codex/phase-11-portfolio",
+    "headRefOid": "c10b24d50cf131db73441c6590468903db0ec332",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 14,
+    "state": "OPEN",
+    "title": "docs: prepare Phase 11 portfolio and release gates",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/14"
+  },
+  {
+    "baseRefName": "codex/phase-09-resilience",
+    "headRefName": "codex/phase-10-aiops",
+    "headRefOid": "afa9867c887819969ac40830cac171914027a720",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 13,
+    "state": "OPEN",
+    "title": "feat: evidence-constrained AIOps incident intelligence",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/13"
+  },
+  {
+    "baseRefName": "codex/phase-08-secure-delivery",
+    "headRefName": "codex/phase-09-resilience",
+    "headRefOid": "c788a7f4b39a4ff5f9d28ffd66b8131d4f351436",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 12,
+    "state": "OPEN",
+    "title": "feat: bounded queues and resilience test harnesses",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/12"
+  },
+  {
+    "baseRefName": "feat/phase-07-operations-dashboard",
+    "headRefName": "codex/phase-08-secure-delivery",
+    "headRefOid": "a7ba011c093d8835b7c95d3e471530709abb8a44",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 11,
+    "state": "OPEN",
+    "title": "feat: secure delivery and controlled GitOps promotion",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/11"
+  },
+  {
+    "baseRefName": "feat/phase-06-policy-operator",
+    "headRefName": "feat/phase-07-operations-dashboard",
+    "headRefOid": "c5ab79b4abaa0324127b18144c9f5e5673158976",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 9,
+    "state": "OPEN",
+    "title": "feat: build the guarded operations dashboard",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/9"
+  },
+  {
+    "baseRefName": "feat/phase-05-anomaly-detection",
+    "headRefName": "feat/phase-06-policy-operator",
+    "headRefOid": "644f133f5cbd028d0507bf68b7f3cc3cb5256df5",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 8,
+    "state": "OPEN",
+    "title": "feat: implement Phase 06 guarded recovery operator",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/8"
+  },
+  {
+    "baseRefName": "feat/phase-04-observability",
+    "headRefName": "feat/phase-05-anomaly-detection",
+    "headRefOid": "24d0a7e692c13fec77a65c90fe670fa31823f6bd",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 7,
+    "state": "OPEN",
+    "title": "feat: implement Phase 05 advisory anomaly detection",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/7"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/default-branch-status",
+    "headRefOid": "530c28c27fd64ff969e03ef8e6cef502533c0357",
+    "isDraft": false,
+    "mergedAt": "2026-11-02T18:17:36Z",
+    "number": 5,
+    "state": "MERGED",
+    "title": "docs: introduce project status on default branch",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/5"
+  },
+  {
+    "baseRefName": "feat/phase-03-terraform",
+    "headRefName": "feat/phase-04-observability",
+    "headRefOid": "e335054596f21b127a4dede1c3987e862450e7f8",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 4,
+    "state": "OPEN",
+    "title": "feat: add end-to-end observability and incident ingestion",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/4"
+  },
+  {
+    "baseRefName": "feat/phase-02-kubernetes",
+    "headRefName": "feat/phase-03-terraform",
+    "headRefOid": "8561fd5fb19b3cc1ff2c76e6e4fa9734890ff072",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 3,
+    "state": "OPEN",
+    "title": "feat: add guarded AWS EKS Terraform infrastructure",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/3"
+  },
+  {
+    "baseRefName": "feat/phase-01-foundation",
+    "headRefName": "feat/phase-02-kubernetes",
+    "headRefOid": "f0778aa98be950fdc712c00db8bd0e2efb5af8bc",
+    "isDraft": true,
+    "mergedAt": null,
+    "number": 2,
+    "state": "OPEN",
+    "title": "feat: add local Kubernetes orchestration and animated banners",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/2"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "feat/phase-01-foundation",
+    "headRefOid": "a9b128365b17427160e4a345844cbd3bd3c46d3c",
+    "isDraft": false,
+    "mergedAt": null,
+    "number": 1,
+    "state": "OPEN",
+    "title": "feat: establish KubeSentinel AI full-stack foundation",
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/pull/1"
+  }
+]

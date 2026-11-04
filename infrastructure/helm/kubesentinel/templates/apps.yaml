@@ -1,0 +1,175 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: {{ .Values.nameOverride }}-api
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {app: {{ .Values.nameOverride }}, component: api}
+  template:
+    metadata:
+      labels: {app: {{ .Values.nameOverride }}, component: api}
+      annotations: {{ toYaml .Values.observability.annotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.nameOverride }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: api
+          image: {{ include "sentinel.image" (list .Values "api") | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef: {name: {{ .Values.nameOverride }}-config}
+            - secretRef: {name: {{ .Values.secretName }}}
+            {{- if .Values.operations.enabled }}
+            - secretRef: {name: {{ .Values.operations.apiSecretName }}}
+            {{- end }}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          ports: [{containerPort: 8000, name: http}]
+          startupProbe:
+            httpGet: {path: /api/v1/health, port: http}
+            periodSeconds: 3
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /api/v1/health, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /api/v1/ready, port: http}
+            timeoutSeconds: 8
+            periodSeconds: 10
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            {{- if and .Values.operations.enabled .Values.operations.approvalSecretName }}
+            - {name: approval, mountPath: /run/approval, readOnly: true}
+            {{- end }}
+      volumes:
+        - {name: tmp, emptyDir: {sizeLimit: 64Mi}}
+        {{- if and .Values.operations.enabled .Values.operations.approvalSecretName }}
+        - name: approval
+          secret:
+            secretName: {{ .Values.operations.approvalSecretName }}
+            defaultMode: 288
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.nameOverride }}-api
+spec:
+  selector: {app: {{ .Values.nameOverride }}, component: api}
+  ports: [{port: 8000, targetPort: http, name: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: {{ .Values.nameOverride }}-dashboard
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {app: {{ .Values.nameOverride }}, component: dashboard}
+  template:
+    metadata:
+      labels: {app: {{ .Values.nameOverride }}, component: dashboard}
+      annotations: {{ toYaml .Values.observability.annotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.nameOverride }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext: {runAsNonRoot: true, runAsUser: 1000, fsGroup: 1000, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: dashboard
+          image: {{ include "sentinel.image" (list .Values "dashboard") | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef: {name: {{ .Values.nameOverride }}-config}
+            {{- if .Values.operations.enabled }}
+            - secretRef: {name: {{ .Values.operations.dashboardSecretName }}}
+            {{- end }}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          ports: [{containerPort: 3000, name: http}]
+          startupProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 3
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /, port: http}
+            timeoutSeconds: 8
+            periodSeconds: 10
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: cache, mountPath: /app/apps/dashboard/.next/cache}
+      volumes:
+        - {name: tmp, emptyDir: {sizeLimit: 64Mi}}
+        - {name: cache, emptyDir: {sizeLimit: 128Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.nameOverride }}-dashboard
+spec:
+  selector: {app: {{ .Values.nameOverride }}, component: dashboard}
+  ports: [{port: 3000, targetPort: http, name: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  name: {{ .Values.nameOverride }}-worker
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {app: {{ .Values.nameOverride }}, component: worker}
+  template:
+    metadata:
+      labels: {app: {{ .Values.nameOverride }}, component: worker}
+      annotations: {{ toYaml .Values.observability.annotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.nameOverride }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: worker
+          image: {{ include "sentinel.image" (list .Values "api") | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          startupProbe:
+            exec:
+              command: [python, -c, "from pathlib import Path; assert Path('/tmp/sentinel-worker-heartbeat').exists()"]
+            failureThreshold: 30
+            periodSeconds: 3
+          livenessProbe:
+            exec:
+              command: [python, -c, "import time; from pathlib import Path; assert time.time()-Path('/tmp/sentinel-worker-heartbeat').stat().st_mtime < 30"]
+            periodSeconds: 10
+          command: [python, -m, kubesentinel_api.worker]
+          envFrom:
+            - configMapRef: {name: {{ .Values.nameOverride }}-config}
+            - secretRef: {name: {{ .Values.secretName }}}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            exec:
+              command: [python, -c, "from kubesentinel_api.database import engine; from sqlalchemy import text; c=engine.connect(); c.execute(text('SELECT 1')); c.close()"]
+            timeoutSeconds: 5
+            periodSeconds: 15
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: tmp, emptyDir: {sizeLimit: 64Mi}}

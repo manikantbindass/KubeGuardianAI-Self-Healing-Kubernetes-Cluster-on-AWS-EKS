@@ -1,0 +1,13 @@
+# Administrator-owned; apply only to the selected isolated test namespace.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: sentinel-lab-budget
+spec:
+  hard:
+    requests.cpu: "6"
+    requests.memory: 8Gi
+    limits.cpu: "12"
+    limits.memory: 16Gi
+    pods: "24"
+    persistentvolumeclaims: "4"

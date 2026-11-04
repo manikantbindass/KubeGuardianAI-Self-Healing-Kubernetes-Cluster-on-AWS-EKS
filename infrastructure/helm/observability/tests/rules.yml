@@ -1,0 +1,37 @@
+# Synthetic PromQL unit fixtures, not runtime evidence.
+rule_files: [/etc/prometheus/rules.yml]
+evaluation_interval: 15s
+tests:
+  - interval: 15s
+    input_series:
+      - series: 'up{job="sentinel-api",instance="sentinel-api:8000",namespace="kubesentinel"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 45s
+        alertname: SentinelApiUnavailable
+        exp_alerts:
+          - exp_labels:
+              job: sentinel-api
+              instance: sentinel-api:8000
+              namespace: kubesentinel
+              severity: critical
+            exp_annotations:
+              summary: KubeSentinel API scrape is unavailable
+  - interval: 15s
+    input_series:
+      - series: 'sentinel_http_requests_total{method="GET",route="/api/v1/version",status="200"}'
+        values: '0+10x40'
+    promql_expr_test:
+      - expr: sentinel:http_errors:ratio5m
+        eval_time: 5m
+        exp_samples:
+          - labels: sentinel:http_errors:ratio5m
+            value: 0
+  - interval: 15s
+    input_series:
+      - series: 'sentinel_http_requests_total{method="GET",route="/api/v1/version",status="200"}'
+        values: '0+0x40'
+    promql_expr_test:
+      - expr: sentinel:http_errors:ratio5m
+        eval_time: 5m
+        exp_samples: []

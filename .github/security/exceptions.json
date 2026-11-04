@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_38",
+      "scope": "module.platform.module.eks.aws_eks_cluster.this",
+      "reason": "Static unresolved endpoint expression; defaults disable public endpoint, validated opt-in CIDRs are /24 or narrower. Require reviewed real plan before apply.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_338",
+      "scope": "module.platform.module.observability.aws_cloudwatch_log_group.control_plane",
+      "reason": "30-day demonstration log retention limits storage cost; choose >=365 days where production policy requires it.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_338",
+      "scope": "module.platform.module.observability.aws_cloudwatch_log_group.flows",
+      "reason": "30-day demonstration log retention limits storage cost; choose >=365 days where production policy requires it.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_338",
+      "scope": "module.platform.module.observability.aws_cloudwatch_log_group.workloads",
+      "reason": "30-day demonstration log retention limits storage cost; choose >=365 days where production policy requires it.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV2_AWS_62",
+      "scope": "aws_s3_bucket.state",
+      "reason": "No state event consumer is configured; S3 native lockfiles/versioning are used. Add notifications when an audited consumer exists.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_18",
+      "scope": "aws_s3_bucket.state",
+      "reason": "Separate access-log bucket/CloudTrail S3 data events require organization configuration and cost approval before sensitive use.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    },
+    {
+      "scanner": "checkov",
+      "id": "CKV_AWS_144",
+      "scope": "aws_s3_bucket.state",
+      "reason": "Cross-region state replication awaits cost and data-residency approval; versioning does not provide regional disaster recovery.",
+      "owner": "manikantbindass",
+      "issue": "https://github.com/manikantbindass/KubeSentinel-AI/issues/10",
+      "expires": "2026-12-03"
+    }
+  ]
+}

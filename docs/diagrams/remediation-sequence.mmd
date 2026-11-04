@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  participant C as Correlator
+  participant P as Policy / recovery
+  participant D as Durable state / audit API
+  actor H as Human approver
+  participant O as Operator
+  participant K as Kubernetes API
+  C->>P: Incident with evidence and target identity
+  P->>D: Persist proposal, policy version, audit intent
+  P->>P: Evaluate scope, freshness, budgets, allowlist
+  alt Denied, stale, or dependency unavailable
+    P->>D: Persist denial reason, no action
+  else Approval required and policy permits
+    P-->>H: Exact proposal digest, risk, rollback, expiry
+    H->>P: Scoped approval for immutable content
+    P->>D: Transaction: approval, authorization, outbox
+    D-->>O: Authorized request via dispatch / CR adapter
+    O->>P: Recheck authorization and policy version
+    P-->>O: Valid, unexpired, within budget
+    O->>K: Read target UID / resourceVersion / preconditions
+    K-->>O: Current observed state
+    O->>D: Durable action intent before side effect
+    O->>K: One allowlisted idempotent action
+    O->>K: Observe bounded postcondition verification
+    K-->>O: Success, failure, timeout, or unknown
+    O->>D: Record result, rollback/escalation if policy permits
+    D-->>H: Outbox notification, redacted evidence
+  end

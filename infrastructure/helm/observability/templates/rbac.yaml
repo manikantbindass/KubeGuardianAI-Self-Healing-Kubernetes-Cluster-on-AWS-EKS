@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: obs-no-api}
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: prometheus-otel-discovery, namespace: sentinel-telemetry}
+rules:
+  - apiGroups: [""]
+    resources: [endpoints, services, pods]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: prometheus-otel-discovery, namespace: sentinel-telemetry}
+subjects: [{kind: ServiceAccount, name: prometheus, namespace: {{ .Release.Namespace }}}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: prometheus-otel-discovery}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: prometheus}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: kube-state-metrics}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: event-collector}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: sentinel-events}
+rules:
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: sentinel-events}
+subjects: [{kind: ServiceAccount, name: event-collector}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: sentinel-events}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: {name: sentinel-prometheus}
+rules:
+  - apiGroups: [""]
+    resources: [nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [nodes/proxy]
+    resourceNames: {{ toJson .Values.nodeNames }}
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: sentinel-prometheus}
+subjects: [{kind: ServiceAccount, name: prometheus, namespace: {{ .Release.Namespace }}}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: sentinel-prometheus}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: {name: sentinel-state-metrics}
+rules:
+  - apiGroups: [""]
+    resources: [pods, nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: sentinel-state-metrics}
+subjects: [{kind: ServiceAccount, name: kube-state-metrics, namespace: {{ .Release.Namespace }}}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: sentinel-state-metrics}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: observer-api-egress}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: component, operator: In, values: [prometheus, kube-state-metrics, event-collector]}
+  policyTypes: [Egress]
+  {{- if .Values.apiServerCIDRs }}
+  egress:
+    - to:
+{{- range .Values.apiServerCIDRs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+{{- end }}
+      ports: [{port: 443, protocol: TCP}, {port: 6443, protocol: TCP}]
+  {{- else }}
+  egress: []
+  {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: observer-otel-egress}
+spec:
+  podSelector: {matchLabels: {app: sentinel}}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: sentinel-telemetry}}
+          podSelector: {matchLabels: {component: otel}}
+      ports: [{port: 4318}, {port: 8888}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: observer-loki-ingress}
+spec:
+  podSelector: {matchLabels: {component: loki}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: sentinel-telemetry}}
+          podSelector: {matchLabels: {component: otel}}
+      ports: [{port: 3100}]

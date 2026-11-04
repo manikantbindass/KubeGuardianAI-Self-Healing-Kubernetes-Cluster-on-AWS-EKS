@@ -1,0 +1,42 @@
+# Apply only to the isolated recovery lab. The bridge is launched with this identity.
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: sentinel-operations-bridge, namespace: sentinel-lab}
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: {name: sentinel-lab-operations-nodes}
+rules:
+  - apiGroups: [""]
+    resources: [nodes]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: sentinel-lab-operations-nodes}
+subjects: [{kind: ServiceAccount, name: sentinel-operations-bridge, namespace: sentinel-lab}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: sentinel-lab-operations-nodes}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: sentinel-operations-bridge, namespace: sentinel-lab}
+rules:
+  - apiGroups: [""]
+    resources: [pods, events]
+    verbs: [get, list]
+  - apiGroups: [apps]
+    resources: [deployments]
+    verbs: [get, list]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationactions, remediationpolicies]
+    verbs: [get, list, patch]
+  - apiGroups: [recovery.kubesentinel.ai]
+    resources: [remediationapprovals]
+    verbs: [get, create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: sentinel-operations-bridge, namespace: sentinel-lab}
+subjects: [{kind: ServiceAccount, name: sentinel-operations-bridge, namespace: sentinel-lab}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: sentinel-operations-bridge}

@@ -1,0 +1,58 @@
+flowchart TB
+  user["Person: Operator"]
+  idp["External: OIDC provider"]
+  destinations["External: Notification adapters"]
+  repo["External: GitHub Actions / Git repository"]
+  subgraph public["Boundary: Browser and edge"]
+    web["Container: Next.js dashboard / session boundary"]
+  end
+  subgraph control["Boundary: Control plane workloads"]
+    api["Container: FastAPI backend / RBAC / REST / SSE"]
+    ingest["Container: Telemetry ingestion"]
+    detect["Container: Anomaly detection"]
+    correlate["Container: Incident correlation"]
+    policy["Container: Policy / recovery proposals"]
+    audit["Container: Audit export / notification worker"]
+    assistant["Container: Optional evidence assistant"]
+  end
+  subgraph data["Boundary: Private data tier"]
+    pg[("Store: PostgreSQL durable state / outbox / audit index")]
+    redis[("Store: Redis transient coordination / streams")]
+    metrics[("Store: Prometheus metrics")]
+    logs[("Store: Loki redacted logs")]
+    archive[("Store: Future object archive / immutable audit export")]
+  end
+  subgraph target["Boundary: Managed cluster / future AWS EKS"]
+    collector["Container: OTel collector / Kubernetes event adapter"]
+    operator["Container: Go operator / scoped RBAC"]
+    workload["External workload: isolated demo or approved application"]
+    argocd["Container: Argo CD / scoped GitOps project"]
+  end
+  user -->|"HTTPS"| web
+  web -->|"OIDC"| idp
+  web -->|"Authenticated REST / SSE"| api
+  api -->|"Identity and role validation"| idp
+  workload -->|"Metrics / logs / events"| collector
+  collector -->|"Workload identity / redacted batches"| ingest
+  ingest --> metrics
+  ingest --> logs
+  ingest -->|"Normalized event pointers"| pg
+  metrics --> detect
+  pg --> detect
+  detect -->|"Versioned scores / evidence"| correlate
+  correlate -->|"Incidents"| pg
+  correlate -->|"Proposal input"| policy
+  api -->|"Approval / incident queries"| pg
+  api --> policy
+  policy -->|"Decision / intent / outbox transaction"| pg
+  pg -->|"Durable outbox relay"| redis
+  redis -->|"Work hints; rebuildable from SQL"| audit
+  pg -->|"Authorized request adapter"| operator
+  operator -->|"Revalidate; act; verify"| workload
+  operator -->|"Action result"| api
+  audit --> destinations
+  audit --> archive
+  api --> assistant
+  assistant -->|"Read-only redacted evidence"| pg
+  repo -->|"Reviewed image digests and manifests"| argocd
+  argocd -->|"Reconcile approved desired state"| workload

@@ -1,0 +1,11 @@
+# Starting configuration only, not production certification. Supply external stores/secrets.
+localStores: false
+rbac:
+  create: false
+environment: production
+replicas: 2
+pdb:
+  enabled: true
+resources:
+  requests: {cpu: 250m, memory: 256Mi}
+  limits: {cpu: "2", memory: 1Gi}

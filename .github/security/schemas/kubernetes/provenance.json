@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/yannh/kubernetes-json-schema",
+  "source_commit": "e0c72a1bc5f409d1685c0e1323460c8a98cd7459",
+  "kubernetes_version": "1.35.0",
+  "sha256": {
+    "configmap-v1.json": "e0eaddebd677c08aa092b2da2264d86ac4fc34eed112b9fac2945b3f00c1e9b1",
+    "service-v1.json": "8bf019854daed511e7c174896a898173fa65d88ec5937c687a37303d4cc9351b",
+    "serviceaccount-v1.json": "8193d6c3561475c6d3d5c44e1faedb1df53905373d904bc17015694326d659cf",
+    "networkpolicy-networking-v1.json": "f6324cc464f62228b0418f438d167208e4f86c7e3677ba30f608e79a8b26ba79",
+    "poddisruptionbudget-policy-v1.json": "da73f50ad0264d73f668eecaa9959da65afe2846602a7a5c8fd51f7799d6a258",
+    "job-batch-v1.json": "514d04ed5540a4d6354bff1ace0bd5155c98c58bcd33a030d1500427387fa97f",
+    "deployment-apps-v1.json": "46dc7cc4bec2c9a62400491e2b8057635afbfa6838999c518f7bea5c621a989b",
+    "validatingadmissionpolicy-admissionregistration-v1.json": "4b8b5f0e0e383363ee248095abe0ba0fd8b79da64d755c68632cbec9617697d9",
+    "validatingadmissionpolicybinding-admissionregistration-v1.json": "a705eb1d0de6d38132435c8df35b33097456012b2cd7d92d685442386d1d5db5"
+  }
+}

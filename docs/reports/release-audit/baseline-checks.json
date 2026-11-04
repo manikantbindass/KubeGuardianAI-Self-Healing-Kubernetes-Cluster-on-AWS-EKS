@@ -1,0 +1,122 @@
+[
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121004536",
+    "name": "api (windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394951/job/126121004880",
+    "name": "reproducibility (ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394951/job/126121004957",
+    "name": "reproducibility (windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394951/job/126121004526",
+    "name": "detector-container",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694395019/job/126121004225",
+    "name": "go-checks (windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694395019/job/126121004013",
+    "name": "go-checks (ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394960/job/126121003801",
+    "name": "cluster",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694395003/job/126121003663",
+    "name": "telemetry",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121004551",
+    "name": "image-security (detector)",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121005320",
+    "name": "migrations",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121003867",
+    "name": "security-static",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121004438",
+    "name": "image-security (api)",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121004607",
+    "name": "image-security (dashboard)",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121003480",
+    "name": "dashboard",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394869/job/126121002706",
+    "name": "resilience",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394959/job/126121003415",
+    "name": "validate",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121004611",
+    "name": "image-security (operator)",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694395019/job/126121003723",
+    "name": "isolated-recovery",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394948/job/126121002919",
+    "name": "kind",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394888/job/126121004331",
+    "name": "image-security (demo-workload)",
+    "state": "FAILURE"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121003838",
+    "name": "api (ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121003900",
+    "name": "portfolio",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394960/job/126121003421",
+    "name": "browser",
+    "state": "SUCCESS"
+  },
+  {
+    "link": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41694394954/job/126121004032",
+    "name": "containers",
+    "state": "SUCCESS"
+  }
+]

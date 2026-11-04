@@ -1,0 +1,72 @@
+[
+  {
+    "ref": "origin",
+    "sha": "650ee4ae91d8406333f99677dac930a1ae70f0da",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/codex/phase-08-secure-delivery",
+    "sha": "a7ba011c093d8835b7c95d3e471530709abb8a44",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/codex/phase-09-resilience",
+    "sha": "c788a7f4b39a4ff5f9d28ffd66b8131d4f351436",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/codex/phase-10-aiops",
+    "sha": "afa9867c887819969ac40830cac171914027a720",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/codex/phase-11-portfolio",
+    "sha": "c10b24d50cf131db73441c6590468903db0ec332",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/docs/default-branch-status",
+    "sha": "530c28c27fd64ff969e03ef8e6cef502533c0357",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-01-foundation",
+    "sha": "a9b128365b17427160e4a345844cbd3bd3c46d3c",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-02-kubernetes",
+    "sha": "f0778aa98be950fdc712c00db8bd0e2efb5af8bc",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-03-terraform",
+    "sha": "8561fd5fb19b3cc1ff2c76e6e4fa9734890ff072",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-04-observability",
+    "sha": "e335054596f21b127a4dede1c3987e862450e7f8",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-05-anomaly-detection",
+    "sha": "24d0a7e692c13fec77a65c90fe670fa31823f6bd",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-06-policy-operator",
+    "sha": "644f133f5cbd028d0507bf68b7f3cc3cb5256df5",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/feat/phase-07-operations-dashboard",
+    "sha": "c5ab79b4abaa0324127b18144c9f5e5673158976",
+    "is_ancestor": true
+  },
+  {
+    "ref": "origin/main",
+    "sha": "650ee4ae91d8406333f99677dac930a1ae70f0da",
+    "is_ancestor": true
+  }
+]

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: recovery-operator
+description: Namespace-scoped, dry-run-first KubeSentinel recovery controller
+type: application
+version: 0.6.0
+appVersion: "0.6.0"

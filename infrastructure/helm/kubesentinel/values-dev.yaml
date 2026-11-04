@@ -1,0 +1,7 @@
+localStores: false
+rbac:
+  create: false
+environment: development
+replicas: 2
+pdb:
+  enabled: true

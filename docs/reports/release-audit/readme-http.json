@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml",
+    "status": 200,
+    "final_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml"
+  },
+  {
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Frelease-audit",
+    "status": 200,
+    "final_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Frelease-audit"
+  },
+  {
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml",
+    "status": 200,
+    "final_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml"
+  },
+  {
+    "url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Frelease-audit",
+    "status": 200,
+    "final_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Frelease-audit"
+  },
+  {
+    "url": "https://img.shields.io/badge/License-Apache%202.0-blue.svg",
+    "status": 200,
+    "final_url": "https://img.shields.io/badge/License-Apache%202.0-blue.svg"
+  }
+]

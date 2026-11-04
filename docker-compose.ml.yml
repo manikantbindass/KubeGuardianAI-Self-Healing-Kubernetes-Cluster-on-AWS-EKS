@@ -1,0 +1,31 @@
+# Optional advisory detector. Train on the host first; only the JSON model directory is mounted.
+services:
+  detector:
+    build:
+      context: .
+      dockerfile: services/anomaly-detector/Dockerfile
+    image: kubesentinel/detector:phase05-local
+    environment:
+      DETECTOR_MODEL_PATH: /models/model.json
+      DETECTOR_WINDOW_SECONDS: 60
+      DETECTOR_INCIDENT_API: http://api:8000
+      DETECTOR_PUBLISH_ENABLED: ${DETECTOR_PUBLISH_ENABLED:-false}
+      DETECTOR_API_TOKEN: ${DETECTOR_API_TOKEN:-}
+      DETECTOR_TELEMETRY_TOKEN: ${TELEMETRY_TOKEN:-}
+    ports: ["127.0.0.1:8010:8010"]
+    volumes:
+      - type: bind
+        source: ./.cache/ml
+        target: /models
+        read_only: true
+    init: true
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 1.0
+    pids_limit: 64
+  api:
+    environment:
+      TELEMETRY_TOKEN: ${TELEMETRY_TOKEN:-}

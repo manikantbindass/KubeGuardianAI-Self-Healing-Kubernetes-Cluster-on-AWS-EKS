@@ -1,0 +1,4 @@
+{
+  "config": { "default": true, "MD013": false, "MD024": { "siblings_only": true } },
+  "ignores": ["apps/dashboard/AGENTS.md", "**/node_modules/**", "**/.venv/**", ".tools/**", ".cache/**", "**/.next/**"]
+}

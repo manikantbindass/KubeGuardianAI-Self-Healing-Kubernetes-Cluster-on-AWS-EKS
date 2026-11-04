@@ -1,0 +1,33 @@
+# Optional native Kubernetes 1.30+ admission. Platform administrators install it.
+# Only namespaces explicitly labeled delivery.kubesentinel.ai/enforce=true match.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: sentinel-immutable-images
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  validations:
+    - expression: "has(namespaceObject.metadata.annotations) && 'delivery.kubesentinel.ai/registry-prefix' in namespaceObject.metadata.annotations && object.spec.containers.all(c, c.image.startsWith(namespaceObject.metadata.annotations['delivery.kubesentinel.ai/registry-prefix'] + '/') && c.image.matches('^[0-9]{12}[.]dkr[.]ecr[.][a-z0-9-]+[.]amazonaws[.]com/[a-z0-9/-]+@sha256:[a-f0-9]{64}$'))"
+      message: All containers must use approved ECR digest references.
+    - expression: "!has(object.spec.initContainers) || object.spec.initContainers.all(c, c.image.startsWith(namespaceObject.metadata.annotations['delivery.kubesentinel.ai/registry-prefix'] + '/') && c.image.matches('^[0-9]{12}[.]dkr[.]ecr[.][a-z0-9-]+[.]amazonaws[.]com/[a-z0-9/-]+@sha256:[a-f0-9]{64}$'))"
+      message: Init containers must use approved ECR digest references.
+    - expression: "!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.size() == 0"
+      message: Ephemeral debug containers require a separate approved break-glass policy.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: sentinel-immutable-images
+spec:
+  policyName: sentinel-immutable-images
+  validationActions: [Deny, Audit]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        delivery.kubesentinel.ai/enforce: "true"

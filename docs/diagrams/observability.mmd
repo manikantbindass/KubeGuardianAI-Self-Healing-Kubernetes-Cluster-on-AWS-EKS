@@ -1,0 +1,15 @@
+flowchart LR
+  api[FastAPI route metrics / trace-aware JSON logs] --> prom[Prometheus]
+  kubelet[Real kubelet cAdvisor] --> prom
+  ksm[Kube-state-metrics] --> prom
+  prom --> am[Alertmanager grouping / silences]
+  am --> ingest[Authenticated normalization]
+  events[Namespaced Kubernetes Warning events] --> collector[Read-only Event collector]
+  collector --> ingest
+  ingest --> sql[PostgreSQL incidents / dedup / lifecycle]
+  api --> otel[Node OTel Collector / host API logs / OTLP spans]
+  otel --> loki[Loki OTLP log ingestion]
+  prom --> grafana[Six provisioned Grafana dashboards]
+  loki --> grafana
+  sql --> app[Dashboard real incident list]
+  outage[Monitoring outage] -.-> degraded[Metrics 503 / persisted incidents still readable]

@@ -1,0 +1,25 @@
+flowchart TB
+  operator[Authorized operator / private-connected runner] --> state[Separate encrypted S3 state / lockfile / KMS]
+  operator --> api[Private EKS API / access entries]
+  github[GitHub exact repository and branch OIDC] --> publish[Optional ECR publisher role]
+  publish --> ecr[Immutable KMS-encrypted ECR repositories]
+  subgraph vpc[Environment VPC - proposed, not provisioned]
+    subgraph public[Public subnets across two AZs]
+      nat[Optional one or per-AZ NAT / EIPs]
+      igw[Internet gateway]
+    end
+    subgraph private[Private subnets across two AZs]
+      nodes[Managed AL2023 nodes / encrypted EBS / IMDSv2]
+      endpoints[Optional private AWS endpoints / S3 gateway]
+      logsIdentity[Optional scoped Pod Identity log writer]
+    end
+    nodes --> nat
+    nat --> igw
+    nodes --> endpoints
+    nodes --> api
+    nodes --> ecr
+    logsIdentity --> logs[Encrypted CloudWatch groups / audit metric / flow logs]
+  end
+  existingLB[Separately approved existing internal LB / TLS] --> dns[Optional existing-zone CNAME]
+  api --> logs
+  state -.-> approval[Separate cost and plan approval before any apply]

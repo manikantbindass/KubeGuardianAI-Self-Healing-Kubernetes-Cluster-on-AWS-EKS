@@ -1,0 +1,12 @@
+# Opt-in lab profile: requires metrics-server and capacity for quotas.
+replicas: 2
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPU: 70
+pdb:
+  enabled: true
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {cpu: "1", memory: 768Mi}

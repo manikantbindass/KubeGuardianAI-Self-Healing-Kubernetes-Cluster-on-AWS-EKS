@@ -1,0 +1,27 @@
+{
+  "source_commit": "6822b8495b83bb11c6fa2396f6471aef111b0bb3",
+  "job_url": "https://github.com/manikantbindass/KubeSentinel-AI/actions/runs/41763267640/job/126355648388",
+  "stats": {
+    "startTime": "2026-11-04T02:51:27.212Z",
+    "duration": 19013.5,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "data": "explicit synthetic fixtures, real application/browser",
+  "screenshots": [
+    {
+      "path": "docs/screenshots/release-audit/desktop.png",
+      "sha256": "db1ee98a13d5b23bc2340a4e22aa7afcc379ed7ac42d664058f8a06d68b77cc4"
+    },
+    {
+      "path": "docs/screenshots/release-audit/tablet.png",
+      "sha256": "db150ddeec226dd5b680a67496db51be83d7b54f540a9d8f4d30e26c92e775e3"
+    },
+    {
+      "path": "docs/screenshots/release-audit/mobile.png",
+      "sha256": "89384c4a744c5af321daa0b8e6b4cd1f883497cd13b03329bc81581c72bba207"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: Observability acceptance
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  telemetry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
+        with:
+          version: v3.19.0
+      - name: Install pinned kind and browser
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 -o /tmp/kind
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+          npm install --global npm@11.11.0
+          npm ci
+          npx playwright install --with-deps chromium
+      - run: helm lint infrastructure/helm/observability
+      - name: Validate runtime configuration before deployment
+        run: |
+          config="$PWD/infrastructure/helm/observability/files"
+          # Kubernetes mounts token/CA only at runtime; preflight checks config syntax plus rules separately.
+          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" prom/prometheus:v3.6.0 check config --syntax-only /etc/prometheus/prometheus.yml
+          docker run --rm --entrypoint /bin/promtool -v "$config:/etc/prometheus:ro" -v "$PWD/infrastructure/helm/observability/tests:/tests:ro" prom/prometheus:v3.6.0 test rules /tests/rules.yml
+          docker run --rm -v "$config:/etc/loki:ro" grafana/loki:3.5.7 -config.file=/etc/loki/loki.yml -verify-config=true
+          docker run --rm --tmpfs /var/lib/otel -v "$config:/etc/otel:ro" otel/opentelemetry-collector-contrib:0.136.0 validate --config=/etc/otel/otel.yml
+      - id: bootstrap
+        run: python scripts/kubernetes.py bootstrap --tag phase04 --observability
+      - run: python -u scripts/test_observability.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: observability-evidence
+          path: .cache/observability/
+          include-hidden-files: true
+      - name: Diagnostics
+        if: failure() && steps.bootstrap.outcome != 'skipped'
+        run: |
+          kubectl --context kind-kubesentinel -n kubesentinel get pods,jobs,events
+          for component in prometheus loki grafana event-collector alertmanager; do
+            kubectl --context kind-kubesentinel -n kubesentinel logs deployment/$component --tail=80 || true
+          done
+          kubectl --context kind-kubesentinel -n sentinel-telemetry get pods
+          kubectl --context kind-kubesentinel -n sentinel-telemetry logs daemonset/otel --tail=100 || true
+          kubectl --context kind-kubesentinel -n kubesentinel logs deployment/sentinel-api --tail=100 || true
+      - if: always()
+        run: python scripts/kubernetes.py clean

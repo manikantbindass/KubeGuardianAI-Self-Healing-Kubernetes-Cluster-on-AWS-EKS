@@ -1,0 +1,22 @@
+global:
+  resolve_timeout: 2m
+route:
+  receiver: incidents
+  group_by: [alertname, namespace, deployment, pod]
+  group_wait: 5s
+  group_interval: 15s
+  repeat_interval: 1h
+receivers:
+  - name: incidents
+    webhook_configs:
+      - url: http://sentinel-api:8000/api/v1/internal/alerts
+        send_resolved: true
+        max_alerts: 100
+        http_config:
+          authorization:
+            type: Bearer
+            credentials_file: /var/run/telemetry/TELEMETRY_TOKEN
+inhibit_rules:
+  - source_matchers: ['severity="critical"']
+    target_matchers: ['severity="warning"']
+    equal: [alertname, namespace, pod]

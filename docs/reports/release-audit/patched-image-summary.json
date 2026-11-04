@@ -1,0 +1,44 @@
+{
+  "source_commit": "5ef44f56859300a5376dcc8514406ffd34744c38",
+  "images": [
+    {
+      "component": "api",
+      "high_critical_count": 45,
+      "severity_counts": {
+        "HIGH": 45
+      },
+      "without_fixed_version": 45
+    },
+    {
+      "component": "dashboard",
+      "high_critical_count": 33,
+      "severity_counts": {
+        "HIGH": 32,
+        "CRITICAL": 1
+      },
+      "without_fixed_version": 33
+    },
+    {
+      "component": "demo-workload",
+      "high_critical_count": 45,
+      "severity_counts": {
+        "HIGH": 45
+      },
+      "without_fixed_version": 45
+    },
+    {
+      "component": "detector",
+      "high_critical_count": 45,
+      "severity_counts": {
+        "HIGH": 45
+      },
+      "without_fixed_version": 45
+    },
+    {
+      "component": "operator",
+      "high_critical_count": 0,
+      "severity_counts": {},
+      "without_fixed_version": 0
+    }
+  ]
+}

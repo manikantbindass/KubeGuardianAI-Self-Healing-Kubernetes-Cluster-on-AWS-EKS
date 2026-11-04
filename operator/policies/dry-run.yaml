@@ -1,0 +1,41 @@
+apiVersion: recovery.kubesentinel.ai/v1alpha1
+kind: RemediationPolicy
+metadata:
+  name: lab-safe
+  namespace: sentinel-lab
+spec:
+  namespaceAllowlist: [sentinel-lab]
+  workloadSelector:
+    matchLabels:
+      app: demo-recovery
+  incidentTypes: [CrashLoopBackOff, OOMKilled, ReadinessProbeFailure, StuckRollout, ExcessiveRestarts, ReplicaShortage, SustainedPressure, LatencyDegradation]
+  allowedActions: [Restart, Scale, Rollback, Escalate]
+  dryRun: true
+  minimumSeverity: warning
+  approvalRequired: true
+  cooldownSeconds: 300
+  maxActionsPerWindow: 2
+  actionWindowSeconds: 3600
+  minimumHealthyReplicas: 1
+  minimumReplicas: 1
+  maximumReplicas: 4
+  scaleStep: 1
+  maintenanceWindows:
+    - weekdays: [0, 1, 2, 3, 4, 5, 6]
+      startHour: 0
+      endHour: 24
+  escalationDestination: local-platform-team
+  maxIncidentAgeSeconds: 300
+  sustainSeconds: 30
+  verification:
+    servicePort: 8080
+    path: /health
+    timeoutSeconds: 120
+    consecutiveSuccesses: 3
+    samples: 5
+    maxErrorBasisPoints: 100
+    maxP95Milliseconds: 500
+    maxLatencyPercent: 150
+  rollback:
+    enabled: false
+    maxRevisionAgeSeconds: 3600

@@ -1,0 +1,35 @@
+flowchart LR
+  web["External container: Web dashboard"]
+  idp["External: OIDC provider"]
+  pg[("External store: PostgreSQL")]
+  redis[("External store: Redis")]
+  operator["External container / privilege boundary: Operator"]
+  subgraph backend["Container: FastAPI backend - proposed components"]
+    routes["Component: Versioned REST / SSE router"]
+    identity["Component: Session / token verifier"]
+    scope["Component: RBAC / tenant / cluster scope"]
+    incidents["Component: Incident query / lifecycle"]
+    proposals["Component: Typed proposal validator"]
+    policy["Component: Default-deny policy / budgets"]
+    approvals["Component: Bound approval / expiry checks"]
+    dispatch["Component: Authorized CR dispatch adapter"]
+    durable["Component: SQL repository / transactional outbox"]
+    audit["Component: Audit intent / result recording"]
+  end
+  web --> routes
+  routes --> identity
+  identity --> idp
+  identity --> scope
+  scope --> incidents
+  scope --> proposals
+  proposals --> policy
+  policy --> approvals
+  approvals -->|"Revalidate approved content"| dispatch
+  incidents --> durable
+  approvals --> durable
+  dispatch -->|"Unique action / bounded scope"| operator
+  dispatch --> audit
+  operator -->|"Observed result / verification"| audit
+  audit --> durable
+  durable --> pg
+  durable -->|"Transient hints only"| redis

@@ -1,0 +1,51 @@
+name: Terraform static checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.13.5
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive infrastructure/terraform
+      - name: Validate roots without AWS or remote state
+        run: |
+          for root in bootstrap environments/dev environments/demo; do
+            terraform -chdir=infrastructure/terraform/$root init -backend=false -input=false -lockfile=readonly
+            terraform -chdir=infrastructure/terraform/$root validate
+          done
+      - name: Synthetic provider-mocked tests only
+        run: terraform -chdir=infrastructure/terraform/environments/dev test
+      - name: Download pinned static scanner
+        run: |
+          curl -fsSL https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_Linux-64bit.tar.gz -o /tmp/trivy.tar.gz
+          curl -fsSL https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_checksums.txt -o /tmp/trivy-checksums.txt
+          expected=$(awk '$2 == "trivy_0.76.1_Linux-64bit.tar.gz" {print $1}' /tmp/trivy-checksums.txt)
+          test -n "$expected"
+          echo "$expected  /tmp/trivy.tar.gz" | sha256sum --check
+          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+      - name: Security scan with explicit static inputs
+        run: |
+          mkdir -p .cache/terraform
+          status=0
+          for root in bootstrap environments/dev environments/demo; do
+            name=$(echo "$root" | tr / -)
+            /tmp/trivy config --severity HIGH,CRITICAL --exit-code 1 --tf-vars "infrastructure/terraform/$root/terraform.tfvars.example" --format json --output ".cache/terraform/$name.json" "infrastructure/terraform/$root" || status=1
+          done
+          exit "$status"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: terraform-static-security
+          path: .cache/terraform/*.json
+          include-hidden-files: true
+          if-no-files-found: warn

@@ -1,0 +1,66 @@
+name: Local Kubernetes
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
+        with:
+          version: v3.19.0
+      - name: Install pinned tools
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 -o /tmp/kind
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+          curl -fsSL https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz | tar xz -C /tmp kubeconform
+          sudo mv /tmp/kubeconform /usr/local/bin/
+      - name: Lint and validate all configurations
+        run: |
+          mkdir -p .cache
+          for values in local dev prod; do
+            helm lint infrastructure/helm/kubesentinel -f infrastructure/helm/kubesentinel/values-$values.yaml
+            helm template sentinel infrastructure/helm/kubesentinel -f infrastructure/helm/kubesentinel/values-$values.yaml > .cache/$values.yaml
+            kubeconform -strict -summary .cache/$values.yaml
+          done
+      - run: python scripts/kubernetes.py bootstrap
+      - run: python scripts/kubernetes.py test
+      - run: python scripts/test_admission.py
+      - name: Actual frontend smoke
+        run: |
+          kubectl --context kind-kubesentinel -n kubesentinel port-forward service/sentinel-dashboard 3100:3000 > /tmp/dashboard.log 2>&1 &
+          kubectl --context kind-kubesentinel -n kubesentinel port-forward service/sentinel-api 8100:8000 > /tmp/api.log 2>&1 &
+          sleep 5
+          python scripts/setup/smoke.py --dashboard http://127.0.0.1:3100 --api http://127.0.0.1:8100
+      - name: Capture non-secret deployment evidence
+        if: always()
+        run: |
+          mkdir -p .cache
+          kubectl --context kind-kubesentinel -n kubesentinel get pods,deployments,services > .cache/kind-status.log
+          kubectl --context kind-kubesentinel -n kubesentinel get events --field-selector type=Warning > .cache/kind-warnings.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: kubernetes-validation
+          path: |
+            .cache/kind-*.log
+            .cache/*.yaml
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Diagnostics
+        if: failure()
+        run: |
+          kubectl --context kind-kubesentinel -n kubesentinel get pods,jobs,events
+          kubectl --context kind-kubesentinel -n kubesentinel logs -l component=api --all-containers --tail=100
+      - if: always()
+        run: python scripts/kubernetes.py clean

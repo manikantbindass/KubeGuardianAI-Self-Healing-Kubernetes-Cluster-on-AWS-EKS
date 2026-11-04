@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels: {cluster: kind-kubesentinel}
+rule_files: [/etc/prometheus/rules.yml]
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: [alertmanager:9093]
+scrape_configs:
+  - job_name: sentinel-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: [sentinel-api:8000]
+        labels: {namespace: kubesentinel}
+    sample_limit: 10000
+  - job_name: kube-state-metrics
+    static_configs: [{targets: [kube-state-metrics:8080]}]
+    sample_limit: 50000
+    metric_relabel_configs:
+      - {action: labeldrop, regex: "uid|pod_ip|host_ip|container_id|image_id"}
+  - job_name: otel
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces: {names: [sentinel-telemetry]}
+    relabel_configs:
+      - {source_labels: [__meta_kubernetes_service_name], action: keep, regex: otel}
+      - {source_labels: [__meta_kubernetes_endpoint_port_name], action: keep, regex: metrics}
+  - job_name: kubernetes-cadvisor
+    scheme: https
+    authorization: {credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
+    tls_config: {ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt}
+    kubernetes_sd_configs: [{role: node}]
+    relabel_configs:
+      - {target_label: __address__, replacement: "kubernetes.default.svc:443"}
+      - {source_labels: [__meta_kubernetes_node_name], regex: "(.+)", target_label: __metrics_path__, replacement: "/api/v1/nodes/${1}/proxy/metrics/cadvisor"}
+    metric_relabel_configs:
+      - {action: keep, source_labels: [__name__], regex: "container_cpu_usage_seconds_total|container_memory_working_set_bytes"}
+      - {action: labeldrop, regex: "id|image|name|container_label_.*"}
+    sample_limit: 50000
