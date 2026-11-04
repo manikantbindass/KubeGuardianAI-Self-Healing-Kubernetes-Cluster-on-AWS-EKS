@@ -26,13 +26,13 @@ does not accept license agreements or change system security settings.
 Run this in a directory where you want the new checkout:
 
 ```bat
-git clone --branch codex/windows-cmd-setup https://github.com/manikantbindass/KubeSentinel-AI.git && cd KubeSentinel-AI && scripts\setup\install.cmd --demo
+git clone --branch main https://github.com/manikantbindass/KubeSentinel-AI.git && cd KubeSentinel-AI && scripts\setup\install.cmd --demo
 ```
 
-The command selects the installer feature branch while it is reviewed. After
-that branch is merged, `--branch main` can be used instead. The default clone
-directory must not already exist. For an existing checkout on a branch that
-contains the installer,
+The installer was merged into `main` through
+[PR #28](https://github.com/manikantbindass/KubeSentinel-AI/pull/28).
+The default clone directory must not already exist. For an existing checkout
+that includes the installer,
 run `scripts\setup\install.cmd --demo` from its root. From another batch file,
 use `call scripts\setup\install.cmd --demo` so control returns to the caller.
 

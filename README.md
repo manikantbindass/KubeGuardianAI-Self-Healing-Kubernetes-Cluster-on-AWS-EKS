@@ -6,8 +6,8 @@
 
 A Kubernetes operations platform with a real full-stack dashboard, explainable anomaly detection and a policy-driven recovery operator. Detection supplies evidence; deterministic policy and human approval control execution.
 
-[![Foundation checks](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=codex%2Frelease-audit)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml)
-[![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=codex%2Frelease-audit)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
+[![Foundation checks](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/checks.yml)
+[![Security gates](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/manikantbindass/KubeSentinel-AI/actions/workflows/security.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 **Release status:** development portfolio; v1.0.0 is unpublished. The latest [security remediation](docs/reports/release-audit/security-remediation.json) passes source and all five image gates with no HIGH/CRITICAL findings; final integration checks and the remaining release acceptance criteria still apply. Local and Linux CI evidence exists for selected flows. AWS is **not deployed**. Synthetic evaluations and demo telemetry do not establish production accuracy or readiness. See the [release checklist](docs/releases/v1.0.0-candidate.md) and [dated validation matrix](docs/reports/phase-11-validation.md).
@@ -63,10 +63,10 @@ The browser receives no Kubernetes credentials. The operator independently check
 Install Git for Windows and Docker Desktop with a running Linux engine, then paste this into **Command Prompt** in a folder for a new checkout:
 
 ```bat
-git clone --branch codex/windows-cmd-setup https://github.com/manikantbindass/KubeSentinel-AI.git && cd KubeSentinel-AI && scripts\setup\install.cmd --demo
+git clone --branch main https://github.com/manikantbindass/KubeSentinel-AI.git && cd KubeSentinel-AI && scripts\setup\install.cmd --demo
 ```
 
-The command selects the installer feature branch for review; use `--branch main` after it is merged. Open `http://localhost:3000`, read `OPS_DEV_TOKEN` from your ignored `.env`, sign in and select **Synthetic demo**. Host Python, Node and Make are not required. Omit `--demo` for a fresh real-data installation, which stays empty until collection is configured. The script preserves existing settings/volumes and does not enable cluster mutation or provision AWS. See the [CMD guide](docs/runbooks/windows-cmd.md) for prerequisites, checks, troubleshooting and validation limits.
+The installer is available on `main` following [PR #28](https://github.com/manikantbindass/KubeSentinel-AI/pull/28). Open `http://localhost:3000`, read `OPS_DEV_TOKEN` from your ignored `.env`, sign in and select **Synthetic demo**. Host Python, Node and Make are not required. Omit `--demo` for a fresh real-data installation, which stays empty until collection is configured. The script preserves existing settings/volumes and does not enable cluster mutation or provision AWS. See the [CMD guide](docs/runbooks/windows-cmd.md) for prerequisites, checks, troubleshooting and validation limits.
 
 ## Quickstart: local vertical slice
 
@@ -105,10 +105,10 @@ This actual application capture comes from the [Phase 07 browser run](docs/repor
 | [Detector evaluation](docs/reports/phase-05/evaluation.json) | 177 synthetic held-out windows, two incidents; rules P/R 1.00/1.00; forest 0.667/0.90 | Tiny generated distribution; no production accuracy estimate |
 | [Isolated kind recovery](docs/reports/phase-06/all-actions.json) | Eight action records: two succeeded, four rejected, one dry-run, one rolled back | Safety outcomes; not eight independent recovery trials |
 | [Approved scale](docs/reports/phase-06/approved-scale.json) | 10 s observation-to-apply; 36 s verification | One sample, including human approval/polling; no SLA or native baseline |
-| [Loopback health load](docs/benchmarks/phase-09/loopback/summary.json) | 900 requests, concurrency 1/4/8, three repetitions; trial p95 16.6–31.0 ms; zero sample errors | Windows HTTP health only; no DB/cluster capacity claim |
+| [Release-audit loopback health load](docs/reports/release-audit/health-loopback-summary.json) | 900 requests, concurrency 1/4/8, three repetitions; trial p95 23.59–122.61 ms; zero sample errors | Separate Windows HTTP health run; no DB/cluster capacity claim |
 | [Correlation/retrieval](docs/reports/phase-10/results.json) | Eight synthetic incidents, 12 expected directed links, 8/8 retrieval matches | Contract evaluation; no real-world root-cause accuracy claim |
 
-![Measured health-only load trials without database or cluster](docs/portfolio/figures/load.png)
+![Release-audit health-only load trials without database or cluster](docs/reports/release-audit/health-loopback.png)
 
 CPU/memory overhead, repeated native-versus-KubeSentinel recovery, full-stack saturation and HPA curves are **planned experiments**, with no invented values. [Cost scenarios](docs/costs/eks-estimate.md) use rounded assumptions, exclude major services, and are not current AWS quotes.
 
@@ -135,6 +135,38 @@ uv run python scripts/validate_repository.py
 ```
 
 Migration tests separately require a disposable PostgreSQL database ending in `_test`. Container, browser and cluster checks require documented dependencies; [validation results](docs/reports/phase-11-validation.md) distinguish current local checks from historical CI. Make targets include `setup`, `dev`, `test`, `lint`, `build`, `clean` and `health`; Make is optional on Windows.
+
+## Verified outcomes after testing
+
+> [!IMPORTANT]
+> **What KubeSentinel AI does:** collects Kubernetes and application evidence,
+> presents incidents and anomaly explanations in an operations dashboard, and
+> evaluates recovery through deterministic safety policies. In the isolated lab,
+> the operator can perform bounded restart, scale or rollback actions, then
+> verify workload/service evidence and record the outcome. **ML and optional LLM
+> recommendations cannot authorize cluster changes.** Dry-run, protected scope,
+> signed approval where required, cooldowns and action budgets govern execution.
+
+**Recorded results, with their limits:**
+
+- **Detection:** on 177 synthetic held-out windows, Isolation Forest achieved
+  precision **0.667**, recall **0.900** and F1 **0.766**; the rule baseline achieved
+  **1.000** for all three on this small fixture. This is not production accuracy.
+- **Guarded recovery:** eight isolated action records contain **two succeeded,
+  four rejected, one dry-run and one rolled back**. These are different safety
+  outcomes, not eight comparable recovery trials or a recovery-success rate.
+- **Serving:** a separate health-only loopback run recorded **900 requests with
+  zero errors**, trial p95 **23.59–122.61 ms** and throughput **94.44–227.53 req/s**.
+  It did not exercise PostgreSQL, cluster operations or full-stack capacity.
+- **Validation:** the installer PR head `6b0b81e` passed **24 GitHub checks** before
+  [PR #28](https://github.com/manikantbindass/KubeSentinel-AI/pull/28) merged.
+  Current branch checks must still pass for each new change.
+
+**Final engineering outcome:** a runnable, inspectable development prototype
+with selected local/CI integration and guarded Kubernetes recovery evidence.
+**AWS deployment, production HA/restore, real-label ML quality and a continuous
+telemetry-to-verified-recovery experiment remain unverified.** See the
+[result sources and interpretation](docs/reports/verified-outcomes.md).
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) and [CHANGELOG](CHANGELOG.md). Use reviewed feature branches and Conventional Commits. [Release notes and gates](docs/releases/v1.0.0-candidate.md) are prepared; no merge or release publication is authorized by this documentation change.
 

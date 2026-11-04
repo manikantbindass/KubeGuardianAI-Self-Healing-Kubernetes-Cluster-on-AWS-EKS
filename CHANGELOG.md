@@ -2,6 +2,8 @@
 
 ## Unreleased - release audit and portfolio preparation
 
+- Highlight measured outcomes and guarded recovery behavior after the README test instructions; link result provenance and update installer/badges to main.
+
 - Add a Windows CMD container installer, one-line clone/start guide and orchestration regression tests. Host Python/Node are not required for this setup.
 
 - Resolve blocking source/image findings using official digest-pinned Alpine runtimes and a reproducible Checkov cryptography replacement; preserve strict gates and negative signature tests.
