@@ -31,6 +31,8 @@ jobs:
       - run: actionlint -color
       - run: uv sync --frozen
       - run: uv sync --project .github/security --frozen
+      - name: Verify patched scanner cryptographic boundaries
+        run: uv run --project .github/security python .github/security/checkov-patch/test_crypto.py
       - run: uv run --project .github/security python scripts/validate_delivery.py
       - run: uv run pytest tests/unit/test_delivery.py -q
       - name: Scan full Git history without disclosing secrets

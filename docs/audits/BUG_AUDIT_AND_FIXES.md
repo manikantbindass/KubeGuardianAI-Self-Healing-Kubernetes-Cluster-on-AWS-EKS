@@ -137,3 +137,9 @@ transactions, recovery mutation boundaries, telemetry, model training/inference,
 workflows and GitOps. A passing scanner does not establish absence of every bug.
 See the [phase audit](PHASE_COMPLETION_AUDIT.md) and
 [final gates](FINAL_RELEASE_READINESS.md) for incomplete capabilities and blockers.
+
+## Security remediation follow-up
+
+Candidate changes replace the four Debian application image runtimes with official digest-pinned Alpine 3.24 equivalents. They must pass musl dependency installation, application startup, browser/cluster tests and Trivy gates before any clean-scan claim. No suppressions are added.
+
+Checkov is now an explicit downstream `3.4.3+sentinel.1` build: the two public-key verification modules use OpenSSL-backed cryptography, and python-ecdsa is removed entirely. The checksum-verified wheel builder, retained upstream license, regenerated wheel RECORD and signature boundary regressions are in [.github/security/checkov-patch](../../.github/security/checkov-patch). Four regression groups pass locally; real scanner and fresh CI validation remain required. This is not claimed as an upstream fix.
