@@ -51,7 +51,7 @@ identify the executed jobs. It is not approval of the changed audit commit.
 | 00 Foundation | PASS | Repository structure, ADRs, architecture, standards, docs and original LICENSE checked; histories integrated without losing branch ancestry |
 | 01 Full stack | PARTIAL | API/frontend unit, lint/type/build and baseline PostgreSQL/Redis/Compose/migration CI pass; legacy greeting routes remain local-only, not installation-wide OIDC protected |
 | 02 Kubernetes | PARTIAL | Baseline kind, RBAC, discovery, readiness and rollout tests pass; chart lint/render checks exist; changed images require fresh container scans and cluster validation |
-| 03 AWS IaC | PARTIAL | Modular code, locked providers, private endpoints, scoped identities and mocked tests exist; no reviewed real AWS plan or deployment evidence |
+| 03 AWS IaC | BLOCKED | Modular code, locked providers, private endpoints, scoped identities and mocked tests exist; no reviewed real AWS plan or deployment evidence |
 | 04 Observability | PASS | Baseline telemetry CI verifies real isolated-cluster scraping, logs, events, incidents and outage behavior; AWS CloudWatch integration remains optional and undeployed |
 | 05 Anomaly detection | PARTIAL | Feature/leakage/serialization/fallback/reproducibility tests pass; measured accuracy is synthetic, not validated on representative labeled production data |
 | 06 Recovery operator | PARTIAL | Native evidence, deterministic policy and approval checks, rollback and isolated baseline tests exist; broad fault/recovery comparisons and renewed compiler/module cluster verification remain required |
@@ -283,3 +283,7 @@ The Insights follow-up uses the scoped Phase 10 API rather than a name-only
 client graph, with a typed proxy/client and loading/empty/error states. Local
 frontend tests now total 20. See [bug resolutions](BUG_AUDIT_AND_FIXES.md) and
 [final gates](FINAL_RELEASE_READINESS.md).
+
+AWS phase verification is BLOCKED for real environment behavior: safe credentials, reviewed plan and cost-approved deployment are absent. Static and provider-mocked checks pass. The supported Debian 13 dashboard runtime removes the observed critical entry but still has 44 unfixed HIGH entries, so Phase 08 remains FAIL.
+
+Final implementation `6822b84` completed all 24 CI jobs: 19 passed and five security jobs failed. New [browser evidence](../reports/release-audit/browser-summary.json) and [real recovery evidence](../reports/release-audit/cluster-results.json) are preserved. Phase statuses remain conservative; mandatory merge gates still fail.

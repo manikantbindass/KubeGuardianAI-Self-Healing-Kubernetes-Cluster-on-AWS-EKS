@@ -1,0 +1,9 @@
+{
+  "source_commit": "6822b8495b83bb11c6fa2396f6471aef111b0bb3",
+  "runtime": "node:24.22.2-trixie-slim",
+  "counts": {
+    "HIGH": 44
+  },
+  "critical_count": 0,
+  "without_fixed_version": 44
+}

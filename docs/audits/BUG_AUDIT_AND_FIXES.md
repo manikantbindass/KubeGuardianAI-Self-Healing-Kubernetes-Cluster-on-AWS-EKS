@@ -67,7 +67,7 @@ Release recommendation remains **NOT READY** while mandatory security gates fail
 - Verification: fresh Compose, detector, browser, telemetry and kind jobs pass;
   image rescans show all remaining HIGH/CRITICAL entries have no supplied fixed
   version. The operator image passes. API/detector/demo retain 45 findings each;
-  dashboard retains 33, including CVE-2023-45853 in Debian 12 zlib. Counts are advisory entries, not unique exploit paths. A supported digest-pinned Debian 13 Node runtime is the next candidate; its build/scan must verify the change.
+  dashboard retains 33, including CVE-2023-45853 in Debian 12 zlib. Counts are advisory entries, not unique exploit paths. The supported digest-pinned Debian 13 Node runtime was then built and scanned on `6822b84`: critical findings are zero, while 44 unfixed HIGH advisories remain. The runtime change is verified; the overall image gate is still failing.
 - Status: **PARTIALLY RESOLVED / RELEASE BLOCKING**. Available fixed-version
   findings were removed; unfixed advisories require a supported clean runtime or
   explicit reviewed treatment. This audit adds no vulnerability exception.

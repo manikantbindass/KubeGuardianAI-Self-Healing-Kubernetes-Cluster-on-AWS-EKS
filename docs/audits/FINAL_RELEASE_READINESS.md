@@ -2,6 +2,7 @@
 
 Date: 2026-11-04 (Asia/Calcutta). Repository:
 [KubeSentinel-AI](https://github.com/manikantbindass/KubeSentinel-AI).
+Audited implementation commit: `6822b8495b83bb11c6fa2396f6471aef111b0bb3`.
 Branch: `codex/release-audit`. Target: `main`. Draft
 [PR #15](https://github.com/manikantbindass/KubeSentinel-AI/pull/15).
 
@@ -18,14 +19,14 @@ bypassed. No AWS deployment, GitHub release or branch deletion is authorized.
 | Every phase meets all required acceptance criteria | FAIL | Several phases remain PARTIAL; DevSecOps fails required security gates |
 | No unresolved Critical/High security defects | FAIL | Unfixed Checkov dependency and OS findings; no CVE waiver added |
 | No known source build failures | PASS | Python compile/type/lint, Go tests/vet and dashboard production build pass on audited source; clean-install final UI build verified |
-| All required tests pass | BLOCKED | Local PostgreSQL skipped, Docker unavailable; latest final-source CI must complete |
+| All required tests pass | FAIL | Final implementation CI: 19 passed, five security failures; local PostgreSQL skipped and Docker unavailable |
 | Actual frontend/backend integration | PASS | Real migrated API/Compose and browser jobs passed on `5ef44f5`; newer Insights source also passed Linux frontend/browser checks on `38e3e5a` |
 | Fresh local kind deployment | BLOCKED | Docker Desktop Linux named pipe unavailable on this host; fresh Linux kind CI passed on `5ef44f5` |
-| Self-healing safety and controlled recovery | PASS | Fresh isolated-recovery and real cluster bridge CI passed on `5ef44f5`; evidence does not establish broad production recovery |
+| Self-healing safety and controlled recovery | PASS | Final `6822b84` isolated recovery and real bridge CI pass; saved action Succeeded and denied action Rejected; no broad production recovery claim |
 | Documentation matches verified implementation | PASS | Planned/synthetic/undeployed capabilities labeled; current supplement records fixes and remaining gaps |
 | Root PPTX/PDF valid and prominently linked | PASS | README preview near beginning; 25-slide editable deck, 22-page report and 25-page slide export pass structural/hash checks |
 | No committed secrets found | PASS | Redacted full-history scan reported zero leaks; final commit scan must retain this result |
-| CI checks pass | FAIL | `5ef44f5`: 19 successful jobs, five failed security jobs; final source recheck required |
+| CI checks pass | FAIL | `6822b84`: all 24 complete, 19 successful jobs and five failed security jobs |
 | Merge conflicts resolved | PASS | README conflict resolved while preserving original introduction and all ancestry |
 | Git history and Apache-2.0 preserved | PASS | All fetched heads are ancestors; original LICENSE blob unchanged |
 | AWS validation limits documented | PASS | No real plan/apply/destroy or live EKS/ECR/Argo/OIDC proof claimed |
@@ -66,8 +67,9 @@ success claim is inferred by concatenating independent passing tests.
 ## Security and performance limits
 
 The fixed operator image has zero HIGH/CRITICAL scan entries. Remaining image
-counts are API/detector/demo 45 each and dashboard 33; every remaining entry in
-the downloaded scan has no supplied fixed version. The static scan's remaining
+counts on `5ef44f5` were API/detector/demo 45 each and dashboard 33; the later
+Debian 13 dashboard scan has 44 HIGH and zero critical entries. Every remaining
+entry in those scans has no supplied fixed version. The static scan's remaining
 source dependency is `ecdsa` 0.19.2 / CVE-2024-23342 in Checkov tooling. See
 [bug resolutions](BUG_AUDIT_AND_FIXES.md). Existing Terraform exceptions expire
 2026-12-03. No broad suppression, scanner removal or invented safety conclusion
@@ -143,4 +145,16 @@ the final checks finish, pending results remain BLOCKED rather than PASS.
 
 Current `main` was observed at `650ee4a` with `protected=false`. No protection settings were changed. This lack of repository-enforced checks is an operational risk; the audit still refuses the merge while mandatory gates fail. The five public HTTPS links/badges in README returned HTTP 200; local links and the original LICENSE also pass validation.
 
-The dashboard runtime is being moved from the supported Debian 12 image to the official Debian 13 Node 24.22.2 image, pinned by registry digest. This targets the remaining Debian 12 critical zlib entry; no removal or clean scan is claimed until new image CI verifies it.
+The dashboard runtime was moved to the official Debian 13 Node 24.22.2 image, pinned by registry digest. Build and scan on `6822b84` confirm zero critical entries and 44 unfixed HIGH advisories. The operator image passes; the other four image gates and the Checkov dependency gate still fail. This is a verified partial security improvement, not a clean scan or permission to merge.
+
+Authenticated local HTTP smoke on the repaired preview returned 200 for the dashboard, development sign-in and BFF intelligence. Explicit demo mode returned four explanations; real mode returned none. This is SQLite synthetic preview evidence, not a PostgreSQL/Redis deployment.
+
+## Completed implementation CI and fresh screenshots
+
+All 24 jobs on `6822b84` completed: **19 success, five security failures**. See [final code checks](../reports/release-audit/final-code-checks.json). Cluster, telemetry, isolated recovery, browser, frontend, migrations, Compose, ML, Go, Terraform and artifact checks pass.
+
+[Real isolated-cluster evidence](../reports/release-audit/cluster-results.json) records a policy-approved Scale action reaching `Succeeded` and a separately rejected action reaching `Rejected`. It is not the missing full telemetry/ML/incident-lifecycle chain described above.
+
+[Browser evidence](../reports/release-audit/browser-summary.json) records six passing Playwright tests, zero unexpected failures, zero flaky tests and real responsive captures using explicit synthetic fixtures: [desktop](../screenshots/release-audit/desktop.png), [tablet](../screenshots/release-audit/tablet.png), [mobile](../screenshots/release-audit/mobile.png). The root portfolio binaries remain unchanged and structurally valid; current audit findings are documented here as their later supplement.
+
+The audit evidence commit changes documentation/screenshots only after the tested implementation commit. Its own live checks remain visible in PR #15. No merge SHA exists because the mandatory security and phase-completion gates fail.

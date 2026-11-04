@@ -1,0 +1,191 @@
+{
+  "context": "kind-kubesentinel-recovery",
+  "namespace": "sentinel-lab",
+  "mode": "real",
+  "resources": 79,
+  "approval": {
+    "id": "b3176c84-0ee6-409d-aea6-27c372ac8010",
+    "kind": "approve",
+    "target": "recovery-da8c95eaa34c8d003d13b7a6e5a35423",
+    "namespace": "sentinel-lab",
+    "state": "pending",
+    "created_at": "2026-11-04T02:56:11.579219Z",
+    "expires_at": "2026-11-04T03:01:11.578859Z",
+    "actor": "local-admin",
+    "mode": "real",
+    "result": null
+  },
+  "rejection": {
+    "id": "9a886f98-0496-4cf2-949b-6b46c2328639",
+    "kind": "reject",
+    "target": "recovery-5820f97bf78c1f6872e19ae1e61be631",
+    "namespace": "sentinel-lab",
+    "state": "pending",
+    "created_at": "2026-11-04T02:55:40.350293Z",
+    "expires_at": "2026-11-04T03:00:40.349082Z",
+    "actor": "local-admin",
+    "mode": "real",
+    "result": null
+  },
+  "recovered_action": {
+    "apiVersion": "recovery.kubesentinel.ai/v1alpha1",
+    "kind": "RemediationAction",
+    "metadata": {
+      "creationTimestamp": "2026-11-04T02:56:04Z",
+      "generation": 1,
+      "name": "recovery-da8c95eaa34c8d003d13b7a6e5a35423",
+      "namespace": "sentinel-lab",
+      "resourceVersion": "1476",
+      "uid": "897d6337-f60e-41f4-bd57-60db5f0397a7"
+    },
+    "spec": {
+      "beforeRevision": "verified-4128297e994b5c75bd459448d3c3923c",
+      "budgetCost": 1,
+      "expiresAt": "2026-11-04T03:01:04Z",
+      "incident": {
+        "id": "9e0f00dc12912f18d2b4f784e2f46c2fe38d8b2f6a914f2704bbe82fddc8af1f",
+        "observedAt": "2026-11-04T02:56:04Z",
+        "severity": "warning",
+        "source": "kubernetes",
+        "type": "ReplicaShortage"
+      },
+      "kind": "Scale",
+      "policyName": "lab-safe",
+      "policyUID": "1f8280f8-1e08-472e-87f0-afd0bf13a645",
+      "policyVersion": "940",
+      "rollbackEnabled": false,
+      "scaleTo": 4,
+      "target": {
+        "generation": 5,
+        "name": "demo-recovery",
+        "replicas": 3,
+        "templateDigest": "b443e26746e6d63d0d83c88110bcb82275abd51296dcdcce9bc67464add00c7b",
+        "uid": "53cab49b-2f67-4b1d-a729-2b666b1663a9"
+      }
+    },
+    "status": {
+      "after": {
+        "at": "2026-11-04T02:56:50Z",
+        "errors": 0,
+        "p95Milliseconds": 1,
+        "requests": 5
+      },
+      "appliedGeneration": 6,
+      "approvalActor": "local-operator",
+      "approvalUID": "2e808360-2595-4808-8cbb-3e2b171a1be3",
+      "attemptedAt": "2026-11-04T02:56:14Z",
+      "audit": [
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:56:04Z",
+          "reason": "NativeIncidentDetected",
+          "state": "Observing"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:56:09Z",
+          "reason": "SignedPlanApprovalRequired",
+          "state": "AwaitingApproval"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:56:14Z",
+          "reason": "IntentPersistedBeforeMutation",
+          "state": "Applying"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:56:14Z",
+          "reason": "MutationObservedByAPIServer",
+          "state": "Verifying"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:56:50Z",
+          "reason": "RolloutReplicasAndSampledSLIVerified",
+          "state": "Succeeded"
+        }
+      ],
+      "before": {
+        "at": "2026-11-04T02:56:14Z",
+        "errors": 0,
+        "p95Milliseconds": 1,
+        "requests": 5
+      },
+      "completedAt": "2026-11-04T02:56:50Z",
+      "expectedReplicas": 4,
+      "expectedTemplate": "b443e26746e6d63d0d83c88110bcb82275abd51296dcdcce9bc67464add00c7b",
+      "mutationCount": 1,
+      "phase": "Succeeded",
+      "reason": "RolloutReplicasAndSampledSLIVerified",
+      "successes": 2,
+      "verificationStartedAt": "2026-11-04T02:56:14Z"
+    }
+  },
+  "rejected_action": {
+    "apiVersion": "recovery.kubesentinel.ai/v1alpha1",
+    "kind": "RemediationAction",
+    "metadata": {
+      "annotations": {
+        "recovery.kubesentinel.ai/rejected-by": "local-admin"
+      },
+      "creationTimestamp": "2026-11-04T02:55:33Z",
+      "generation": 1,
+      "name": "recovery-5820f97bf78c1f6872e19ae1e61be631",
+      "namespace": "sentinel-lab",
+      "resourceVersion": "1209",
+      "uid": "0aff9bc0-7c82-4973-876e-1c8d5ccb4b0c"
+    },
+    "spec": {
+      "beforeRevision": "verified-56a2848fe623905319fae685c68ead86",
+      "budgetCost": 1,
+      "expiresAt": "2026-11-04T03:00:33Z",
+      "incident": {
+        "id": "176c5c6659e945c65dc03496742758caa8501c0a866627450489b2e96efdce1e",
+        "observedAt": "2026-11-04T02:55:33Z",
+        "severity": "warning",
+        "source": "kubernetes",
+        "type": "ReplicaShortage"
+      },
+      "kind": "Scale",
+      "policyName": "lab-safe",
+      "policyUID": "1f8280f8-1e08-472e-87f0-afd0bf13a645",
+      "policyVersion": "940",
+      "rollbackEnabled": false,
+      "scaleTo": 4,
+      "target": {
+        "generation": 3,
+        "name": "demo-recovery",
+        "replicas": 3,
+        "templateDigest": "b443e26746e6d63d0d83c88110bcb82275abd51296dcdcce9bc67464add00c7b",
+        "uid": "53cab49b-2f67-4b1d-a729-2b666b1663a9"
+      }
+    },
+    "status": {
+      "audit": [
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:55:33Z",
+          "reason": "NativeIncidentDetected",
+          "state": "Observing"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:55:38Z",
+          "reason": "SignedPlanApprovalRequired",
+          "state": "AwaitingApproval"
+        },
+        {
+          "actor": "sentinel-recovery-9c7ff4cb9-z5dd2",
+          "at": "2026-11-04T02:55:43Z",
+          "reason": "RejectedByAuthorizedGateway:local-admin",
+          "state": "Rejected"
+        }
+      ],
+      "completedAt": "2026-11-04T02:55:43Z",
+      "phase": "Rejected",
+      "reason": "RejectedByAuthorizedGateway:local-admin"
+    }
+  },
+  "aws_resources": false
+}

@@ -102,6 +102,8 @@ This actual application capture comes from the [Phase 07 browser run](docs/repor
 
 CPU/memory overhead, repeated native-versus-KubeSentinel recovery, full-stack saturation and HPA curves are **planned experiments**, with no invented values. [Cost scenarios](docs/costs/eks-estimate.md) use rounded assumptions, exclude major services, and are not current AWS quotes.
 
+Fresh [release-audit browser evidence](docs/reports/release-audit/browser-summary.json) includes six passing E2E tests and updated [desktop](docs/screenshots/release-audit/desktop.png), [tablet](docs/screenshots/release-audit/tablet.png) and [mobile](docs/screenshots/release-audit/mobile.png) captures, also using explicitly synthetic telemetry.
+
 ## Validate and contribute
 
 Toolchain: Node **24.22.2**, npm **11.11.0**, Python **3.12**, uv **0.13.6**. Explicit dependencies and transitive locks are committed. Go, Terraform, Helm and security tool pins live with their workflows/configuration.
