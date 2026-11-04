@@ -2,6 +2,7 @@
 
 import hashlib
 import hmac
+import http.client
 import json
 import threading
 import time
@@ -365,3 +366,41 @@ def test_ingestion_backpressure_rolls_back_snapshot_and_outbox(
     db.rollback()
     assert db.scalar(select(func.count()).select_from(Snapshot)) == 0
     assert db.scalar(select(func.count()).select_from(Escalation)) == 0
+
+
+def test_slow_response_headers_cannot_hold_worker_indefinitely() -> None:
+    class SlowReceiver(BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            self.rfile.read(int(self.headers["Content-Length"]))
+            try:
+                for byte in b"HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n\r\n":
+                    self.wfile.write(bytes([byte]))
+                    self.wfile.flush()
+                    time.sleep(0.03)
+            except OSError:
+                pass
+
+        def log_message(self, format: str, *args: Any) -> None:
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), SlowReceiver)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        started = time.monotonic()
+        with pytest.raises((OSError, http.client.HTTPException)):
+            deliver(
+                validate_destination(
+                    f"http://127.0.0.1:{server.server_port}/hook", "127.0.0.1", True
+                ),
+                b"{}",
+                "event",
+                SECRET,
+                "123",
+                0.15,
+            )
+        assert time.monotonic() - started < 1
+    finally:
+        server.shutdown()
+        thread.join(timeout=3)
+        server.server_close()

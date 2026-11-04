@@ -7,6 +7,7 @@ import ipaddress
 import re
 import socket
 import ssl
+import threading
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
@@ -67,8 +68,23 @@ def deliver(
     # Connect to the numeric configured address; never resolve the hostname a second time.
     # TLS still verifies the certificate and SNI against the original configured hostname.
     connection = http.client.HTTPConnection(destination.host, destination.port, timeout=timeout)
+    deadline: threading.Timer | None = None
+
+    def interrupt() -> None:
+        # A receiver sending one header byte before each socket timeout must not
+        # monopolize a worker indefinitely or outlive its durable delivery lease.
+        sock = connection.sock
+        if sock is not None:
+            try:
+                sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+
     try:
         connection.sock = socket.create_connection((destination.ip, destination.port), timeout)
+        deadline = threading.Timer(timeout, interrupt)
+        deadline.daemon = True
+        deadline.start()
         if destination.tls:
             connection.sock = ssl.create_default_context().wrap_socket(
                 connection.sock, server_hostname=destination.host
@@ -90,4 +106,6 @@ def deliver(
         # Do not consume/store untrusted response bodies or follow redirects.
         return response.status
     finally:
+        if deadline is not None:
+            deadline.cancel()
         connection.close()

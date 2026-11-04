@@ -102,8 +102,10 @@ monitor the delivery backlog before enabling it on a busy cluster.
 Workers claim rows with `FOR UPDATE SKIP LOCKED`, persist the attempt before I/O
 and use a 30-second lease. An expired lease is retryable within the attempt
 budget, so process crashes do not reset attempts. A reclaimed attempt cannot
-have its outcome overwritten by an older worker. Socket operations have a
-three-second default timeout (configurable 0.1–5 seconds).
+have its outcome overwritten by an older worker. Connection establishment has
+a three-second default timeout (configurable 0.1–5 seconds); after connecting,
+a matching deadline interrupts slow response headers as well as socket stalls.
+Both stages remain bounded below the delivery lease.
 
 2xx marks `delivered`. Network errors, 429 and 5xx retry with bounded exponential
 backoff; other statuses (including redirects) mark `dead`. Attempts are bounded
