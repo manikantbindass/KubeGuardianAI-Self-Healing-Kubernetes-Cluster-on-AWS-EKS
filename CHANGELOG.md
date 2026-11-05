@@ -2,6 +2,8 @@
 
 ## Unreleased - release audit and portfolio preparation
 
+- Expand the README with project purpose, component/data flows, dashboard sections, setup/configuration options, API examples, recovery/webhook controls, tests and troubleshooting.
+
 - Highlight measured outcomes and guarded recovery behavior after the README test instructions; link result provenance and update installer/badges to main.
 - Add opt-in signed recovery escalation webhooks, durable attempt leases and retry/audit state, scoped delivery history, migration 0006 and Compose/Helm configuration. Notifications cannot mutate Kubernetes resources.
 
