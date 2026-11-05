@@ -1,2 +1,5 @@
 # Historical non-secret idempotency test fixture, not an authentication credential.
 9bbfdcd6dad8992ffc9487a17cd925451c90bab5:tests/unit/test_operations.py:generic-api-key:75
+# Historical README literal YOUR_LOCAL_OPERATIONS_TOKEN placeholder; no real credential.
+# Exact commit/rule/line only; retain full-history scanning and all other matches.
+14b9e6e7a9286bbf63fb95da8c3ceef6a7e91660:README.md:curl-auth-header:313
