@@ -310,7 +310,7 @@ Authenticated example on Linux/macOS; replace the placeholder locally, without
 posting the token or command history publicly:
 
 ```sh
-curl -H "Authorization: Bearer YOUR_LOCAL_OPERATIONS_TOKEN" http://localhost:8000/api/v1/ops/escalations
+curl --oauth2-bearer YOUR_LOCAL_OPERATIONS_TOKEN http://localhost:8000/api/v1/ops/escalations
 ```
 
 Use `curl.exe` for the same command on Windows. Operations authorization does
